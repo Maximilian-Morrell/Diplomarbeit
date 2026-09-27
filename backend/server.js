@@ -9,7 +9,8 @@ app.use(express.json());
 
 // Routing
 app.get("/", (req, res) => {
-    res.send('Hello World');
+    console.log("Testing")
+    res.sendStatus(700);
 });
 
 // Start Server
