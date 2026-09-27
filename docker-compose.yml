@@ -1,0 +1,36 @@
+services:
+  database:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: Test1!
+      MARIADB_DATABASE: diplomDB
+      MARIADB_USER: max
+      MARIADB_PASSWORD: Test1!
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      BACKEND_PORT: 3000
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: diplomDB
+      DB_USER: max
+      DB_PASSWORD: Test1!
+    depends_on:
+      - database
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mariadb_data:
