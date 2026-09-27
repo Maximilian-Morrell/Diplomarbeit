@@ -4,15 +4,15 @@ import express from "express";
 
 // Setup
 const app = express();
-const PORT = process.env.BACKEND_PORT;
-app.use(express.json);
+const port = process.env.BACKEND_PORT || 3000;
+app.use(express.json());
 
 // Routing
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send('Hello World');
 });
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`Backend running on Port ${PORT}`);
+app.listen(port, "0.0.0.0", () => {
+    console.log(`Backend running on Port ${port}`);
 });
