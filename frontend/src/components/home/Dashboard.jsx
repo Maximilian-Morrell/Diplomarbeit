@@ -40,7 +40,7 @@ export default function Dashboard() {
                     <TabPanel value="0" tabIndex={0} sx={{ height: '750px', overflowY: 'auto', boxSizing: 'border-box' }}>
                         <List Type={0} />
                     </TabPanel>
-                    <TabPanel value="1" tabIndex={0} sx={{ height: '75px', overflowY: 'auto', boxSizing: 'border-box' }}>
+                    <TabPanel value="1" tabIndex={0} sx={{ height: '750px', overflowY: 'auto', boxSizing: 'border-box' }}>
                         <List Type={1} />
                     </TabPanel>
                 </Box>
