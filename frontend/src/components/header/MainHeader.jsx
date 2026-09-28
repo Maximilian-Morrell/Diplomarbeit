@@ -8,17 +8,17 @@ import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
 export default function MainHeader() {
 
     return (
-        <Box sx={{flexGrow: 1}}>
-            <AppBar position='static' sx={{ borderRadius: 0.8}}>
+        <Box sx={{height: '7vh'}}>
+            <AppBar position='static' sx={{ borderRadius: 0.8 }}>
                 <Toolbar>
-                    <Typography variant='h6' sx={{flexGrow: 1}}>Citytrip Planner</Typography>
+                    <Typography variant='h6' sx={{ flexGrow: 1 }}>Citytrip Planner</Typography>
                     <IconButton
                         size="large"
                         edge="end"
                         color="inherit"
-                        sx={{mr:1}}>
-                            <LoginRoundedIcon />
-                        </IconButton>
+                        sx={{ mr: 1 }}>
+                        <LoginRoundedIcon />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
         </Box>

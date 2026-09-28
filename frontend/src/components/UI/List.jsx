@@ -10,7 +10,7 @@ export default function List(Children) {
     const [page, setPage] = React.useState(1);
 
     return (
-        <Box sx={{ width: '100%', display: "flex", flexWrap: "wrap", gap: 2 }}>
+        <Box sx={{ width: '100%', display: "flex", flexWrap: "wrap", gap: 1}}>
             <TripCard></TripCard>
             <TripCard></TripCard>
             <TripCard></TripCard>
