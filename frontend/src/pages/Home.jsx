@@ -1,4 +1,4 @@
-import MainHeader from "../Components/Header/MainHeader"
+import MainHeader from "../components/header/MainHeader"
 import Dashboard from "../components/home/Dashboard"
 
 export default function Home() {

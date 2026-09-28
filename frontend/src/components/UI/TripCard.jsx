@@ -12,7 +12,7 @@ export default function TripCard(CardData) {
         <Card sx={{ width: 350}}>
             <CardMedia
                 sx={{height: 240}}
-                image="/src/static/images/kitz.jpg"
+                image="/image/Kitz.jpg"
                 title="Kitz"></CardMedia>
             <CardContent>
                 <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>Type</Typography>
