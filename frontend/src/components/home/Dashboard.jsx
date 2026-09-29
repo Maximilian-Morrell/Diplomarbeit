@@ -8,6 +8,10 @@ import TabPanel from '@mui/lab/TabPanel';
 import List from '../UI/List';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Button from '@mui/material/Button'
+import Backdrop from '@mui/material/Backdrop';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import CreateTrip from '../UI/CreateTrip';
 
 
 export default function Dashboard() {
@@ -17,6 +21,14 @@ export default function Dashboard() {
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
+    };
+
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleOpen = () => {
+        setOpen(true);
     };
 
     return (
@@ -31,8 +43,8 @@ export default function Dashboard() {
                         <Tab label="Planned" value="0"></Tab>
                         <Tab label="Trip history" value="1"></Tab>
                     </TabList>
-                    <Button>
-                                                <AddRoundedIcon></AddRoundedIcon>
+                    <Button onClick={handleOpen}>
+                        <AddRoundedIcon></AddRoundedIcon>
                         <Typography>New Trip</Typography>
                     </Button>
                 </Box>
@@ -45,6 +57,13 @@ export default function Dashboard() {
                     </TabPanel>
                 </Box>
             </TabContext>
+            <Backdrop
+                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                open={open}
+                onClick={handleClose}
+            >
+                <CreateTrip></CreateTrip>
+            </Backdrop>
         </Box>
     );
 }
