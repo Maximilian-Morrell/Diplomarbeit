@@ -21,14 +21,17 @@ export default function Dashboard() {
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
+
     };
 
     const [open, setOpen] = React.useState(false);
-    const handleClose = () => {
-        setOpen(false);
-    };
-    const handleOpen = () => {
+    const handleClickOpen = () => {
         setOpen(true);
+    };
+
+    const handleClose = (value) => {
+        setOpen(false);
+        setSelectedValue(value);
     };
 
     return (
@@ -43,7 +46,7 @@ export default function Dashboard() {
                         <Tab label="Planned" value="0"></Tab>
                         <Tab label="Trip history" value="1"></Tab>
                     </TabList>
-                    <Button onClick={handleOpen}>
+                    <Button onClick={handleClickOpen}>
                         <AddRoundedIcon></AddRoundedIcon>
                         <Typography>New Trip</Typography>
                     </Button>
@@ -57,13 +60,7 @@ export default function Dashboard() {
                     </TabPanel>
                 </Box>
             </TabContext>
-            <Backdrop
-                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-                open={open}
-                onClick={handleClose}
-            >
-                <CreateTrip></CreateTrip>
-            </Backdrop>
+            <CreateTrip open={open} onClose={handleClose}></CreateTrip>
         </Box>
     );
 }
