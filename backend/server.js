@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { CheckDB } from "./db/dbServer.js";
 import GetRouter from './http/Get.js'
+import PostRouter from './http/Post.js'
 
 // Setup
 const app = express();
@@ -17,12 +18,11 @@ const __dirname = path.dirname(__filename)
 
 app.use("/image", express.static("./public/images"))
 app.use('/get', GetRouter)
+app.use('/post', PostRouter)
 
 // Routing
 app.get("/", async (req, res) => {
     console.log("Testing")
-    const countries = await GetCountries();
-    console.log(countries)
     res.sendStatus(700);
 });
 

@@ -4,22 +4,18 @@ import Typography from "@mui/material/Typography";
 import MultiSelect from "../MultiSelect";
 import * as React from 'react'
 import CityCard from "../CityCard";
+import CardActionArea from "@mui/material/CardActionArea";
 
-export default function CT_One() {
-    const Cities = [
-        'Kitzbühel',
-        'Kufstein',
-        'Tux',
-    ]
+export default function CT_One({ selectedCity, setSelectedCity, cities }) {
 
-
-    const [selectedCities, setSelectedCities] = React.useState([]);
 
     return (
         <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', justifyContent: 'space-evenly', gap: 2, boxSizing: 'border-box' }}>
-            <CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard>
-            <CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard><CityCard></CityCard>
-
+            {cities.map((city, index) => (
+                <CityCard key={city.id} city={city} onClick={() => {
+                    setSelectedCity(index);
+                }} selectedCity={selectedCity} selected={selectedCity === index}></CityCard>
+            ))}
         </Box>
     )
 }

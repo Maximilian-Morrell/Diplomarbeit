@@ -22,6 +22,7 @@ services:
       DB_NAME: diplomDB
       DB_USER: max
       DB_PASSWORD: Test1!
+      JWT_SECRET: p1IS9nDdchqdixREMMyh4IVWDcyY7jUBogbpTEBuiBWo4qaloR5Vyqq1lLkU5zKqGS4P8XnjL4oZkgjbsTMDZS
     depends_on:
       - database
 
