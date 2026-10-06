@@ -1,8 +1,27 @@
-import Home from "./pages/Home";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Trips from "./pages/Trips";
+import Home from "./pages/Home"
+import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 function App() {
 
-  return <Home></Home>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Home></Home>}/>
+
+        <Route element={<ProtectedRoute requiredPermission={["User"]}></ProtectedRoute>}>
+          <Route path="/trips" element={<Trips></Trips>}></Route>
+        </Route>
+        
+        <Route element={<ProtectedRoute requiredPermissions={["CityAdmin", "CountryAdmin", "UserAdmin"]}></ProtectedRoute>}>
+          <Route path="/admin" element={<h1>Accessed the admin page</h1>}></Route>
+        </Route>
+        
+        <Route path='*' element={<Navigate to="/"/>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

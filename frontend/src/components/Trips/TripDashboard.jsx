@@ -14,7 +14,7 @@ import Divider from '@mui/material/Divider';
 import CreateTrip from '../UI/CreateTrip';
 
 
-export default function Dashboard() {
+export default function TripDashboard() {
 
     document.title = "Holidai: Dashboard"
     const [value, setValue] = React.useState('0');
