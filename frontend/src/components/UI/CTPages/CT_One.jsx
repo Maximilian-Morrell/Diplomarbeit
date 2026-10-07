@@ -10,7 +10,7 @@ export default function CT_One({ selectedCity, setSelectedCity, cities }) {
 
 
     return (
-        <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', justifyContent: 'space-evenly', gap: 2, boxSizing: 'border-box' }}>
+        <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', justifyContent: 'space-evenly', gap: 2, boxSizing: 'border-box', padding: 1 }}>
             {cities.map((city, index) => (
                 <CityCard key={city.id} city={city} onClick={() => {
                     setSelectedCity(index);
