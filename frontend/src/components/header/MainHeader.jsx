@@ -21,29 +21,13 @@ export default function MainHeader() {
         <Box sx={{ height: '7dvh' }}>
             <AppBar position='static' sx={{ borderRadius: 0.8 }}>
                 <Toolbar>
-                    <Box sx={{ width: '10%' }}>
-                        <Typography variant='h5' sx={{ flexGrow: 1, pb: 0, mb: 0, fontWeight: 'bolder' }}>Holid.ai</Typography>
-                    </Box>
+                    <Link href="/" color="inherit" underline='none' sx={{ width: '10%' }}>
+                            <Typography variant='h5' sx={{ flexGrow: 1, pb: 0, mb: 0, fontWeight: 'bolder' }}>Holid.ai</Typography>
+                    </Link>
 
                     <Box sx={{ width: '80%', display: 'flex', gap: 3, flexGrow: 1, justifyContent: 'space-evenly' }}>
-                        <Link href="/" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Home
-                        </Link>
-                        <Link href="/about-us" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            About us
-                        </Link>
-                        <Link href="/contact-us" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Contact us
-                        </Link>
-                        <Link href="/impressum" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Impressum
-                        </Link>
                         {isAuthenticated && (
                             <>
-                                <Divider orientation="vertical" flexItem sx={{
-                                    borderColor: 'var(--AppBar-color)',
-                                    opacity: 0.6
-                                }} />
                                 <Link href="/trips" color="inherit" underline="none" sx={{ mr: 2 }}>
                                     Trips
                                 </Link>
@@ -54,14 +38,20 @@ export default function MainHeader() {
                         )}
                         {hasPermission("CityAdmin") || hasPermission("CountryAdmin") || hasPermission("UserAdmin") ? (
                             <>
-                                <Divider orientation="vertical" flexItem sx={{
-                                    borderColor: 'var(--AppBar-color)',
-                                    opacity: 0.6
-                                }} />
                                 <Link href="/admin" color="inherit" underline="none" sx={{ mr: 2 }}>Admin</Link>
                             </>
 
                         ) : null}
+                        
+                        <Link href="/about-us" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            About us
+                        </Link>
+                        <Link href="/contact-us" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            Contact us
+                        </Link>
+                        <Link href="/impressum" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            Impressum
+                        </Link>
                     </Box>
                     <Box sx={{ width: '10%', display: 'flex', gap: 3, flexDirection: 'row-reverse' }}>
                         {!isAuthenticated && (
