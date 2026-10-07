@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home></Home>}/>
 
-        <Route element={<ProtectedRoute requiredPermission={["User"]}></ProtectedRoute>}>
+        <Route element={<ProtectedRoute requiredPermissions={["User"]}></ProtectedRoute>}>
           <Route path="/trips" element={<Trips></Trips>}></Route>
         </Route>
         

@@ -5,75 +5,40 @@ import React, {
     useState
 } from "react";
 
-import { getUserPermissions } from "./API/apiClient";
+import { getUserPermissions, getUser } from "./API/apiClient";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [permissions, setPermissions] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const loadUser = async () => {
+            try {
+                const token = localStorage.getItem("token");
 
-        if (!token) {
-            setUser(null);
-            setLoading(false);
-            return;
-        }
+                if (!token) {
+                    setUser(null);
+                    setPermissions([]);
+                    return;
+                }
 
-        try {
-            const tokenParts = token.split(".");
+                const userData = await getUser();
 
-            if (tokenParts.length !== 3) {
-                throw new Error("Invalid JWT");
+                setUser(userData);
+                setPermissions(userData.permissions ?? []);
+            } catch (error) {
+                console.error(error);
+                setUser(null);
+                setPermissions([]);
+            } finally {
+                setLoading(false);
             }
+        };
 
-            const payload = JSON.parse(
-                atob(tokenParts[1])
-            );
-
-            const basicUser = {
-                id: payload.id,
-                username: payload.username,
-                permissions: []
-            };
-
-            setUser(basicUser);
-
-            getUserPermissions()
-                .then((result) => {
-                    setUser((currentUser) => {
-                        if (!currentUser) {
-                            return null;
-                        }
-
-                        return {
-                            ...currentUser,
-                            permissions: result.permissions
-                        };
-                    });
-                })
-                .catch((error) => {
-                    console.error(
-                        "Failed to load permissions:",
-                        error
-                    );
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-
-        } catch (error) {
-            console.error(
-                "Invalid JWT:",
-                error
-            );
-
-            localStorage.removeItem("token");
-            setUser(null);
-            setLoading(false);
-        }
+        loadUser();
     }, []);
 
     const isAuthenticated = !!user;
@@ -141,7 +106,8 @@ export function AuthProvider({ children }) {
                 isAuthenticated,
                 hasPermission,
                 login,
-                logout
+                logout,
+                permissions
             }}
         >
             {children}

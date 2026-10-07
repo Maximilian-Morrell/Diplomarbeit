@@ -67,3 +67,21 @@ export async function getUserPermissions() {
 
     return await response.json();
 }
+
+export async function getUser() {
+    const response = await fetch('/api/get/me', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        credentials: 'include', // Include cookies in the request
+
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to get permissions");
+    }
+
+    return await response.json();
+}
