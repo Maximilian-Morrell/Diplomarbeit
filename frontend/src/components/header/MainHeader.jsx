@@ -18,49 +18,69 @@ export default function MainHeader() {
     console.log("MainHeader user:", user);
 
     return (
-        <Box sx={{ height: '7vh' }}>
+        <Box sx={{ height: '7dvh' }}>
             <AppBar position='static' sx={{ borderRadius: 0.8 }}>
                 <Toolbar>
-                    <Typography variant='h6' sx={{ flexGrow: 1 }}>
-                        <Badge badgeContent={"prototype"} color="secondary">Holidai</Badge>
-                    </Typography>
-                    {!isAuthenticated && (
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            color="inherit"
-                            sx={{ mr: 1 }}
-                            onClick={() => setAuthOpen(true)}>
-                            <LoginRoundedIcon />
-                        </IconButton>
-                    )}
-                    <Box sx={{ display: 'flex', gap: 3, flexGrow: 1 }}>
+                    <Box sx={{ width: '10%' }}>
+                        <Typography variant='h5' sx={{ flexGrow: 1, pb: 0, mb: 0, fontWeight: 'bolder' }}>Holid.ai</Typography>
+                    </Box>
+
+                    <Box sx={{ width: '80%', display: 'flex', gap: 3, flexGrow: 1, justifyContent: 'space-evenly' }}>
                         <Link href="/" color="inherit" underline="none" sx={{ mr: 2 }}>
                             Home
                         </Link>
-                    {hasPermission("CityAdmin") || hasPermission("CountryAdmin") || hasPermission("UserAdmin")  ? (
-                        <Divider orientation="vertical" flexItem sx={{ mr: 2 }} />
-                    ): null}
-                    {hasPermission("CityAdmin") && (
-                        <Link href="/admin/cities" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Admin - Cities
+                        <Link href="/about-us" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            About us
                         </Link>
-                    )}
+                        <Link href="/contact-us" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            Contact us
+                        </Link>
+                        <Link href="/impressum" color="inherit" underline="none" sx={{ mr: 2 }}>
+                            Impressum
+                        </Link>
+                        {isAuthenticated && (
+                            <>
+                                <Divider orientation="vertical" flexItem sx={{
+                                    borderColor: 'var(--AppBar-color)',
+                                    opacity: 0.6
+                                }} />
+                                <Link href="/trips" color="inherit" underline="none" sx={{ mr: 2 }}>
+                                    Trips
+                                </Link>
+                                <Link href="/ittinararies" color="inherit" underline="none" sx={{ mr: 2 }}>
+                                    Ittinararies
+                                </Link>
+                            </>
+                        )}
+                        {hasPermission("CityAdmin") || hasPermission("CountryAdmin") || hasPermission("UserAdmin") ? (
+                            <>
+                                <Divider orientation="vertical" flexItem sx={{
+                                    borderColor: 'var(--AppBar-color)',
+                                    opacity: 0.6
+                                }} />
+                                <Link href="/admin" color="inherit" underline="none" sx={{ mr: 2 }}>Admin</Link>
+                            </>
 
-                    {hasPermission("CountryAdmin") && (
-                        <Link href="/admin/countries" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Admin - Countries
-                        </Link>
-                    )}
-                    {hasPermission("UserAdmin") && (
-                        <Link href="/admin/users" color="inherit" underline="none" sx={{ mr: 2 }}>
-                            Admin - Users
-                        </Link>
-                    )}
+                        ) : null}
                     </Box>
-                    {isAuthenticated && (
-                        <Avatar sx={{ mr: 1 }}>{user.username.charAt(0)}</Avatar>
-                    )}
+                    <Box sx={{ width: '10%', display: 'flex', gap: 3, flexDirection: 'row-reverse' }}>
+                        {!isAuthenticated && (
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                color="inherit"
+                                sx={{ mr: 1 }}
+                                onClick={() => setAuthOpen(true)}>
+                                <LoginRoundedIcon />
+                            </IconButton>
+                        )}
+
+
+                        {isAuthenticated && (
+                            <Avatar sx={{ mr: 1 }}>{user.username.charAt(0)}</Avatar>
+                        )}
+                    </Box>
+
 
 
                 </Toolbar>

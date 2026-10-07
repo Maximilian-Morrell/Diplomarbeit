@@ -33,7 +33,7 @@ export async function CheckDB() {
         await con.query(`
             CREATE TABLE IF NOT EXISTS users (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
-            username VARCHAR(255) NOT NULL UNIQUE,
+            username VARCHAR(255) NOT NULL,
             password_hash VARCHAR(255) NOT NULL)`);
 
         console.log("Table users is ready!")
@@ -57,7 +57,7 @@ export async function CheckDB() {
         await con.query(`
             INSERT IGNORE  INTO permissions (name)
             VALUES 
-            ('User'), ('CountryAdmin'), ('CityAdmin'), ('UserAdmin')`);
+            ('User'), ('CountryAdmin'), ('CityAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
 
         console.log("Table permissions is ready!")
     } catch (err) {
