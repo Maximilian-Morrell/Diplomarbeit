@@ -9,7 +9,7 @@ import AuthDialog from '../UI/AuthDialog';
 import { useAuth } from "../../AuthContext";
 import Link from '@mui/material/Link';
 import { Avatar, Badge, Divider } from '@mui/material';
-
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 export default function MainHeader() {
 
@@ -22,7 +22,7 @@ export default function MainHeader() {
             <AppBar position='static' sx={{ borderRadius: 0.8 }}>
                 <Toolbar>
                     <Link href="/" color="inherit" underline='none' sx={{ width: '10%' }}>
-                            <Typography variant='h5' sx={{ flexGrow: 1, pb: 0, mb: 0, fontWeight: 'bolder' }}>Holid.ai</Typography>
+                        <Typography variant='h5' sx={{ flexGrow: 1, pb: 0, mb: 0, fontWeight: 'bolder' }}>Holid.ai</Typography>
                     </Link>
 
                     <Box sx={{ width: '80%', display: 'flex', gap: 3, flexGrow: 1, justifyContent: 'space-evenly' }}>
@@ -42,7 +42,7 @@ export default function MainHeader() {
                             </>
 
                         ) : null}
-                        
+
                         <Link href="/about-us" color="inherit" underline="none" sx={{ mr: 2 }}>
                             About us
                         </Link>
@@ -53,7 +53,7 @@ export default function MainHeader() {
                             Impressum
                         </Link>
                     </Box>
-                    <Box sx={{ width: '10%', display: 'flex', gap: 3, flexDirection: 'row-reverse' }}>
+                    <Box sx={{ width: '10%', display: 'flex', gap: 3, flexDirection: 'row-reverse', alignItems: "center"}}>
                         {!isAuthenticated && (
                             <IconButton
                                 size="large"
@@ -67,7 +67,22 @@ export default function MainHeader() {
 
 
                         {isAuthenticated && (
-                            <Avatar sx={{ mr: 1 }}>{user.username.charAt(0)}</Avatar>
+                            <>
+                                <Link href="/account" underline='none'>
+                                    <Avatar sx={{ mr: 1 }}>{user.username.charAt(0)}</Avatar>
+                                </Link>
+                                <IconButton
+                                    size="large"
+                                    edge="end"
+                                    color="inherit"
+                                    sx={{ mr: 1 }}
+                                    onClick={() => {
+                                        localStorage.removeItem("token");
+                                        setIsAuthenticated(false);
+                                    }}>
+                                        <LogoutRoundedIcon></LogoutRoundedIcon>
+                                    </IconButton>
+                            </>
                         )}
                     </Box>
 
