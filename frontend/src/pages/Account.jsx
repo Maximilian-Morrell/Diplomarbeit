@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
 import MainHeader from "../components/header/MainHeader";
+import MainAccount from "../Components/Account/MainAccount";
 
 export default function Account() {
     return (
-        <div sx={{width: "100dvw", height: "100dvh"}}>
-            <MainHeader></MainHeader>
-            <h1>Test</h1>
-        </div>
+        <Box sx={{margin: 1}}>
+            <MainAccount></MainAccount>
+        </Box>
     )
 }

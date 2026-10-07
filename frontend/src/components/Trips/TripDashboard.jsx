@@ -35,7 +35,7 @@ export default function TripDashboard() {
     };
 
     return (
-        <Box sx={{ marginTop: 2, width: '100%' }}>
+        <Box >
             <Typography variant='h1' sx={{ fontWeight: '700', fontSize: 60 }}>Trips</Typography>
             <TabContext value={value}>
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>

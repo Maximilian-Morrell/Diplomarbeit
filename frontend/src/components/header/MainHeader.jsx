@@ -18,7 +18,7 @@ export default function MainHeader() {
     console.log("MainHeader user:", user);
 
     return (
-        <Box sx={{ height: '7dvh' }}>
+        <Box sx={{margin: "0.5%"}}>
             <AppBar position='static' sx={{ borderRadius: 0.8 }}>
                 <Toolbar>
                     <Link href="/" color="inherit" underline='none' sx={{ width: '10%' }}>
