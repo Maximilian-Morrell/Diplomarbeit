@@ -19,6 +19,10 @@ export default function AuthDialog({ open, onClose }) {
     const { login } = useAuth();
 
     const [formData, setFormData] = React.useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        birthDay: "",
         username: "",
         password: "",
     });
@@ -33,6 +37,10 @@ export default function AuthDialog({ open, onClose }) {
     const reset = () => {
         setMode(null);
         setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            birthDay: "",
             username: "",
             password: "",
         });
@@ -49,6 +57,10 @@ export default function AuthDialog({ open, onClose }) {
                 console.log("[AuthDialog] Signing up...");
 
                 const result = await signUp(
+                    formData.firstName,
+                    formData.lastName,
+                    formData.email,
+                    formData.birthDay,
                     formData.username,
                     formData.password
                 );
@@ -79,7 +91,7 @@ export default function AuthDialog({ open, onClose }) {
                 console.log("[AuthDialog] Logging in...");
 
                 const result = await logIn(
-                    formData.username,
+                    formData.email,
                     formData.password
                 );
 
@@ -159,27 +171,90 @@ export default function AuthDialog({ open, onClose }) {
                             pt: 1,
                         }}
                     >
-                        <TextField
-                            fullWidth
-                            label="Username"
-                            type="text"
-                            value={formData.username}
-                            onChange={handleChange("username")}
-                            autoComplete="username"
-                        />
+                        {mode === "signup" ? (
+                            <>
+                                <Typography>Sign Up</Typography>
 
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange("password")}
-                            autoComplete={
-                                mode === "login"
-                                    ? "current-password"
-                                    : "new-password"
-                            }
-                        />
+                                <TextField
+                                    fullWidth
+                                    label="First Name"
+                                    type="text"
+                                    value={formData.firstName}
+                                    onChange={handleChange("firstName")}
+                                    autoComplete="firstName"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Last Name"
+                                    type="text"
+                                    value={formData.lastName}
+                                    onChange={handleChange("lastName")}
+                                    autoComplete="lastName"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="E-Mail"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange("email")}
+                                    autoComplete="email"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Username"
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={handleChange("username")}
+                                    autoComplete="username"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Birthday"
+                                    type="date"
+                                    value={formData.birthDay}
+                                    onChange={handleChange("birthDay")}
+                                    autoComplete="birthDay"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange("password")}
+                                    autoComplete="new-password"
+                                />
+
+
+                            </>
+                        ) : (
+                            <>
+                                <Typography>Login</Typography>
+
+                                <TextField
+                                    fullWidth
+                                    label="Username"
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={handleChange("username")}
+                                    autoComplete="username"
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange("password")}
+                                    autoComplete="current-password"
+                                />
+                            </>
+                        )}
+
                     </Box>
                 )}
             </DialogContent>
