@@ -1,4 +1,3 @@
-import mainMailLayout from "./templates/mainMailLayout.js";
 import transporter from "./transporter.js";
 import nodemailer from "nodemailer";
 
