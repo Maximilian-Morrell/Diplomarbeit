@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 import { CheckDB } from "./db/dbServer.js";
 import GetRouter from './http/Get.js'
 import PostRouter from './http/Post.js'
-import TestEMail from "./mail/mailserver.js";
 
 // Setup
 const app = express();

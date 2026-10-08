@@ -1,4 +1,5 @@
 import transporter from "./transporter.js";
+import verificationEMail from "./templates/verificationEMail.js";
 import nodemailer from "nodemailer";
 
 export default async function RegisterEMail(user) {
@@ -11,7 +12,7 @@ export default async function RegisterEMail(user) {
             from: `"Account Creation Service" <diplom@morrell.at>`,
             to: user.email,
             subject: "Welcome " + user.firstName,
-            html: mainMailLayout(content)
+            html: content
         });
 
         console.log("Message sent: %s", info.messageId)
