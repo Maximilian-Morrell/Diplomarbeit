@@ -33,6 +33,10 @@ export async function CheckDB() {
         await con.query(`
             CREATE TABLE IF NOT EXISTS users (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            firstName VARCHAR(255) NOT NULL,
+            lastName VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            birthDay DATE NOT NULL,
             username VARCHAR(255) NOT NULL,
             password_hash VARCHAR(255) NOT NULL)`);
 
@@ -142,7 +146,7 @@ export async function GetCity(id) {
     return null;
 }
 
-export async function AddUser(username, password) {
+export async function AddUser(firstName, lastName, email, birthDay, username, password) {
     var conn;
 
     try {
@@ -150,7 +154,7 @@ export async function AddUser(username, password) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const UserResult = await conn.query('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]);
+        const UserResult = await conn.query('INSERT INTO users (firstName, lastName, email, birthDay, username, password_hash) VALUES (?, ?, ?, ?, ?, ?)', [firstName, lastName, email, birthDay, username, hashedPassword]);
 
         const user = await GetUser(UserResult.insertId);
         console.log("User created:", user);

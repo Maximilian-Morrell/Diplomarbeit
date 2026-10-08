@@ -18,14 +18,15 @@ export async function getCities() {
     }
 }
 
-export async function signUp(username, password) {
+export async function signUp(firstName, lastName, email, birthDay, userName, password) {
     try {
+        console.log(birthDay)
         const response = await fetch('/api/post/sign-up', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ firstName, lastName, email, birthDay, userName, password }),
         });
         return response.json();
     } catch (error) {

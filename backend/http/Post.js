@@ -3,14 +3,16 @@ import { AddUser, LogIn } from '../db/dbServer.js';
 import { AuthMiddleware, GenerateToken } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
+import RegisterEMail from '../mail/mailserver.js';
 
 
 
 const router = express.Router();
 
 router.post('/sign-up', async (req, res) => {
-    const { username, password } = req.body;
-    const user = await AddUser(username, password);
+    const {firstName, lastName, email, birthDay, userName, password } = req.body;
+    const user = await AddUser(firstName, lastName, email, birthDay, userName, password);
+    RegisterEMail(user);
 
     if(!user) {
         return res.status(500).json({ message: 'Failed to add user' });
