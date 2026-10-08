@@ -218,6 +218,11 @@ export default function AuthDialog({ open, onClose }) {
                                     value={formData.birthDay}
                                     onChange={handleChange("birthDay")}
                                     autoComplete="birthDay"
+                                    slotProps={{
+                                        inputLabel: {
+                                            shrink: true,
+                                        },
+                                    }}
                                 />
 
                                 <TextField
