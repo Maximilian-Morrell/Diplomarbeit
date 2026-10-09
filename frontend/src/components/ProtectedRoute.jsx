@@ -1,35 +1,19 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+const { user, permissions, loading } = useAuth();
 
-function ProtectedRoute({ requiredPermissions = [] }) {
-    const { isAuthenticated, permissions, loading } = useAuth();
-    const location = useLocation();
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (!isAuthenticated) {
-        return (
-            <Navigate
-                to="/login"
-                state={{ from: location }}
-                replace
-            />
-        );
-    }
-
-    if (requiredPermissions.length > 0) {
-        const hasPermission = requiredPermissions.some(
-            permission => permissions.includes(permission)
-        );
-
-        if (!hasPermission) {
-            return <Navigate to="/" replace />;
-        }
-    }
-
-    return <Outlet />;
+if (loading) {
+    return <div>Loading user...</div>;
 }
 
-export default ProtectedRoute;
+if (!user) {
+    return <Navigate to="/" replace />;
+}
+
+const allowed = requiredPermissions.every(permission =>
+    permissions.includes(permission)
+);
+
+if (!allowed) {
+    return <Navigate to="/" replace />;
+}
+
+return <Outlet />;

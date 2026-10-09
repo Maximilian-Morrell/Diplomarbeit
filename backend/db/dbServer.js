@@ -38,7 +38,8 @@ export async function CheckDB() {
             email VARCHAR(255) NOT NULL UNIQUE,
             birthDay DATE NOT NULL,
             username VARCHAR(255) NOT NULL,
-            password_hash VARCHAR(255) NOT NULL)`);
+            password_hash VARCHAR(255) NOT NULL,
+            bio TEXT)`);
 
         console.log("Table users is ready!")
 

@@ -55,6 +55,7 @@ router.get('/me', AuthMiddleware, async (req, res) => {
             email: user.email,
             birthDay: user.birthDay,
             username: user.username,
+            bio: user.bio,
             permissions: user.permissions
         });
     } catch (error) {
