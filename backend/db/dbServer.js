@@ -39,7 +39,11 @@ export async function CheckDB() {
             birthDay DATE NOT NULL,
             username VARCHAR(255) NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
-            bio TEXT)`);
+            bio TEXT,
+            phone VARCHAR(60),
+            TFA_ENABLED TINYINT NOT NULL DEFAULT 0,
+            emailVerified TINYINT NOT NULL DEFAULT 0
+            )`);
 
         console.log("Table users is ready!")
 
@@ -288,12 +292,12 @@ export async function AddPermissionToUser(userId, permissionId) {
     }
 }
 
-export async function LogIn(username, password) {
+export async function LogIn(email, password) {
     var conn;
 
     try {
         conn = await pool.getConnection();
-        const [user] = await conn.query('SELECT * FROM users WHERE username = ?', [username]);
+        const [user] = await conn.query('SELECT * FROM users WHERE email = ?', [email]);
         console.log("Fetched user:", user);
         if (!user) {
             console.log("User not found");

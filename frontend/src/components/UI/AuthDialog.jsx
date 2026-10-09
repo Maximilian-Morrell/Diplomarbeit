@@ -180,6 +180,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="First Name"
                                     type="text"
                                     value={formData.firstName}
+                                    variant="outlined"
                                     onChange={handleChange("firstName")}
                                     autoComplete="firstName"
                                 />
@@ -189,6 +190,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="Last Name"
                                     type="text"
                                     value={formData.lastName}
+                                    variant="outlined"
                                     onChange={handleChange("lastName")}
                                     autoComplete="lastName"
                                 />
@@ -198,6 +200,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="E-Mail"
                                     type="email"
                                     value={formData.email}
+                                    variant="outlined"
                                     onChange={handleChange("email")}
                                     autoComplete="email"
                                 />
@@ -207,6 +210,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="Username"
                                     type="text"
                                     value={formData.username}
+                                    variant="outlined"
                                     onChange={handleChange("username")}
                                     autoComplete="username"
                                 />
@@ -216,6 +220,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="Birthday"
                                     type="date"
                                     value={formData.birthDay}
+                                    variant="outlined"
                                     onChange={handleChange("birthDay")}
                                     autoComplete="birthDay"
                                     slotProps={{
@@ -230,6 +235,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="Password"
                                     type="password"
                                     value={formData.password}
+                                    variant="outlined"
                                     onChange={handleChange("password")}
                                     autoComplete="new-password"
                                 />
@@ -242,11 +248,12 @@ export default function AuthDialog({ open, onClose }) {
 
                                 <TextField
                                     fullWidth
-                                    label="Username"
+                                    label="E-Mail"
                                     type="text"
-                                    value={formData.username}
-                                    onChange={handleChange("username")}
-                                    autoComplete="username"
+                                    value={formData.email}
+                                    variant="outlined"
+                                    onChange={handleChange("email")}
+                                    autoComplete="email"
                                 />
 
                                 <TextField
@@ -254,6 +261,7 @@ export default function AuthDialog({ open, onClose }) {
                                     label="Password"
                                     type="password"
                                     value={formData.password}
+                                    variant="outlined"
                                     onChange={handleChange("password")}
                                     autoComplete="current-password"
                                 />

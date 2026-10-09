@@ -47,7 +47,7 @@ router.get('/me', AuthMiddleware, async (req, res) => {
     try {
         const user = await GetUser(req.user.id);
 
-        
+
         res.json({
             id: user.id,
             firstName: user.firstName,
@@ -56,6 +56,9 @@ router.get('/me', AuthMiddleware, async (req, res) => {
             birthDay: user.birthDay,
             username: user.username,
             bio: user.bio,
+            phone: user.phone,
+            TFA_Enabled: Boolean(user.TFA_Enabled),
+            emailVerified: Boolean(user.emailVerified),
             permissions: user.permissions
         });
     } catch (error) {
