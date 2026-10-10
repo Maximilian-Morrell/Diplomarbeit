@@ -1,6 +1,6 @@
 import { Box } from "@mui/material"
-import MainHeader from "../components/header/MainHeader"
-import TripDashboard from "../components/Trips/TripDashboard"
+import MainHeader from "../Components/Header/MainHeader"
+import TripDashboard from "../Components/Trips/TripDashboard"
 
 export default function Trips() {
 

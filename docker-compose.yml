@@ -5,10 +5,10 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MARIADB_ROOT_PASSWORD: Test1!
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: diplomDB
-      MARIADB_USER: max
-      MARIADB_PASSWORD: Test1!
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIABD_USER_PASSWORD}
 
   backend:
     build:
@@ -20,9 +20,14 @@ services:
       DB_HOST: database
       DB_PORT: 3306
       DB_NAME: diplomDB
-      DB_USER: max
-      DB_PASSWORD: Test1!
-      JWT_SECRET: p1IS9nDdchqdixREMMyh4IVWDcyY7jUBogbpTEBuiBWo4qaloR5Vyqq1lLkU5zKqGS4P8XnjL4oZkgjbsTMDZS
+      DB_USER: ${MARIADB_USER}
+      DB_PASSWORD: ${MARIABD_USER_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
       - database
 
@@ -34,7 +39,7 @@ services:
     environment:
       PMA_HOST: database
       PMA_USER: root
-      PMA_PASSWORD: Test1!
+      PMA_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     depends_on:
       - database
 
@@ -47,3 +52,6 @@ services:
       - "80:80"
     depends_on:
       - backend
+
+# Docker Command:
+# docker compose --env-file .env.docker  up --build

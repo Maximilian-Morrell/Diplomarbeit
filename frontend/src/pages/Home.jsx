@@ -1,5 +1,4 @@
-import MainHeader from "../components/header/MainHeader"
-import TripDashboard from "../components/Trips/TripDashboard"
+import MainHeader from "../Components/Header/MainHeader"
 
 export default function Home() {
 
