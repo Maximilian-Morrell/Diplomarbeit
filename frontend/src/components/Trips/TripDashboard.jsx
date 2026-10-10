@@ -12,12 +12,17 @@ import Backdrop from '@mui/material/Backdrop';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import CreateTrip from '../UI/CreateTrip';
+import { getUser } from '../../API/apiClient';
+import { useAuth } from '../../AuthContext';
+import  Tooltip  from '@mui/material/Tooltip';
+
 
 
 export default function TripDashboard() {
 
     document.title = "Holidai: Dashboard"
     const [value, setValue] = React.useState('0');
+    const { user } = useAuth();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -46,10 +51,14 @@ export default function TripDashboard() {
                         <Tab label="Planned" value="0"></Tab>
                         <Tab label="Trip history" value="1"></Tab>
                     </TabList>
-                    <Button onClick={handleClickOpen}>
-                        <AddRoundedIcon></AddRoundedIcon>
-                        <Typography>New Trip</Typography>
-                    </Button>
+                    <Tooltip describeChild title={!user.emailVerified ? "Verify your E-Mail" : "Test"}>
+                        <span>
+                            <Button onClick={handleClickOpen} disabled={!user.emailVerified}>
+                                <AddRoundedIcon></AddRoundedIcon>
+                                <Typography>New Trip</Typography>
+                            </Button>
+                        </span>
+                    </Tooltip>
                 </Box>
                 <Box>
                     <TabPanel value="0" tabIndex={0} sx={{ height: '750px', overflowY: 'auto', boxSizing: 'border-box' }}>

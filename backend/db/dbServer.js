@@ -1,5 +1,7 @@
 import { pool } from './dbUtils.js'
 import bcrypt from "bcryptjs";
+import crypto from 'crypto';
+import { RegisterEMail }  from '../mail/mailserver.js';
 
 export async function CheckDB() {
     console.log("Checking DB")
@@ -42,7 +44,9 @@ export async function CheckDB() {
             bio TEXT,
             phone VARCHAR(60),
             TFA_ENABLED TINYINT NOT NULL DEFAULT 0,
-            emailVerified TINYINT NOT NULL DEFAULT 0
+            emailVerified TINYINT NOT NULL DEFAULT 0,
+            emailVerificationToken VARCHAR(255),
+            emailVerificationExpires DATETIME
             )`);
 
         console.log("Table users is ready!")
@@ -155,11 +159,17 @@ export async function AddUser(firstName, lastName, email, birthDay, username, pa
     var conn;
 
     try {
+        const token = crypto.randomBytes(32).toString("hex");
+        const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+        const minutes = 30;
+        const expires = new Date(Date.now() + minutes * 60 * 1000)
+
         conn = await pool.getConnection();
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const UserResult = await conn.query('INSERT INTO users (firstName, lastName, email, birthDay, username, password_hash) VALUES (?, ?, ?, ?, ?, ?)', [firstName, lastName, email, birthDay, username, hashedPassword]);
+        const UserResult = await conn.query('INSERT INTO users (firstName, lastName, email, birthDay, username, password_hash, emailVerificationToken, emailVerificationExpires) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [firstName, lastName, email, birthDay, username, hashedPassword, tokenHash, expires]);
 
         const user = await GetUser(UserResult.insertId);
         console.log("User created:", user);
@@ -170,7 +180,8 @@ export async function AddUser(firstName, lastName, email, birthDay, username, pa
         const permissions = await GetPermissionsByUserId(user.id);
         user.permissions = permissions.map(p => p.name);
 
-        console.log(user); 
+        console.log(user);
+        RegisterEMail(user, token);
         conn.release();
         return user;
     } catch (err) {
@@ -180,6 +191,41 @@ export async function AddUser(firstName, lastName, email, birthDay, username, pa
     }
 
     return null;
+}
+
+export async function GetUserByVerificationToken(token) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+        
+        const rows = await conn.query(`Select * FROM users WHERE emailVerificationToken = '${token}'`)
+        conn.release();
+
+        return rows[0];
+
+    } catch (err) {
+        console.error(err);
+        if(conn) conn.release();
+        return null;
+    }
+}
+
+export async function VerifyUser(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        await conn.query("UPDATE users SET emailVerified = 1, emailVerificationToken = NULL, emailVerificationExpires = NULL WHERE id = " + id);
+        conn.release();
+
+        return true;
+    } catch (err) {
+        console.error(err);
+        if(conn) conn.release();
+        return false;
+    }
 }
 
 export async function GetUsers() {
@@ -196,11 +242,11 @@ export async function GetUsers() {
         if (conn) conn.release();
         return null;
     }
-} 
+}
 
 export async function GetUser(id) {
 
-        var conn;
+    var conn;
 
     try {
         conn = await pool.getConnection();

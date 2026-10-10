@@ -117,6 +117,7 @@ export default function AuthDialog({ open, onClose }) {
         }
     };
 
+
     return (
         <Dialog
             open={open}

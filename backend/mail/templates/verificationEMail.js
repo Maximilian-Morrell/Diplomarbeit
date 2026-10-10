@@ -1,4 +1,4 @@
-export default function verificationEMail(user) {
+export default function verificationEMail(user, token) {
     
     return `
     <h1>Welcome ${user.firstName}!</h1>
@@ -9,5 +9,8 @@ export default function verificationEMail(user) {
     <span>Last name: ${user.lastName}</span><br>
     <span>Birthday: ${String(user.birthDay.getDate()).padStart(2, "0")}.${String(user.birthDay.getMonth() + 1).padStart(2, "0")}.${user.birthDay.getFullYear()}</span><br>
     <span>Username: ${user.username}</span>
+
+    <a href=${process.env.FRONTEND_URL}/api/verify-email?token=${token}<h4>Click here to verify your E-Mail</h4></a>
+    <p>This token is valid for 30 Minutes!</p>
     `
 }

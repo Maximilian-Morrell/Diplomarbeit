@@ -1,35 +1,10 @@
 import { Box, Button, Divider, Paper, Stack, TextField, Typography } from "@mui/material";
-import { useEffect } from "react";
-import { useState } from "react";
-import { getUser } from "../../API/apiClient";
+import { useAuth } from "../../AuthContext";
+
+
 
 export default function MainAccount() {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const userData = await getUser();
-                setUser(userData);
-            } catch (err) {
-                console.error("Failed to load user:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadUser();
-    }, []);
-
-    if (loading) {
-        return <Typography>Loading account...</Typography>;
-    }
-
-    if (!user) {
-        return <Typography>Could not load user information.</Typography>;
-    }
-
+    const { user } = useAuth();
 
     return (
         <Box>

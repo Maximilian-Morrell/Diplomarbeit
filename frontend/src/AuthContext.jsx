@@ -41,6 +41,14 @@ export function AuthProvider({ children }) {
         loadUser();
     }, []);
 
+    const refreshUser = async () => {
+
+        const response = await getUser();
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        return updatedUser;
+    }
+
     const isAuthenticated = !!user;
 
     const hasPermission = (permission) => {
@@ -107,7 +115,8 @@ export function AuthProvider({ children }) {
                 hasPermission,
                 login,
                 logout,
-                permissions
+                permissions,
+                refreshUser
             }}
         >
             {children}
