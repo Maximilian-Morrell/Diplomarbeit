@@ -2,6 +2,8 @@ import transporter from "./transporter.js";
 import verificationEMail from "./templates/verificationEMail.js";
 import nodemailer from "nodemailer";
 import verificationEMailSuccess from "./templates/verificationEMailSuccess.js";
+import userDatUpdateEmail from "./templates/userDataUpdateEmail.js";
+import userEmailUpdate from "./templates/userEmailUpdate.js";
 
 export  async function RegisterEMail(user, token) {
     try {
@@ -32,6 +34,63 @@ export async function EMailVerificationSuccessful(user, token) {
             from: `"Account Creation Service" <diplom@morrell.at>`,
             to: user.email,
             subject: "Successful verification " + user.firstName,
+            html: content
+        });
+
+        console.log("Message sent: %s", info.messageId)
+    } catch(err) {
+        console.error("Verification failed: ", err)
+    }
+}
+
+export async function AccountUpdate(user) {
+    try {
+        await transporter.verify();
+        console.log("Mailserver is ready!");
+
+        const content = userDatUpdateEmail(user);
+        const info = await transporter.sendMail({
+            from: `"Account Update Service" <diplom@morrell.at>`,
+            to: user.email,
+            subject: "Successful update " + user.firstName,
+            html: content
+        });
+
+        console.log("Message sent: %s", info.messageId)
+    } catch(err) {
+        console.error("Verification failed: ", err)
+    }
+}
+
+export async function EmailUpdate(user, token, oldAddress) {
+    try {
+        await transporter.verify();
+        console.log("Mailserver is ready!");
+
+        const content = userEmailUpdate(user, token, oldAddress);
+        const info = await transporter.sendMail({
+            from: `"Account Update Service" <diplom@morrell.at>`,
+            to: user.email,
+            subject: "Successful update " + user.firstName,
+            html: content
+        });
+
+        console.log("Message sent: %s", info.messageId)
+    } catch(err) {
+        console.error("Verification failed: ", err)
+    }
+}
+
+export async function NewVerificationLink(user, token) {
+    try {
+        await transporter.verify();
+        console.log("Mailserver is ready!");
+
+        const content = verificationEMail(user, token);
+        const info = await transporter.sendMail({
+            from: `"Account Security Service" <diplom@morrell.at>`,
+            to: user.email,
+            subject: "New verification Link " + user.firstName,
             html: content
         });
 

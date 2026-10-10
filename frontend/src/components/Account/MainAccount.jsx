@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Paper, Stack, TextField, Typography, Alert, Snackbar, Divider, Chip } from "@mui/material";
 import { useAuth } from "../../AuthContext";
+import { ResendVerificationLink, updateUser } from "../../API/apiClient";
+
 
 export default function MainAccount() {
     const { user, setUser } = useAuth();
 
-    const [formData, setFormData] = useState({ firstName: "", lastName: "", username: "", email: "", bio: "", birthDay: "" });
+    const [formData, setFormData] = useState({ firstName: "", lastName: "", username: "", email: "", bio: "", birthDay: null });
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -13,7 +15,8 @@ export default function MainAccount() {
 
     useEffect(() => {
         if (!user) return;
-        setFormData({ firstName: user.firstName ?? "", lastName: user.lastName ?? "", username: user.username ?? "", email: user.email ?? "", bio: user.bio ?? "", birthDay: user.birthDay ?? "" });
+        setFormData({ firstName: user.firstName ?? "", lastName: user.lastName ?? "", username: user.username ?? "", email: user.email ?? "", bio: user.bio ?? "", birthDay: user.birthDay ? String(user.birthDay).split("T")[0] : "" });
+        console.log(formData)
     }, [user]);
 
     const handleChange = (event) => {
@@ -29,8 +32,15 @@ export default function MainAccount() {
     const updateUserHandler = async () => {
         try {
             setSaving(true);
+
             const data = await updateUser(formData.firstName, formData.lastName, formData.username, formData.email, formData.bio, formData.birthDay);
-            setUser(data.user);
+
+            if (!data.user) {
+                throw new Error("The server did not return the updated user.");
+            }
+
+            setUser((previousUser) => ({ ...previousUser, ...data.user }));
+
             setSnackbar({ open: true, message: data.message || "Account updated successfully.", severity: "success" });
         } catch (error) {
             setSnackbar({ open: true, message: error.message || "Something went wrong.", severity: "error" });
@@ -74,14 +84,14 @@ export default function MainAccount() {
             <Typography variant="h4" sx={{ fontWeight: "bolder", mb: 1 }}>Account Settings</Typography>
             <Box sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
                 <Paper elevation={3} sx={{ m: 0.5, p: 0.5 }}>
-                    <Stack direction="column" useFlexGap sx={{ p: 1, gap: 1}}>
+                    <Stack direction="column" useFlexGap sx={{ p: 1, gap: 1 }}>
                         <Typography variant="subtitle1">Personal Information</Typography>
                         <TextField name="firstName" label="First Name" value={formData.firstName} onChange={handleChange} />
                         <TextField name="lastName" label="Last Name" value={formData.lastName} onChange={handleChange} />
                         <TextField name="username" label="Username" value={formData.username} onChange={handleChange} />
                         <Box sx={{ gap: 1, display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
                             <TextField fullWidth name="email" type="email" label="E-Mail" value={formData.email} onChange={handleChange} error={!user.emailVerified} helperText={!user.emailVerified ? "Please verify your email to unlock your full account." : ""} />
-                            {!user.emailVerified && <Button sx={{ height: 56, flexShrink: 0 }} variant="contained">Send new Verification E-Mail</Button>}
+                            {!user.emailVerified && <Button sx={{ height: 56, flexShrink: 0 }} variant="contained" onClick={ResendVerificationLink}>Send new Verification E-Mail</Button>}
                         </Box>
                         <TextField type="date" name="birthDay" value={formData.birthDay} onChange={handleChange} />
                         <TextField name="bio" label="About Me" multiline minRows={2} value={formData.bio} onChange={handleChange} />
@@ -94,7 +104,7 @@ export default function MainAccount() {
                     </Stack>
                 </Paper>
             </Box>
-            <Button fullWidth sx={{mt: 1}} variant="contained" onClick={updateUserHandler} disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
+            <Button fullWidth sx={{ mt: 1 }} variant="contained" onClick={updateUserHandler} disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
             <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar((previous) => ({ ...previous, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                 <Alert severity={snackbar.severity} variant="filled" onClose={() => setSnackbar((previous) => ({ ...previous, open: false }))}>{snackbar.message}</Alert>
             </Snackbar>

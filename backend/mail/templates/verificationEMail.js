@@ -11,6 +11,6 @@ export default function verificationEMail(user, token) {
     <span>Username: ${user.username}</span>
 
     <a href=${process.env.FRONTEND_URL}/api/verify-email?token=${token}<h4>Click here to verify your E-Mail</h4></a>
-    <p>This token is valid for 30 Minutes!</p>
+    <p>This link is valid for 30 Minutes!</p>
     `
 }

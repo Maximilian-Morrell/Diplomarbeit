@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { CheckDB, GetUserByVerificationToken, VerifyUser } from "./db/dbServer.js";
 import GetRouter from './http/Get.js'
 import PostRouter from './http/Post.js'
+import PutRouter from './http/PUT.js'
 import crypto from 'crypto'
 import { EMailVerificationSuccessful } from "./mail/mailserver.js";
 
@@ -21,6 +22,7 @@ const __dirname = path.dirname(__filename)
 app.use("/image", express.static("./public/images"))
 app.use('/get', GetRouter)
 app.use('/post', PostRouter)
+app.use("/put", PutRouter)
 
 app.use('/verify-email', async (req, res) => {
     console.log("Verification process beginning")

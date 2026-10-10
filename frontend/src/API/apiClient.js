@@ -87,7 +87,7 @@ export async function getUser() {
     return await response.json();
 }
 
-export async function updateUser(firstName, lastName, username, email, bio) {
+export async function updateUser(firstName, lastName, username, email, bio, birthDay) {
     try {
         const response = await fetch('/api/put/me', {
             method: 'PUT',
@@ -102,6 +102,7 @@ export async function updateUser(firstName, lastName, username, email, bio) {
                 username,
                 email,
                 bio,
+                birthDay
             }),
         });
 
@@ -145,5 +146,20 @@ export async function changePassword(currentPassword, newPassword) {
     } catch (error) {
         console.error("Error changing password:", error);
         throw error;
+    }
+}
+
+export async function ResendVerificationLink() {
+    try {
+        await fetch("/api/get/newVerificationLink", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+        });
+    } catch (err) {
+        console.err(err)
     }
 }

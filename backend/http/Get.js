@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -56,14 +56,14 @@ router.get('/me', AuthMiddleware, async (req, res) => {
             birthDay: user.birthDay,
             username: user.username,
             bio: user.bio,
-            phone: user.phone,
             TFA_Enabled: Boolean(user.TFA_Enabled),
             emailVerified: Boolean(user.emailVerified),
             permissions: user.permissions
         });
     } catch (error) {
         console.error('Error fetching user data:', error);
-        res.status(500).json({ message: 'Failed to fetch user data'
+        res.status(500).json({
+            message: 'Failed to fetch user data'
         })
     }
 })
@@ -84,5 +84,17 @@ router.get("/me/permissions", AuthMiddleware, async (req, res) => {
         });
     }
 });
+
+router.get("/newVerificationLink", AuthMiddleware, async (req, res) => {
+    try {
+        newVerificationEMail(req.user.id)
+    } catch (err) {
+        console.error(err);
+
+        res.status(500).json({
+            message: "Failed to send new verification Link"
+        });
+    }
+})
 
 export default router;

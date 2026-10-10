@@ -1,7 +1,7 @@
 import { pool } from './dbUtils.js'
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-import { RegisterEMail } from '../mail/mailserver.js';
+import { AccountUpdate, EmailUpdate, NewVerificationLink, RegisterEMail } from '../mail/mailserver.js';
 
 export async function CheckDB() {
     console.log("Checking DB")
@@ -192,27 +192,64 @@ export async function AddUser(firstName, lastName, email, birthDay, username, pa
     return null;
 }
 
-export async function UpdateUser(userID, newEmail, firstName, lastName, username, email, bio) {
+export async function UpdateUser(userID, newEmail, firstName, lastName, username, email, bio, birthDay, oldEmail) {
     var conn;
+
+    console.log(firstName, lastName, username, bio, birthDay, userID)
 
     try {
         conn = await pool.getConnection();
 
-        const UserResult = await conn.query(`UPDATE users SET firstName = ?, lastName = ? , username = ?, email`)
+        const UserResult = await conn.query(`UPDATE users SET firstName = ?, lastName = ? , username = ?, bio = ?, birthDay = ? WHERE id = ?`, [firstName, lastName, username, bio, birthDay, userID]);
+        const newUser = await GetUser(userID);
+        console.log(newUser)
+        AccountUpdate(newUser)
         if (newEmail) {
             const token = crypto.randomBytes(32).toString("hex");
             const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
             const minutes = 30;
             const expires = new Date(Date.now() + minutes * 60 * 1000)
+            const EMailResult = await conn.query(`UPDATE users SET email = ?, emailVerified = 0, emailVerificationToken = ?, emailVerificationExpires = ? WHERE id = ?`, [email, tokenHash, expires, userID]);
+            const newEmailUser = await GetUser(userID)
+            console.log(newEmailUser)
+            conn.release();
+            EmailUpdate(newEmailUser, token, oldEmail)
+            return newEmailUser;
         }
-        conn = await pool.getConnection();
-
+        conn.release();
+        return newUser;
 
     } catch (err) {
         console.error(err);
         if (conn) conn.release();
     }
+}
+
+export async function newVerificationEMail(userID) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+        const minutes = 30;
+        const expires = new Date(Date.now() + minutes * 60 * 1000)
+        const EMailResult = await conn.query(`UPDATE users SET emailVerified = 0, emailVerificationToken = ?, emailVerificationExpires = ? WHERE id = ?`, [tokenHash, expires, userID]);
+        const user = await GetUser(userID)
+
+        NewVerificationLink(user, token)
+
+        conn.release();
+        return 1
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
+
 }
 
 export async function GetUserByVerificationToken(token) {
