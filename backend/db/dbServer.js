@@ -1,7 +1,7 @@
 import { pool } from './dbUtils.js'
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-import { RegisterEMail }  from '../mail/mailserver.js';
+import { RegisterEMail } from '../mail/mailserver.js';
 
 export async function CheckDB() {
     console.log("Checking DB")
@@ -42,7 +42,6 @@ export async function CheckDB() {
             username VARCHAR(255) NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
             bio TEXT,
-            phone VARCHAR(60),
             TFA_ENABLED TINYINT NOT NULL DEFAULT 0,
             emailVerified TINYINT NOT NULL DEFAULT 0,
             emailVerificationToken VARCHAR(255),
@@ -193,12 +192,35 @@ export async function AddUser(firstName, lastName, email, birthDay, username, pa
     return null;
 }
 
+export async function UpdateUser(userID, newEmail, firstName, lastName, username, email, bio) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const UserResult = await conn.query(`UPDATE users SET firstName = ?, lastName = ? , username = ?, email`)
+        if (newEmail) {
+            const token = crypto.randomBytes(32).toString("hex");
+            const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+            const minutes = 30;
+            const expires = new Date(Date.now() + minutes * 60 * 1000)
+        }
+        conn = await pool.getConnection();
+
+
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+    }
+}
+
 export async function GetUserByVerificationToken(token) {
     var conn;
 
     try {
         conn = await pool.getConnection();
-        
+
         const rows = await conn.query(`Select * FROM users WHERE emailVerificationToken = '${token}'`)
         conn.release();
 
@@ -206,7 +228,7 @@ export async function GetUserByVerificationToken(token) {
 
     } catch (err) {
         console.error(err);
-        if(conn) conn.release();
+        if (conn) conn.release();
         return null;
     }
 }
@@ -223,7 +245,7 @@ export async function VerifyUser(id) {
         return true;
     } catch (err) {
         console.error(err);
-        if(conn) conn.release();
+        if (conn) conn.release();
         return false;
     }
 }

@@ -174,7 +174,6 @@ export default function AuthDialog({ open, onClose }) {
                     >
                         {mode === "signup" ? (
                             <>
-                                <Typography>Sign Up</Typography>
 
                                 <TextField
                                     fullWidth
@@ -245,7 +244,6 @@ export default function AuthDialog({ open, onClose }) {
                             </>
                         ) : (
                             <>
-                                <Typography>Login</Typography>
 
                                 <TextField
                                     fullWidth

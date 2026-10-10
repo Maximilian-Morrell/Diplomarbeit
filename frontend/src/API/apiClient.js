@@ -86,3 +86,64 @@ export async function getUser() {
 
     return await response.json();
 }
+
+export async function updateUser(firstName, lastName, username, email, bio) {
+    try {
+        const response = await fetch('/api/put/me', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                username,
+                email,
+                bio,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to update account.');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+    }
+}
+
+export async function changePassword(currentPassword, newPassword) {
+    try {
+        const response = await fetch("/api/put/me/password", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.message || "Failed to change password."
+            );
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error changing password:", error);
+        throw error;
+    }
+}
