@@ -85,7 +85,6 @@ export default function MainAccount() {
                         </Box>
                         <TextField type="date" name="birthDay" value={formData.birthDay} onChange={handleChange} />
                         <TextField name="bio" label="About Me" multiline minRows={2} value={formData.bio} onChange={handleChange} />
-                        <Button>Upload Profile Picture</Button>
                         <Divider textAlign="left">Security</Divider>
                         <TextField type="password" name="currentPassword" label="Current password" autoComplete="current-password" value={passwordData.currentPassword} onChange={handlePasswordChange} />
                         <TextField type="password" name="newPassword" label="New password" autoComplete="new-password" value={passwordData.newPassword} onChange={handlePasswordChange} />
