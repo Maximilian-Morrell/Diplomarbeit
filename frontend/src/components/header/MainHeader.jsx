@@ -105,7 +105,7 @@ export default function MainHeader() {
                             )}
 
                         <Link
-                            href="/about-us"
+                            href="/AboutUs"
                             color="inherit"
                             underline="none"
                             sx={{ mr: 2 }}

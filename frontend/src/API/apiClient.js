@@ -8,6 +8,16 @@ export async function getCountries() {
     }
 }
 
+export async function getPermissions() {
+    try {
+        const response = await fetch('/api/get/permissions');
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching permissions:', error);
+        throw error;
+    }
+}
+
 export async function getCities() {
     try {
         const response = await fetch('/api/get/cities');
@@ -161,5 +171,26 @@ export async function ResendVerificationLink() {
         });
     } catch (err) {
         console.err(err)
+    }
+}
+
+export async function AddNewCity(name, type, region, description, country, permission) {
+    try {
+       const cities = await fetch('/api/post/city', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name, type, region, description, country, permission,
+            }),
+        });
+        console.log(cities)
+        return cities;
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
 }

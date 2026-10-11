@@ -4,6 +4,8 @@ import Home from "./pages/Home"
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Account from "./pages/Account";
 import MainLayout from "./MainLayout";
+import AboutUs from "./pages/AboutUs";
+import Admin from "./pages/Admin";
 
 function App() {
 
@@ -12,6 +14,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout></MainLayout>}>
           <Route path="/" element={<Home></Home>}></Route>
+          <Route path="/AboutUs" element={<AboutUs></AboutUs>}></Route>
           
           <Route element={<ProtectedRoute requiredPermissions={["User"]}></ProtectedRoute>}>
             <Route path="/trips" element={<Trips></Trips>}></Route>
@@ -19,7 +22,7 @@ function App() {
           </Route>
           
           <Route element={<ProtectedRoute requiredPermissions={["CityAdmin", "UserAdmin", "CountryAdmin"]}></ProtectedRoute>}>
-            <Route path="/admin" element={<h1>Admin</h1>}></Route>
+            <Route path="/admin" element={<Admin></Admin>}></Route>
           </Route>
         </Route>
       </Routes>

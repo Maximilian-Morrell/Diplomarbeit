@@ -1,7 +1,7 @@
 import { pool } from './dbUtils.js'
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-import { AccountUpdate, EmailUpdate, NewVerificationLink, RegisterEMail } from '../mail/mailserver.js';
+import { AccountUpdate, EmailUpdate, NewVerificationLink, RegisterEMail, UpdateUserPassworMail } from '../mail/mailserver.js';
 
 export async function CheckDB() {
     console.log("Checking DB")
@@ -18,6 +18,16 @@ export async function CheckDB() {
         console.log("Table countries is ready!")
 
         await con.query(`
+            CREATE TABLE IF NOT EXISTS permissions (
+            id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name varchar(255) NOT NULL UNIQUE)`);
+        
+        await con.query(`
+            INSERT IGNORE  INTO permissions (name)
+            VALUES 
+            ('User'), ('CountryAdmin'), ('CityAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
+
+        await con.query(`
             CREATE TABLE IF NOT EXISTS cities (
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name VARCHAR(255) NOT NULL,
@@ -25,9 +35,12 @@ export async function CheckDB() {
             region VARCHAR(255) NOT NULL,
             description VARCHAR(255), 
             country_id INT NOT NULL,
+            permission_id INT NOT NULL,
             
             FOREIGN KEY (country_id)
-                REFERENCES countries(id))`);
+                REFERENCES countries(id),
+            FOREIGN KEY (permission_id)
+                REFERENCES permissions(id))`);
 
         console.log("Table cities is ready!")
 
@@ -50,10 +63,7 @@ export async function CheckDB() {
 
         console.log("Table users is ready!")
 
-        await con.query(`
-            CREATE TABLE IF NOT EXISTS permissions (
-            id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
-            name varchar(255) NOT NULL UNIQUE)`);
+
 
 
         await con.query(`
@@ -66,10 +76,6 @@ export async function CheckDB() {
             FOREIGN KEY (user_id) REFERENCES users(id),
             FOREIGN KEY (permission_id) REFERENCES permissions(id))`);
 
-        await con.query(`
-            INSERT IGNORE  INTO permissions (name)
-            VALUES 
-            ('User'), ('CountryAdmin'), ('CityAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
 
         console.log("Table permissions is ready!")
     } catch (err) {
@@ -95,6 +101,22 @@ export async function GetCountries() {
     }
 
     return null;
+}
+
+export async function GetPermissions() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query('SELECT * FROM permissions');
+        
+        conn.release();
+        return rows;
+    } catch (err) {
+        console.error(err);
+        if(conn) conn.release();
+        return null;
+    }
 }
 
 export async function GetCountry(id) {
@@ -252,6 +274,33 @@ export async function newVerificationEMail(userID) {
 
 }
 
+export async function UpdateUserPassword(id, oldPassword, newPassword) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const users = await conn.query(`SELECT * FROM users WHERE id = ?`, [id])
+        const user = users[0];
+
+        console.log(users[0])
+        if(bcrypt.compare(oldPassword, user.password_hash)) {
+            await conn.query(`UPDATE users SET password_hash = ? WHERE id = ?`, [newPassword, id])
+            conn.release();
+            UpdateUserPassworMail(user)
+            return "Password change successfull"
+        }
+        else {
+            if(conn) conn.release();
+            return "Wrong Password"
+        }
+    } catch (err) {
+        console.error(err);
+        if(conn) conn.release();
+        return "Something went wrong with changing the password";
+    }
+}
+
 export async function GetUserByVerificationToken(token) {
     var conn;
 
@@ -319,22 +368,6 @@ export async function GetUser(id) {
         console.log("Fetched user:", user);
         conn.release();
         return user;
-    } catch (err) {
-        console.log(err)
-        if (conn) conn.release();
-        return null;
-    }
-}
-
-export async function GetPermissions() {
-    var conn;
-
-    try {
-        conn = await pool.getConnection();
-
-        const rows = await conn.query('SELECT * FROM permissions');
-        conn.release();
-        return rows;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
@@ -425,6 +458,21 @@ export async function LogIn(email, password) {
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function AddCity(name, type, region, description, country, permission) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`INSERT INTO cities (name, type, region, description, country_id, permission_id) VALUES (?, ?, ?, ?, ?, ?)`, [name, type, region, description, country, permission]);
+        const cities = await GetCountries();
+        conn.release()
+        return cities;
+    } catch (err) {
+        console.error(err);
+        if(conn) conn.release();
         return null;
     }
 }

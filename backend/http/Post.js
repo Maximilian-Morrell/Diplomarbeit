@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddUser, LogIn } from '../db/dbServer.js';
+import { AddCity, AddUser, LogIn } from '../db/dbServer.js';
 import { AuthMiddleware, GenerateToken } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -40,5 +40,15 @@ router.post('/log-in', async (req, res) => {
     }
 })
 
+router.post("/city", AuthMiddleware, async (req, res) => {
+    try {
+        const { name, type, region, description, country, permission } = req.body;
+        const cities = await AddCity(name, type, region, description, country, permission);
+        res.json({cities: cities});
+    } catch (error) {
+        console.error('Error signing in:', error);
+        res.status(500).json({ message: 'Failed to create City' });
+    }
+})
 
 export default router;

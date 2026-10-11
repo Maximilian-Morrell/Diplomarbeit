@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Paper, Stack, TextField, Typography, Alert, Snackbar, Divider, Chip } from "@mui/material";
 import { useAuth } from "../../AuthContext";
-import { ResendVerificationLink, updateUser } from "../../API/apiClient";
+import { changePassword, ResendVerificationLink, updateUser } from "../../API/apiClient";
 
 
 export default function MainAccount() {
@@ -82,28 +82,27 @@ export default function MainAccount() {
     return (
         <Box>
             <Typography variant="h4" sx={{ fontWeight: "bolder", mb: 1 }}>Account Settings</Typography>
-            <Box sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
-                <Paper elevation={3} sx={{ m: 0.5, p: 0.5 }}>
-                    <Stack direction="column" useFlexGap sx={{ p: 1, gap: 1 }}>
-                        <Typography variant="subtitle1">Personal Information</Typography>
-                        <TextField name="firstName" label="First Name" value={formData.firstName} onChange={handleChange} />
-                        <TextField name="lastName" label="Last Name" value={formData.lastName} onChange={handleChange} />
-                        <TextField name="username" label="Username" value={formData.username} onChange={handleChange} />
-                        <Box sx={{ gap: 1, display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
-                            <TextField fullWidth name="email" type="email" label="E-Mail" value={formData.email} onChange={handleChange} error={!user.emailVerified} helperText={!user.emailVerified ? "Please verify your email to unlock your full account." : ""} />
-                            {!user.emailVerified && <Button sx={{ height: 56, flexShrink: 0 }} variant="contained" onClick={ResendVerificationLink}>Send new Verification E-Mail</Button>}
-                        </Box>
-                        <TextField type="date" name="birthDay" value={formData.birthDay} onChange={handleChange} />
-                        <TextField name="bio" label="About Me" multiline minRows={2} value={formData.bio} onChange={handleChange} />
-                        <Divider textAlign="left">Security</Divider>
-                        <TextField type="password" name="currentPassword" label="Current password" autoComplete="current-password" value={passwordData.currentPassword} onChange={handlePasswordChange} />
-                        <TextField type="password" name="newPassword" label="New password" autoComplete="new-password" value={passwordData.newPassword} onChange={handlePasswordChange} />
-                        <TextField type="password" name="confirmPassword" label="Confirm new password" autoComplete="new-password" value={passwordData.confirmPassword} onChange={handlePasswordChange} />
-                        <Button fullWidth variant="contained" onClick={changePasswordHandler} disabled={passwordSaving}>{passwordSaving ? "Changing Password..." : "Change Password"}</Button>
-                        <Button fullWidth variant="contained" disabled>Enable 2FA</Button>
-                    </Stack>
-                </Paper>
+            <Box sx={{ gap: 2, display: "flex", flexDirection: "column", overflow: "scroll", height: "80dvh" }}>
+                <Stack direction="column" useFlexGap sx={{ p: 1, gap: 1 }}>
+                    <Typography variant="subtitle1">Personal Information</Typography>
+                    <TextField name="firstName" label="First Name" value={formData.firstName} onChange={handleChange} />
+                    <TextField name="lastName" label="Last Name" value={formData.lastName} onChange={handleChange} />
+                    <TextField name="username" label="Username" value={formData.username} onChange={handleChange} />
+                    <Box sx={{ gap: 1, display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
+                        <TextField fullWidth name="email" type="email" label="E-Mail" value={formData.email} onChange={handleChange} error={!user.emailVerified} helperText={!user.emailVerified ? "Please verify your email to unlock your full account." : ""} />
+                        {!user.emailVerified && <Button sx={{ height: 56, flexShrink: 0 }} variant="contained" onClick={ResendVerificationLink}>Send new Verification E-Mail</Button>}
+                    </Box>
+                    <TextField type="date" name="birthDay" value={formData.birthDay} onChange={handleChange} />
+                    <TextField name="bio" label="About Me" multiline minRows={2} value={formData.bio} onChange={handleChange} />
+                    <Divider textAlign="left">Security</Divider>
+                    <TextField type="password" name="currentPassword" label="Current password" autoComplete="current-password" value={passwordData.currentPassword} onChange={handlePasswordChange} />
+                    <TextField type="password" name="newPassword" label="New password" autoComplete="new-password" value={passwordData.newPassword} onChange={handlePasswordChange} />
+                    <TextField type="password" name="confirmPassword" label="Confirm new password" autoComplete="new-password" value={passwordData.confirmPassword} onChange={handlePasswordChange} />
+                    <Button fullWidth variant="contained" onClick={changePasswordHandler} disabled={passwordSaving}>{passwordSaving ? "Changing Password..." : "Change Password"}</Button>
+                    <Button fullWidth variant="contained" disabled>Enable 2FA</Button>
+                </Stack>
             </Box>
+
             <Button fullWidth sx={{ mt: 1 }} variant="contained" onClick={updateUserHandler} disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
             <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar((previous) => ({ ...previous, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                 <Alert severity={snackbar.severity} variant="filled" onClose={() => setSnackbar((previous) => ({ ...previous, open: false }))}>{snackbar.message}</Alert>

@@ -14,11 +14,14 @@ import CardActionArea from '@mui/material/CardActionArea';
 export default function CityCard({ city, onClick, selected }) {
 
     return (
-        <Card sx={{ width: 300, height: 450, m: 0.1 }} variant='elevation'>
+        <Card sx={{ width: 300, height: 450, m: 0.1, display: 'grid' }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
                     height: '100%',
+                    gridArea: "1 / 1",
+                    zIndex: 0,
+                    width: 300,
                     backgroundColor: selected
                         ? 'action.selected'
                         : 'transparent',
@@ -34,11 +37,7 @@ export default function CityCard({ city, onClick, selected }) {
                     sx={{ height: 180 }}
                     image="/image/Kitz.jpg"
                     title="Kitz">
-                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row-reverse' }}>
-                        <Button>
-                            <EditRoundedIcon></EditRoundedIcon>
-                        </Button>
-                    </Box>
+
                 </CardMedia>
                 <CardContent>
                     <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>{city.type || "Village/Town/City/Capital City"}</Typography>
@@ -63,7 +62,9 @@ export default function CityCard({ city, onClick, selected }) {
                     </Stack>
                 </CardContent>
             </CardActionArea>
-
+            <Box sx={{ gridArea: "1 / 1", display: "flex", justifyContent: "flex-end", alignItems: "flex-start", zIndex: 1, pointerEvents: "none" }}>
+                <Button sx={{ pointerEvents: "auto" }}><EditRoundedIcon color='primary'></EditRoundedIcon></Button>
+            </Box>
         </Card>
     )
 }

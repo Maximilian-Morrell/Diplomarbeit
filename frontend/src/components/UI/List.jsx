@@ -5,27 +5,13 @@ import Pagination from '@mui/material/Pagination';
 import * as React from 'react';
 
 
-export default function List(Children) {
+export default function List({ Type, children}) {
 
     const [page, setPage] = React.useState(1);
 
     return (
         <Box sx={{ width: '100%', display: "flex", flexWrap: "wrap", gap: 1}}>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
-            <TripCard></TripCard>
+            {children}
         </Box>
     )
 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -9,6 +9,11 @@ router.get('/', async (req, res) => {
         message: "Get is working!"
     })
 })
+
+router.get('/permissions', async (req, res) => {
+    const permissions = await GetPermissions();
+    res.json(permissions);
+}) 
 
 router.get('/countries', async (req, res) => {
     const countries = await GetCountries();

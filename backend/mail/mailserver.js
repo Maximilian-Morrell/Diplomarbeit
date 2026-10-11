@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import verificationEMailSuccess from "./templates/verificationEMailSuccess.js";
 import userDatUpdateEmail from "./templates/userDataUpdateEmail.js";
 import userEmailUpdate from "./templates/userEmailUpdate.js";
+import userPasswordUpdate from "./templates/userPasswordUpdate.js";
 
 export  async function RegisterEMail(user, token) {
     try {
@@ -91,6 +92,25 @@ export async function NewVerificationLink(user, token) {
             from: `"Account Security Service" <diplom@morrell.at>`,
             to: user.email,
             subject: "New verification Link " + user.firstName,
+            html: content
+        });
+
+        console.log("Message sent: %s", info.messageId)
+    } catch(err) {
+        console.error("Verification failed: ", err)
+    }
+}
+
+export async function UpdateUserPassworMail(user) {
+    try {
+        await transporter.verify();
+        console.log("Mailserver is ready!");
+
+        const content = userPasswordUpdate(user);
+        const info = await transporter.sendMail({
+            from: `"Account Security Service" <diplom@morrell.at>`,
+            to: user.email,
+            subject: "Password Updated " + user.firstName,
             html: content
         });
 
