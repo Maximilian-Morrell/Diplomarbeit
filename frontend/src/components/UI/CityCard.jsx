@@ -10,15 +10,23 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import CardActionArea from '@mui/material/CardActionArea';
+import { useAuth } from '../../AuthContext';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
-export default function CityCard({ city, onClick, selected }) {
+export default function CityCard({ city, onClick, selected, isAdmin, handleDelete }) {
+
+    var cheight = 470;
+
+    if(isAdmin) {
+        cheight = 500;
+    }
 
     return (
-        <Card sx={{ width: 300, height: 450, m: 0.1, display: 'grid' }} variant='elevation'>
+        <Card sx={{ width: 300, height: cheight || 470, m: 0.1, display: 'grid' }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
-                    height: '100%',
+                    height: '102%',
                     gridArea: "1 / 1",
                     zIndex: 0,
                     width: 300,
@@ -56,12 +64,15 @@ export default function CityCard({ city, onClick, selected }) {
                     <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 1, mb: 1, height: 90, overflow: 'auto' }}>
                         {city.description}
                     </Typography>
-                    <Divider></Divider>
-                    <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', mt: 2 }}>
-                        <Chip label={city.country || "Country"}></Chip>
-                    </Stack>
                 </CardContent>
             </CardActionArea>
+            <Divider></Divider>
+            <Stack direction="row" spacing={1} sx={{ alignItems:"center", padding: 0.5 }}>
+                <Chip  label={city.country || "Country"}></Chip>
+            </Stack>
+                {isAdmin ? (
+                    <Button sx={{mt: 0.1}} fullWidth variant='contained' color='error' onClick={handleDelete}><DeleteRoundedIcon></DeleteRoundedIcon>Delete</Button>
+                ) : null}
             <Box sx={{ gridArea: "1 / 1", display: "flex", justifyContent: "flex-end", alignItems: "flex-start", zIndex: 1, pointerEvents: "none" }}>
                 <Button sx={{ pointerEvents: "auto" }}><EditRoundedIcon color='primary'></EditRoundedIcon></Button>
             </Box>

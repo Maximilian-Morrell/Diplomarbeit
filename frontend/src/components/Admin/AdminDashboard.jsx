@@ -29,7 +29,13 @@ export default function AdminDashboard() {
         loadCities();
     }, []);
 
-    const cityItems = cities.map((city) => <CityCard key={city.id} city={city} />);
+    
+    const handleDeleteCity = async (id) => {
+        console.log(id)
+    }
+
+    const cityItems = cities.map((city) => <CityCard key={city.id} city={city} isAdmin={true} handleDelete={handleDeleteCity}/>);
+
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
