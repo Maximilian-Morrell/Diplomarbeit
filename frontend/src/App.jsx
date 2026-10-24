@@ -1,11 +1,11 @@
 import ProtectedRoute from "./Components/ProtectedRoute";
-import Trips from "./pages/Trips";
-import Home from "./pages/Home"
+import Trips from "./Pages/Trips";
+import Home from "./Pages/Home"
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Account from "./pages/Account";
+import Account from "./Pages/Account";
 import MainLayout from "./MainLayout";
-import AboutUs from "./pages/AboutUs";
-import Admin from "./pages/Admin";
+import AboutUs from "./Pages/AboutUs";
+import Admin from "./Pages/Admin";
 
 function App() {
 
@@ -21,7 +21,7 @@ function App() {
             <Route path="/account" element={<Account></Account>}></Route>
           </Route>
           
-          <Route element={<ProtectedRoute requiredPermissions={["CityAdmin", "UserAdmin", "CountryAdmin"]}></ProtectedRoute>}>
+          <Route element={<ProtectedRoute requiredPermissions={["PlacesAdmin", "UserAdmin", "CountryAdmin"]}></ProtectedRoute>}>
             <Route path="/admin" element={<Admin></Admin>}></Route>
           </Route>
         </Route>

@@ -12,7 +12,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import CreateTrip from '../UI/CreateTrip';
-import { getUser } from '../../API/apiClient';
+import { getUser } from '../../API/ApiClient';
 import { useAuth } from '../../AuthContext';
 import  Tooltip  from '@mui/material/Tooltip';
 

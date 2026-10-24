@@ -9,6 +9,7 @@ export async function getCountries() {
 }
 
 export async function getPermissions() {
+
     try {
         const response = await fetch('/api/get/permissions');
         return response.json();

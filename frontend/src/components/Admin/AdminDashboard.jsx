@@ -7,7 +7,7 @@ import TabList from "@mui/lab/TabList";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import TabPanel from "@mui/lab/TabPanel";
 import List from "../UI/List";
-import { getCities } from "../../API/apiClient";
+import { getCities } from "../../API/ApiClient";
 import CityCard from "../UI/CityCard";
 import CreateCityDialog from "./CreateCityDialog";
 

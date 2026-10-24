@@ -5,7 +5,7 @@ import React, {
     useState
 } from "react";
 
-import { getUserPermissions, getUser } from "./API/apiClient";
+import { getUserPermissions, getUser } from "./API/ApiClient";
 
 const AuthContext = createContext(null);
 

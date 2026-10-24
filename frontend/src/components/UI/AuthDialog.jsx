@@ -10,7 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 
-import { logIn, signUp } from "../../API/apiClient";
+import { logIn, signUp } from "../../API/ApiClient";
 import { useAuth } from "../../AuthContext";
 
 export default function AuthDialog({ open, onClose }) {

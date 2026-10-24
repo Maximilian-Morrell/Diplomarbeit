@@ -15,21 +15,19 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export default function CityCard({ city, onClick, selected, isAdmin, handleDelete }) {
 
-    var cheight = 470;
-
-    if(isAdmin) {
-        cheight = 500;
-    }
 
     return (
-        <Card sx={{ width: 300, height: cheight || 470, m: 0.1, display: 'grid' }} variant='elevation'>
+        <Card sx={{ width: 300, height: 470, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
-                    height: '102%',
-                    gridArea: "1 / 1",
+                    flex: 1,
                     zIndex: 0,
-                    width: 300,
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "stretch",
+                    overflow: "hidden",
                     backgroundColor: selected
                         ? 'action.selected'
                         : 'transparent',
@@ -42,12 +40,12 @@ export default function CityCard({ city, onClick, selected, isAdmin, handleDelet
                 }}
             >
                 <CardMedia
-                    sx={{ height: 180 }}
+                    sx={{ height: 170, flexShrink: 0 }}
                     image="/image/Kitz.jpg"
                     title="Kitz">
 
                 </CardMedia>
-                <CardContent>
+                <CardContent sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, width: "100%", boxSizing: "border-box" }}>
                     <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>{city.type || "Village/Town/City/Capital City"}</Typography>
                     <Typography variant='h4' component="div" sx={{
                         fontSize: city.name?.length > 25
@@ -60,22 +58,18 @@ export default function CityCard({ city, onClick, selected, isAdmin, handleDelet
                         lineHeight: 1.2,
                         minHeight: '2.55rem',
                     }}>{city.name || "Name"}</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{city.region || "Region"}</Typography>
-                    <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 1, mb: 1, height: 90, overflow: 'auto' }}>
+                    <Box sx={{display: "flex"}}>
+                    <Typography sx={{ color: 'text.secondary' }}>{city.country || "Country"} - {city.region || "Region"}  </Typography>
+                    </Box>
+                    <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 0.5, flex: 1, overflowY: 'scroll'}}>
                         {city.description}
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            <Divider></Divider>
-            <Stack direction="row" spacing={1} sx={{ alignItems:"center", padding: 0.5 }}>
-                <Chip  label={city.country || "Country"}></Chip>
-            </Stack>
-                {isAdmin ? (
-                    <Button sx={{mt: 0.1}} fullWidth variant='contained' color='error' onClick={handleDelete}><DeleteRoundedIcon></DeleteRoundedIcon>Delete</Button>
-                ) : null}
-            <Box sx={{ gridArea: "1 / 1", display: "flex", justifyContent: "flex-end", alignItems: "flex-start", zIndex: 1, pointerEvents: "none" }}>
-                <Button sx={{ pointerEvents: "auto" }}><EditRoundedIcon color='primary'></EditRoundedIcon></Button>
-            </Box>
+            {isAdmin ? (
+                <Button sx={{flexShrink: 0}} fullWidth variant='contained' color='error' onClick={handleDelete}><DeleteRoundedIcon></DeleteRoundedIcon>Delete</Button>
+            ) : null}
+
         </Card>
     )
 }

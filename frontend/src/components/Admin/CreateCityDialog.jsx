@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogTitle, Divider, MenuItem, TextField } from "@mui/material";
 import * as React from "react";
-import { AddNewCity, getCountries, getPermissions } from "../../API/apiClient";
+import { AddNewCity, getCountries, getPermissions } from "../../API/ApiClient";
 
 export default function CreateCityDialog(props) {
     const { onClose, onCityCreated, open } = props;

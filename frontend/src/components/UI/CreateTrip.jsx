@@ -14,7 +14,7 @@ import CT_Two from "./CTPages/CT_Two";
 import CT_One from "./CTPages/CT_One";
 import CT_Three from "./CTPages/CT_Three";
 import CT_Four from "./CTPages/CT_Four";
-import { getCities } from "../../API/apiClient";
+import { getCities } from "../../API/ApiClient";
 
 const steps = ['Select a City', 'Select a type of trip', 'Select specifi disires', "Finalise"]
 

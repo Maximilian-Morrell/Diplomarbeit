@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Paper, Stack, TextField, Typography, Alert, Snackbar, Divider, Chip } from "@mui/material";
 import { useAuth } from "../../AuthContext";
-import { changePassword, ResendVerificationLink, updateUser } from "../../API/apiClient";
+import { changePassword, ResendVerificationLink, updateUser } from "../../API/ApiClient";
 
 
 export default function MainAccount() {
