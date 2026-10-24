@@ -66,10 +66,6 @@ export default function CityCard({ city, onClick, selected, isAdmin, handleDelet
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            {isAdmin ? (
-                <Button sx={{flexShrink: 0}} fullWidth variant='contained' color='error' onClick={handleDelete}><DeleteRoundedIcon></DeleteRoundedIcon>Delete</Button>
-            ) : null}
-
         </Card>
     )
 }

@@ -21,11 +21,11 @@ export async function CheckDB() {
             CREATE TABLE IF NOT EXISTS permissions (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name varchar(255) NOT NULL UNIQUE)`);
-        
+
         await con.query(`
             INSERT IGNORE  INTO permissions (name)
             VALUES 
-            ('User'), ('CountryAdmin'), ('CityAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
+            ('User'), ('PlacesAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS cities (
@@ -84,12 +84,22 @@ export async function CheckDB() {
 }
 
 // Gets
-export async function GetCountries() {
+export async function GetCountries(countCities) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
+        if (countCities) {
+            const countries = await conn.query('SELECT countries.*, COUNT(cities.id) AS cities FROM countries LEFT JOIN cities ON cities.country_id = countries.id GROUP BY countries.id, countries.name');
+
+            conn.release();
+            return countries.map(country => ({
+                id: Number(country.id),
+                name: country.name,
+                cities: Number(country.cities)
+            }));
+        }
         const rows = await conn.query('SELECT * FROM countries');
 
         conn.release();
@@ -109,12 +119,29 @@ export async function GetPermissions() {
     try {
         conn = await pool.getConnection();
         const rows = await conn.query('SELECT * FROM permissions');
-        
+
         conn.release();
         return rows;
     } catch (err) {
         console.error(err);
-        if(conn) conn.release();
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function GetPermission(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query('SELECT * FROM permissions WHERE id = ?', [id]);
+        console.log(rows[0])
+        conn.release();
+
+        return rows[0];
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
         return null;
     }
 }
@@ -284,19 +311,19 @@ export async function UpdateUserPassword(id, oldPassword, newPassword) {
         const user = users[0];
 
         console.log(users[0])
-        if(bcrypt.compare(oldPassword, user.password_hash)) {
+        if (bcrypt.compare(oldPassword, user.password_hash)) {
             await conn.query(`UPDATE users SET password_hash = ? WHERE id = ?`, [newPassword, id])
             conn.release();
             UpdateUserPassworMail(user)
             return "Password change successfull"
         }
         else {
-            if(conn) conn.release();
+            if (conn) conn.release();
             return "Wrong Password"
         }
     } catch (err) {
         console.error(err);
-        if(conn) conn.release();
+        if (conn) conn.release();
         return "Something went wrong with changing the password";
     }
 }
@@ -467,12 +494,87 @@ export async function AddCity(name, type, region, description, country, permissi
     try {
         conn = await pool.getConnection();
         const result = await conn.query(`INSERT INTO cities (name, type, region, description, country_id, permission_id) VALUES (?, ?, ?, ?, ?, ?)`, [name, type, region, description, country, permission]);
-        const cities = await GetCountries();
+        const cities = await GetCities();
         conn.release()
         return cities;
     } catch (err) {
         console.error(err);
-        if(conn) conn.release();
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function UpdateCity(name, type, region, description, country, permission, id) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`Update cities SET name = ?, type = ?, region = ?, description = ?, country_id = ?, permission_id = ? WHERE id = ?`, [name, type, region, description, country, permission, id]);
+        const cities = await GetCities();
+        conn.release()
+        return cities;
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function AddCountry(name) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`INSERT INTO countries (name) VALUES (?)`, [name]);
+        const countries = await GetCountries();
+        conn.release()
+        return countries;
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function UpdateCountry(id, name) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`UPDATE countries SET name  = ? WHERE id = ?`, [name, id]);
+        const countries = await GetCountries();
+        conn.release()
+        return countries;
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function DeleteCountry(id) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`DELETE FROM countries WHERE id = ?`, [id]);
+        const countries = await GetCountries();
+        conn.release()
+        return countries;
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function DeleteCity(id) {
+    var conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(`DELETE FROM cities WHERE id = ?`, [id]);
+        const countries = await GetCountries();
+        conn.release()
+        return countries;
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
         return null;
     }
 }

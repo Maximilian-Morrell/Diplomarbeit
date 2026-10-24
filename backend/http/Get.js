@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -16,7 +16,7 @@ router.get('/permissions', async (req, res) => {
 }) 
 
 router.get('/countries', async (req, res) => {
-    const countries = await GetCountries();
+    const countries = await GetCountries(req.query.countCities);
     res.json(countries);
 })
 
@@ -25,7 +25,10 @@ router.get('/cities', async (req, res) => {
     const cities = await GetCities();
     for (const city of cities) {
         const country = await GetCountry(city.country_id);
+        const permission = await GetPermission(city.permission_id)
+        city.permission = permission.name;
         city.country = country.name;
+        console.log(city)
     }
     res.json(cities);
 })

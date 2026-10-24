@@ -1,12 +1,13 @@
-export async function getCountries() {
+export async function getCountries(countCities = false) {
     try {
-        const response = await fetch('/api/get/countries');
+        const response = await fetch('/api/get/countries?countCities=' + countCities);
         return response.json();
     } catch (error) {
         console.error('Error fetching countries:', error);
         throw error;
     }
 }
+
 
 export async function getPermissions() {
 
@@ -190,6 +191,111 @@ export async function AddNewCity(name, type, region, description, country, permi
         });
         console.log(cities)
         return cities;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function UpdateCity(id, name, type, region, description, country, permission) {
+    try {
+       const cities = await fetch('/api/put/city', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                id, name, type, region, description, country, permission,
+            }),
+        });
+        console.log(cities)
+        return cities;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function DeleteCity(id) {
+    try {
+       const cities = await fetch('/api/delete/city', {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                id
+            }),
+        });
+        console.log(cities)
+        return cities;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function AddNewCountry(name) {
+    try {
+       const countries = await fetch('/api/post/country', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name
+            }),
+        });
+        console.log(countries)
+        return countries;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function UpdateCountry(name, id) {
+    try {
+       const countries = await fetch('/api/put/country', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name, id
+            }),
+        });
+        console.log(countries)
+        return countries;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function DeleteCountry(id) {
+    try {
+       const countries = await fetch('/api/delete/country', {
+            method: "delete",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                id
+            }),
+        });
+        console.log(countries)
+        return countries;
     } catch (err) {
         console.error(err);
         throw err;

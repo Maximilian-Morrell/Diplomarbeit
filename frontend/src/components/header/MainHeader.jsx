@@ -91,8 +91,7 @@ export default function MainHeader() {
                             </>
                         )}
 
-                        {(hasPermission('CityAdmin') ||
-                            hasPermission('CountryAdmin') ||
+                        {(hasPermission('PlacesAdmin') ||
                             hasPermission('UserAdmin')) && (
                                 <Link
                                     href="/admin"

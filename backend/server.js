@@ -7,6 +7,7 @@ import { CheckDB, GetUserByVerificationToken, VerifyUser } from "./db/dbServer.j
 import GetRouter from './http/Get.js'
 import PostRouter from './http/Post.js'
 import PutRouter from './http/PUT.js'
+import DeleteRouter from "./http/Delete.js"
 import crypto from 'crypto'
 import { EMailVerificationSuccessful } from "./mail/mailserver.js";
 
@@ -23,6 +24,7 @@ app.use("/image", express.static("./public/images"))
 app.use('/get', GetRouter)
 app.use('/post', PostRouter)
 app.use("/put", PutRouter)
+app.use("/delete", DeleteRouter)
 
 app.use('/verify-email', async (req, res) => {
     console.log("Verification process beginning")

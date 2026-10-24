@@ -1,9 +1,9 @@
 import { Box, Button, Dialog, DialogTitle, Divider, MenuItem, TextField } from "@mui/material";
 import * as React from "react";
-import { AddNewCity, getCountries, getPermissions } from "../../API/ApiClient";
+import { AddNewCity, getCountries, getPermissions, UpdateCity } from "../../API/ApiClient";
 
 export default function CreateCityDialog(props) {
-    const { onClose, onCityCreated, open } = props;
+    const { onClose, onCityCreated, open, city } = props;
 
     const handleClose = () => {
         onClose();
@@ -37,15 +37,32 @@ export default function CreateCityDialog(props) {
         loadPermissions();
     }, [])
 
+    React.useEffect(() => {
+        if (city != null) {
+            setFormData({ name: city.name, type: city.type, region: city.region, description: city.description, country: city.country_id, permission: city.permission_id })
+        }
+    }, [city])
+
     const typeOfCities = ["Village", "Town", "Small Town", "Town", "City", "Metropolitan City", "Capital City"]
 
     const handleSave = async () => {
         console.log("saving")
         try {
+
+            if(city) {
+            const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.country, formData.permission);
+            console.log(cities)
+            if (!cities) return;
+            }
+            else {
             const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.country, formData.permission);
             console.log(cities)
             if (!cities) return;
+            }
+
+
             await onCityCreated();
+            setFormData({ name: "", type: "", region: "", description: "", country: "", permission: "" })
         } catch (error) {
             console.error("Failed to create city:", error);
         }
