@@ -16,7 +16,7 @@ import CT_Three from "./CTPages/CT_Three";
 import CT_Four from "./CTPages/CT_Four";
 import { getCities } from "../../API/ApiClient";
 
-const steps = ['Select a City', 'Select a type of trip', 'Select specifi disires', "Finalise"]
+const steps = ['Select a City', "Details", 'Select a type of trip', 'Select special desires', "Finalise"]
 
 export default function CreateTrip(props) {
 
@@ -34,7 +34,7 @@ export default function CreateTrip(props) {
     const [skipped, setSkipped] = React.useState(new Set());
 
     const isStepOptional = React.useCallback((step) => {
-        return step === 2;
+        return step === 3 || step === 2;
     }, []);
 
     const isStepSkipped = (step) => {

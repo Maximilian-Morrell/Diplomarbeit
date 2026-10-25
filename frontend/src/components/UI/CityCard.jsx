@@ -13,11 +13,11 @@ import CardActionArea from '@mui/material/CardActionArea';
 import { useAuth } from '../../AuthContext';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
-export default function CityCard({ city, onClick, selected, isAdmin, handleDelete }) {
+export default function CityCard({ city, onClick, selected, isMini }) {
 
 
     return (
-        <Card sx={{ width: 300, height: 470, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
+        <Card sx={{ width: 300, height: 550, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
@@ -58,13 +58,24 @@ export default function CityCard({ city, onClick, selected, isAdmin, handleDelet
                         lineHeight: 1.2,
                         minHeight: '2.55rem',
                     }}>{city.name || "Name"}</Typography>
-                    <Box sx={{display: "flex"}}>
-                    <Typography sx={{ color: 'text.secondary' }}>{city.country || "Country"} - {city.region || "Region"}  </Typography>
+                    <Box sx={{ display: "flex" }}>
+                        <Typography sx={{ color: 'text.secondary' }}>{city.country || "Country"} - {city.region || "Region"}  </Typography>
                     </Box>
-                    <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 0.5, flex: 1, overflowY: 'scroll'}}>
-                        {city.description}
-                    </Typography>
+                    {!isMini ? (
+                        <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 0.5, flex: 1, overflowY: 'scroll' }}>
+                            {city.description}
+                        </Typography>
+                    ) : (
+                        <></>
+                    )}
+
                 </CardContent>
+                <Divider></Divider>
+                <Box sx={{ flex: 0.3, overflow: "scroll", m: 1 }}>
+                    {city.tags.map((tag) => (
+                        <Chip sx={{ m: 0.2 }} label={tag.name}></Chip>
+                    ))}
+                </Box>
             </CardActionArea>
         </Card>
     )

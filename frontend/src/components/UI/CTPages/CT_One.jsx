@@ -3,7 +3,7 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import MultiSelect from "../MultiSelect";
 import * as React from 'react'
-import CityCard from "../CityCard";
+import CityCard from "../../../Components/UI/CityCard"
 import CardActionArea from "@mui/material/CardActionArea";
 
 export default function CT_One({ selectedCity, setSelectedCity, cities }) {

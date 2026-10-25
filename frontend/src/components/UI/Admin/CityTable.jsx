@@ -1,4 +1,4 @@
-import { Button, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 import { DeleteCity } from "../../../API/ApiClient";
@@ -51,12 +51,15 @@ export default function CityTable(props) {
                             <TableCell>{city.country}</TableCell>
                             <TableCell>{city.type}</TableCell>
                             <TableCell>{city.region}</TableCell>
-                            <TableCell><Box sx={{maxHeight: 50, overflowY: "auto", width: 300}}>{city.description}</Box></TableCell>
+                            <TableCell><Box sx={{ height: 75, overflowWrap: "anywhere", overflow:"scroll", width: "40 %" }}><Typography variant="body2">{city.description}</Typography></Box></TableCell>
                             <TableCell>{city.permission}</TableCell>
-                            <TableCell>{city.tags.map((tag) => (
-                                <Chip label={tag.name} ></Chip>
-                            ))}</TableCell>
-                            <TableCell sx={{zIndex: 1}} align="right"><Button variant="contained" color="error" onClick={() => RemoveCity(city)}>Delete</Button></TableCell>
+                            <TableCell>
+                                <Box sx={{overflow: "auto", height: 75, mWidth: "30 %" }}>
+                                    {city.tags.map((tag) => (
+                                        <Chip sx={{m: 0.5}} label={tag.name} ></Chip>
+                                    ))}
+                                </Box></TableCell>
+                            <TableCell sx={{ zIndex: 1 }} align="right"><Button variant="contained" color="error" onClick={() => RemoveCity(city)}>Delete</Button></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

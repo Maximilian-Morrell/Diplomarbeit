@@ -160,7 +160,6 @@ export async function GetPermission(id) {
     try {
         conn = await pool.getConnection();
         const rows = await conn.query('SELECT * FROM permissions WHERE id = ?', [id]);
-        console.log(rows[0])
         conn.release();
 
         return rows[0];
@@ -403,7 +402,6 @@ export async function GetUser(id) {
         const userPermissions = await GetPermissionsByUserId(user.id);
         user.permissions = userPermissions.map(p => p.name);
 
-        console.log("Fetched user:", user);
         conn.release();
         return user;
     } catch (err) {
@@ -427,8 +425,6 @@ export async function GetUsers() {
             user.permissions = userPermissions.map(p => p.name);
         }
 
-
-        console.log("Fetched users:", users);
         conn.release();
         return users;
     } catch (err) {
@@ -467,7 +463,6 @@ export async function GetPermissionsByUserId(userId) {
             permissions.push(permission);
         }
 
-        console.log("User permissions:", permissions);
         conn.release();
         return permissions;
     } catch (err) {
@@ -624,7 +619,6 @@ export async function GetRegions(countCities) {
 
         if (countCities) {
             const regions = await conn.query('SELECT regions.*, COUNT(cities.id) AS cities FROM regions LEFT JOIN cities ON regions.id = cities.region_id GROUP BY regions.id, regions.name');
-            console.log(regions)
             conn.release();
             return regions.map(region => ({
                 id: region.id,
@@ -833,11 +827,11 @@ export async function GetTagsForCity(id) {
         conn = await pool.getConnection();
 
         const tag_ids = await conn.query(`SELECT tag_id FROM city_tags WHERE city_id = ?`, [id]);
-        console.log(tag_ids)
+
         const Tags = [];
         for (const tagID of tag_ids) {
             const Tag = await GetTagsByID(tagID.tag_id);
-            console.log(Tag)
+
             Tags.push(Tag);
         }
 
@@ -879,16 +873,14 @@ export async function ModifyTagsForCity(city, tags) {
 
         const tagsToRemove = [];
         const currentTags = await GetTagsForCity(city);
-        console.log(currentTags);
 
         for (const currentTag of currentTags) {
             if (tags.includes(currentTag)) {
                 tags.splice(tags.findIndex(t => t === currentTag.id), 1)
-                return;
             }
             else {
                 tagsToRemove.push(currentTag);
-                return;
+
             }
 
         }
@@ -898,7 +890,6 @@ export async function ModifyTagsForCity(city, tags) {
         }
 
         for(const tag of tags) {
-            console.log(tag);
             const addTagsResult = await conn.query(`INSERT INTO city_tags (city_id, tag_id) VALUES (?,?)`, [city, tag])
         }
 

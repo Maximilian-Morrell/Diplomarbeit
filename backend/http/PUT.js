@@ -60,6 +60,7 @@ router.put("/city", AuthMiddleware, async (req, res) => {
     try {
         const { id, name, type, region, description, permission, tags } = req.body;
         const cities = await UpdateCity(name, type, region, description, permission, id);
+        console.log(tags)
         await ModifyTagsForCity(id, tags);
         res.json({cities: cities});
     } catch (error) {
