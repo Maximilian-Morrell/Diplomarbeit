@@ -49,7 +49,11 @@ export default function CreateCityDialog(props) {
 
     React.useEffect(() => {
         if (city != null) {
-            setFormData({ name: city.name, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id, tags: city.tags.tags_id })
+            const tagIds = [];
+            for(const tag of city.tags) {
+                tagIds.push(tag.id)
+            }
+            setFormData({ name: city.name, country: city.country_id, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id, tags: tagIds })
         }
     }, [city])
 

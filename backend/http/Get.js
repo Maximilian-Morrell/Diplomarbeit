@@ -51,6 +51,7 @@ router.get('/cities', async (req, res) => {
         city.permission = permission.name;
         city.region = region.name;
         city.country = country.name;
+        city.country_id = country.id;
         city.tags = Tags;
         console.log(city)
     }
