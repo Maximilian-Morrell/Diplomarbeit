@@ -13,11 +13,15 @@ import CardActionArea from '@mui/material/CardActionArea';
 import { useAuth } from '../../AuthContext';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
-export default function CityCard({ city, onClick, selected, isMini }) {
+export default function CityCard({ city, onClick, selected, isMini = false }) {
 
+    var custom_height = 550;
+    if(isMini) {
+        custom_height = "auto"
+    }
 
     return (
-        <Card sx={{ width: 300, height: 550, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
+        <Card sx={{ width: 400, height: custom_height, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
@@ -70,12 +74,6 @@ export default function CityCard({ city, onClick, selected, isMini }) {
                     )}
 
                 </CardContent>
-                <Divider></Divider>
-                <Box sx={{ flex: 0.3, overflow: "scroll", m: 1 }}>
-                    {city.tags.map((tag) => (
-                        <Chip sx={{ m: 0.2 }} label={tag.name}></Chip>
-                    ))}
-                </Box>
             </CardActionArea>
         </Card>
     )

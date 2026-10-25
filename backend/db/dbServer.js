@@ -31,7 +31,8 @@ export async function CheckDB() {
         await con.query(`
             CREATE TABLE IF NOT EXISTS tags (
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-            name varchar(255) NOT NULL UNIQUE)`)
+            name varchar(255) NOT NULL UNIQUE,
+            description varchar(255))`)
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS regions (
@@ -58,16 +59,6 @@ export async function CheckDB() {
                 REFERENCES permissions(id))`);
 
         console.log("Table cities is ready!")
-
-        await con.query(`
-            CREATE TABLE IF NOT EXISTS city_tags (
-            city_id INT NOT NULL,
-            tag_id INT NOT NULL,
-            
-            FOREIGN KEY (city_id)
-                REFERENCES cities(id),
-            FOREIGN KEY (tag_id)
-                REFERENCES tags(id))`)
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS users (
@@ -760,13 +751,13 @@ export async function DeleteRegion(id) {
 }
 
 
-export async function AddTag(name) {
+export async function AddTag(name, description) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`INSERT INTO tags (name) VALUES (?)`, [name]);
+        const result = await conn.query(`INSERT INTO tags (name, description) VALUES (?, ?)`, [name, description]);
         const Tags = await GetTags();
 
         conn.release();
@@ -780,13 +771,13 @@ export async function AddTag(name) {
     return null;
 }
 
-export async function UpdateTag(name, id) {
+export async function UpdateTag(name, description, id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const rows = await conn.query(`UPDATE tags SET name  = ? WHERE id = ?`, [name, id]);
+        const rows = await conn.query(`UPDATE tags SET name  = ?, description = ? WHERE id = ?`, [name, description, id]);
         const Tags = await GetTags();
 
         conn.release();
@@ -820,31 +811,6 @@ export async function DeleteTag(id) {
     return null;
 }
 
-export async function GetTagsForCity(id) {
-    var conn;
-
-    try {
-        conn = await pool.getConnection();
-
-        const tag_ids = await conn.query(`SELECT tag_id FROM city_tags WHERE city_id = ?`, [id]);
-
-        const Tags = [];
-        for (const tagID of tag_ids) {
-            const Tag = await GetTagsByID(tagID.tag_id);
-
-            Tags.push(Tag);
-        }
-
-        conn.release();
-        return Tags;
-    } catch (err) {
-        console.log(err)
-        if (conn) conn.release();
-        return null;
-    }
-
-    return null;
-}
 
 export async function GetRegion(id) {
     var conn;
@@ -856,66 +822,6 @@ export async function GetRegion(id) {
 
         conn.release();
         return regions[0];
-    } catch (err) {
-        console.log(err)
-        if (conn) conn.release();
-        return null;
-    }
-
-    return null;
-}
-
-export async function ModifyTagsForCity(city, tags) {
-    var conn;
-
-    try {
-        conn = await pool.getConnection();
-
-        const tagsToRemove = [];
-        const currentTags = await GetTagsForCity(city);
-
-        for (const currentTag of currentTags) {
-            if (tags.includes(currentTag)) {
-                tags.splice(tags.findIndex(t => t === currentTag.id), 1)
-            }
-            else {
-                tagsToRemove.push(currentTag);
-
-            }
-
-        }
-
-        for (const tag of tagsToRemove) {
-            const removeTagsResult = await conn.query(`DELETE FROM city_tags WHERE city_id = ? AND tag_id = ?`, [city, tag.id])
-        }
-
-        for(const tag of tags) {
-            const addTagsResult = await conn.query(`INSERT INTO city_tags (city_id, tag_id) VALUES (?,?)`, [city, tag])
-        }
-
-
-    } catch (err) {
-        console.error(err);
-        if (conn) conn.release();
-        return null;
-    }
-}
-
-export async function RemoveAllTagsFromCity(id) {
-    var conn;
-
-    try {
-        conn = await pool.getConnection();
-
-        const tag_ids = await conn.query(`DELETE FROM tags WHERE city_id = ?`, [id]);
-        const Tags = [];
-        for (const tagID of tag_ids) {
-            const Tag = await GetTagsByID(tagID);
-            Tags.push(Tag);
-        }
-
-        conn.release();
-        return Tags;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();

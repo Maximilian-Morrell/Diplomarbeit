@@ -16,7 +16,7 @@ import CT_Three from "./CTPages/CT_Three";
 import CT_Four from "./CTPages/CT_Four";
 import { getCities } from "../../API/ApiClient";
 
-const steps = ['Select a City', "Details", 'Select a type of trip', 'Select special desires', "Finalise"]
+const steps = ['Select a City', "Travelers", "Dates", 'Select a type of trip', 'Select special desires', "Finalise"]
 
 export default function CreateTrip(props) {
 
@@ -34,7 +34,7 @@ export default function CreateTrip(props) {
     const [skipped, setSkipped] = React.useState(new Set());
 
     const isStepOptional = React.useCallback((step) => {
-        return step === 3 || step === 2;
+        return step === 4 || step === 3;
     }, []);
 
     const isStepSkipped = (step) => {
@@ -90,10 +90,10 @@ export default function CreateTrip(props) {
             open={open}
             sx={{
                 '& .MuiDialog-paper': {
-                    width: '90vw',
-                    height: '90vh',
-                    maxWidth: '90vw',
-                    maxHeight: '90vh',
+                    width: '97vw',
+                    height: '97vh',
+                    maxWidth: '97vw',
+                    maxHeight: '97vh',
                     margin: 0,
                     overflow: 'hidden',
                 },
@@ -169,7 +169,7 @@ export default function CreateTrip(props) {
                                 ml: 3,
                                 mt: 1,
                                 mr: 3,
-                                p: '1vh',
+                                p: 1,
                                 flex: 1,
                                 minHeight: 0,
                                 overflowY: 'auto',
@@ -184,7 +184,7 @@ export default function CreateTrip(props) {
                             ) : activeStep === 1 ? (
                                 <CT_Two />
                             ) : activeStep === 2 ? (
-                                <CT_Three />
+                                <CT_Three city={cities[selectedCity]?.name}/>
                             ) : (
                                 <CT_Four />
                             )}

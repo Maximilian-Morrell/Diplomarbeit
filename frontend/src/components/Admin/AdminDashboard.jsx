@@ -115,7 +115,7 @@ export default function AdminDashboard() {
                         <RegionTable regions={regions} currentRegion={selectedRegion} selectRegion={setSelectedRegion} deleteRegion={handleDelete}></RegionTable>
                     </TabPanel>
                     <TabPanel value="2" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
-                        <TagTable tags={tags} currenTag={selectedTag} selectTaag={setSelectedTag} deleteTag={handleDelete}></TagTable>
+                        <TagTable tags={tags} currentTag={selectedTag} selectTag={setSelectedTag} deleteTag={handleDelete}></TagTable>
                     </TabPanel>
                     <TabPanel value="3" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <CityTable cities={cities} currentCity={selectedCity} selectCity={setSelectedCity} deleteCity={handleDelete}></CityTable>

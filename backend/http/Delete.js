@@ -1,6 +1,6 @@
 import express from "express";
 import { AuthMiddleware } from '../middleware/authMiddleware.js';
-import { DeleteCity, DeleteCountry, DeleteRegion, DeleteTag, RemoveAllTagsFromCity } from "../db/dbServer.js";
+import { DeleteCity, DeleteCountry, DeleteRegion, DeleteTag } from "../db/dbServer.js";
 
 const router = express.Router();
 
@@ -21,7 +21,6 @@ router.delete("/city", AuthMiddleware, async (req, res) => {
     try {
         const { id } = req.body;
 
-        await RemoveAllTagsFromCity(id);
         const result = await DeleteCity(id);
         res.status(200).json({ result: result })
 

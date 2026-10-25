@@ -42,8 +42,8 @@ router.post('/log-in', async (req, res) => {
 
 router.post("/city", AuthMiddleware, async (req, res) => {
     try {
-        const { name, type, region, description, permission, tags } = req.body;
-        const cities = await AddCity(name, type, region, description, permission, tags);
+        const { name, type, region, description, permission } = req.body;
+        const cities = await AddCity(name, type, region, description, permission);
         res.json({cities: cities});
     } catch (error) {
         console.error('Error creating city:', error);
@@ -64,8 +64,8 @@ router.post("/region", AuthMiddleware, async (req, res) => {
 
 router.post("/tag", AuthMiddleware, async (req, res) => {
     try {
-        const { name } = req.body;
-        const tags = await AddTag(name);
+        const { name, description } = req.body;
+        const tags = await AddTag(name, description);
         res.json({tags: tags});
     } catch (error) {
         console.error('Error creating tag:', error);

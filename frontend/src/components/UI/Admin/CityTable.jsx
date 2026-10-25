@@ -36,9 +36,8 @@ export default function CityTable(props) {
                         <TableCell>Country</TableCell>
                         <TableCell>Type</TableCell>
                         <TableCell>Region</TableCell>
-                        <TableCell>Description</TableCell>
                         <TableCell>Permission</TableCell>
-                        <TableCell>Tags</TableCell>
+                        <TableCell>Description</TableCell>
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
@@ -51,14 +50,8 @@ export default function CityTable(props) {
                             <TableCell>{city.country}</TableCell>
                             <TableCell>{city.type}</TableCell>
                             <TableCell>{city.region}</TableCell>
-                            <TableCell><Box sx={{ height: 75, overflowWrap: "anywhere", overflow:"scroll", width: "40 %" }}><Typography variant="body2">{city.description}</Typography></Box></TableCell>
                             <TableCell>{city.permission}</TableCell>
-                            <TableCell>
-                                <Box sx={{overflow: "auto", height: 75, mWidth: "30 %" }}>
-                                    {city.tags.map((tag) => (
-                                        <Chip sx={{m: 0.5}} label={tag.name} ></Chip>
-                                    ))}
-                                </Box></TableCell>
+                            <TableCell><Box sx={{ width: 1000 }}><Typography noWrap variant="body2">{city.description}</Typography></Box></TableCell>
                             <TableCell sx={{ zIndex: 1 }} align="right"><Button variant="contained" color="error" onClick={() => RemoveCity(city)}>Delete</Button></TableCell>
                         </TableRow>
                     ))}

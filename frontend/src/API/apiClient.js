@@ -214,7 +214,7 @@ export async function ResendVerificationLink() {
     }
 }
 
-export async function AddNewCity(name, type, region, description, permission, tags) {
+export async function AddNewCity(name, type, region, description, permission) {
     try {
         const cities = await fetch('/api/post/city', {
             method: "POST",
@@ -224,7 +224,7 @@ export async function AddNewCity(name, type, region, description, permission, ta
             },
             credentials: "include",
             body: JSON.stringify({
-                name, type, region, description, permission, tags
+                name, type, region, description, permission
             }),
         });
         console.log(cities)
@@ -235,7 +235,7 @@ export async function AddNewCity(name, type, region, description, permission, ta
     }
 }
 
-export async function UpdateCity(id, name, type, region, description, permission, tags) {
+export async function UpdateCity(id, name, type, region, description, permission) {
     try {
         const cities = await fetch('/api/put/city', {
             method: "PUT",
@@ -245,7 +245,7 @@ export async function UpdateCity(id, name, type, region, description, permission
             },
             credentials: "include",
             body: JSON.stringify({
-                id, name, type, region, description, permission, tags
+                id, name, type, region, description, permission 
             }),
         });
         console.log(cities)
@@ -403,7 +403,7 @@ export async function DeleteRegion(id) {
     }
 }
 
-export async function AddNewTag(name) {
+export async function AddNewTag(name, description) {
     try {
         const tags = await fetch('/api/post/tag', {
             method: "POST",
@@ -413,7 +413,7 @@ export async function AddNewTag(name) {
             },
             credentials: "include",
             body: JSON.stringify({
-                name
+                name, description,
             }),
         });
         console.log(tags)
@@ -424,7 +424,7 @@ export async function AddNewTag(name) {
     }
 }
 
-export async function UpdateTag(name, id) {
+export async function UpdateTag(name, description, id) {
     try {
         const tags = await fetch('/api/put/tag', {
             method: "PUT",
@@ -434,7 +434,7 @@ export async function UpdateTag(name, id) {
             },
             credentials: "include",
             body: JSON.stringify({
-                name, id
+                name, description, id
             }),
         });
         console.log(tags)

@@ -5,6 +5,7 @@ export default function TagTable(props) {
 
     const { tags, selectTag, currentTag, deleteTag } = props;
 
+    console.log(tags)
     function SetSelectedTag(tag) {
         if (currentTag?.id === tag.id) {
             console.log("Test")
@@ -28,15 +29,17 @@ export default function TagTable(props) {
                     <TableRow>
                         <TableCell>ID</TableCell>
                         <TableCell>Name</TableCell>
+                        <TableCell>Description</TableCell>
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
 
                 <TableBody>
                     {tags.map((tag) => (
-                        <TableRow key={tag.id} hover onClick={() => SetSelectedRegion(tag)} sx={{ cursor: "pointer" }} selected={currentTag?.id === tag.id}>
+                        <TableRow key={tag.id} hover onClick={() => SetSelectedTag(tag)} sx={{ cursor: "pointer" }} selected={currentTag?.id === tag.id}>
                             <TableCell>{tag.id}</TableCell>
                             <TableCell>{tag.name}</TableCell>
+                            <TableCell>{tag.description}</TableCell>
                             <TableCell sx={{ zIndex: 1 }} align="right"><Button variant="contained" color="error" onClick={() => RemoveTag(tag)}>Delete</Button></TableCell>
 
                         </TableRow>

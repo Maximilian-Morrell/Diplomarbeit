@@ -9,7 +9,7 @@ export default function CreateCityDialog(props) {
         onClose();
     };
 
-    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: "", tags: "" });
+    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: ""});
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -37,23 +37,9 @@ export default function CreateCityDialog(props) {
         loadPermissions();
     }, [])
 
-    const [tags, setTags] = React.useState([])
-
-    React.useEffect(() => {
-        const loadTags = async () => {
-            setTags(await getTags());
-        }
-
-        loadTags();
-    }, [])
-
     React.useEffect(() => {
         if (city != null) {
-            const tagIds = [];
-            for(const tag of city.tags) {
-                tagIds.push(tag.id)
-            }
-            setFormData({ name: city.name, country: city.country_id, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id, tags: tagIds })
+            setFormData({ name: city.name, country: city.country_id, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id})
         }
     }, [city])
 
@@ -64,19 +50,19 @@ export default function CreateCityDialog(props) {
         try {
 
             if (city) {
-                const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.permission, formData.tags);
+                const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.permission);
                 console.log(cities)
                 if (!cities) return;
             }
             else {
-                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.permission, formData.tags);
+                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.permission);
                 console.log(cities)
                 if (!cities) return;
             }
 
 
             await onCityCreated();
-            setFormData({ name: "", type: "", region: "", description: "", country: "", permission: "", tags: "" })
+            setFormData({ name: "", type: "", region: "", description: "", country: "", permission: "" })
         } catch (error) {
             console.error("Failed to create city:", error);
         }
@@ -117,38 +103,7 @@ export default function CreateCityDialog(props) {
                 <TextField name="permission" value={formData.permission} onChange={handleChange} label="Permission" select>{permissions.map((permission) => (
                     <MenuItem key={permission.id} value={permission.id}>{permission.name}</MenuItem>
                 ))}</TextField>
-                <FormControl fullWidth>
-                    <InputLabel id="SelectTagsLabel">Tags</InputLabel>
-                    <Select
-                        multiple
-                        name="tags"
-                        labelId="SelectTagsLabel"
-                        value={formData.tags || []}
-                        onChange={handleChange}
-                        input={<OutlinedInput id="selectTags" label="Tags" />}
-                        MenuProps={{
-                            PaperProps: {
-                                sx: {
-                                    maxHeight: 250,
-                                    overflowY: "auto"
-                                }
-                            }
-                        }}
-                        renderValue={(selected) => (
-                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                                {selected.map((id) => (
-                                    <Chip key={id} label={tags.find((tag) => tag.id === id)?.name || id} />
-                                ))}
-                            </Box>
-                        )}
-                    >
-                        {tags.map((tag) => (
-                            <MenuItem key={tag.id} value={tag.id}>
-                                {tag.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                
                 <Button onClick={handleSave}>Save</Button>
             </Box>
         </Dialog>

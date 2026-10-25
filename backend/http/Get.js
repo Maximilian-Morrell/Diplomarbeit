@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetTags, GetUsers, GetTagsForCity, GetRegion } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetTags, GetUsers, GetRegion } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -47,12 +47,10 @@ router.get('/cities', async (req, res) => {
         const country = await GetCountry(region.country_id)
         console.log(region.country_id)
         const permission = await GetPermission(city.permission_id)
-        const Tags = await GetTagsForCity(city.id)
         city.permission = permission.name;
         city.region = region.name;
         city.country = country.name;
         city.country_id = country.id;
-        city.tags = Tags;
         console.log(city)
     }
     res.json(cities);
