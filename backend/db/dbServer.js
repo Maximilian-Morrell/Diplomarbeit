@@ -48,8 +48,7 @@ export async function CheckDB() {
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name VARCHAR(255) NOT NULL,
             type VARCHAR(25) NOT NULL,
-            region VARCHAR(255) NOT NULL,
-            description VARCHAR(255), 
+            description text, 
             region_id INT NOT NULL,
             permission_id INT NOT NULL,
             
@@ -526,11 +525,12 @@ export async function LogIn(email, password) {
     }
 }
 
-export async function AddCity(name, type, region, description, country, permission) {
+export async function AddCity(name, type, region, description, permission, tags) {
     var conn;
     try {
         conn = await pool.getConnection();
-        const result = await conn.query(`INSERT INTO cities (name, type, region, description, country_id, permission_id) VALUES (?, ?, ?, ?, ?, ?)`, [name, type, region, description, country, permission]);
+        const result = await conn.query(`INSERT INTO cities (name, type, description, region_id, permission_id) VALUES (?, ?, ?, ?, ?)`, [name, type, description, region, permission]);
+        await ModifyTagsForCity(result.insertId, tags);
         const cities = await GetCities();
         conn.release()
         return cities;
@@ -541,11 +541,11 @@ export async function AddCity(name, type, region, description, country, permissi
     }
 }
 
-export async function UpdateCity(name, type, region, description, country, permission, id) {
+export async function UpdateCity(name, type, region, description, permission, id) {
     var conn;
     try {
         conn = await pool.getConnection();
-        const result = await conn.query(`Update cities SET name = ?, type = ?, region = ?, description = ?, country_id = ?, permission_id = ? WHERE id = ?`, [name, type, region, description, country, permission, id]);
+        const result = await conn.query(`Update cities SET name = ?, type = ?, region_id = ?, description = ?, permission_id = ? WHERE id = ?`, [name, type, region, description, permission, id]);
         const cities = await GetCities();
         conn.release()
         return cities;
@@ -677,7 +677,7 @@ export async function GetTagsByID(id) {
         const rows = await conn.query('SELECT * FROM tags WHERE id = ?', [id]);
 
         conn.release();
-        return rows;
+        return rows[0];
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
@@ -832,7 +832,91 @@ export async function GetTagsForCity(id) {
     try {
         conn = await pool.getConnection();
 
-        const tag_ids = await conn.query(`SELECT tag_id FROM tags WHERE city_id = ?`, [id]);
+        const tag_ids = await conn.query(`SELECT tag_id FROM city_tags WHERE city_id = ?`, [id]);
+        console.log(tag_ids)
+        const Tags = [];
+        for (const tagID of tag_ids) {
+            const Tag = await GetTagsByID(tagID.tag_id);
+            console.log(Tag)
+            Tags.push(Tag);
+        }
+
+        conn.release();
+        return Tags;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetRegion(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const regions = await conn.query(`SELECT * FROM regions WHERE id = ?`, [id]);
+
+        conn.release();
+        return regions[0];
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function ModifyTagsForCity(city, tags) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const tagsToRemove = [];
+        const currentTags = await GetTagsForCity(city);
+        console.log(currentTags);
+
+        for (const currentTag of currentTags) {
+            if (tags.includes(currentTag)) {
+                tags.splice(tags.findIndex(t => t === currentTag.id), 1)
+                return;
+            }
+            else {
+                tagsToRemove.push(currentTag);
+                return;
+            }
+
+        }
+
+        for (const tag of tagsToRemove) {
+            const removeTagsResult = await conn.query(`DELETE FROM city_tags WHERE city_id = ? AND tag_id = ?`, [city, tag.id])
+        }
+
+        for(const tag of tags) {
+            console.log(tag);
+            const addTagsResult = await conn.query(`INSERT INTO city_tags (city_id, tag_id) VALUES (?,?)`, [city, tag])
+        }
+
+
+    } catch (err) {
+        console.error(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function RemoveAllTagsFromCity(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const tag_ids = await conn.query(`DELETE FROM tags WHERE city_id = ?`, [id]);
         const Tags = [];
         for (const tagID of tag_ids) {
             const Tag = await GetTagsByID(tagID);

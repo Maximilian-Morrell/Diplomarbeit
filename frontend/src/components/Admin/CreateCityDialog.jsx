@@ -49,7 +49,7 @@ export default function CreateCityDialog(props) {
 
     React.useEffect(() => {
         if (city != null) {
-            setFormData({ name: city.name, type: city.type, region: city.region, description: city.description, country: city.country_id, permission: city.permission_id, tags: city.tags })
+            setFormData({ name: city.name, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id, tags: city.tags.tags_id })
         }
     }, [city])
 
@@ -60,12 +60,12 @@ export default function CreateCityDialog(props) {
         try {
 
             if (city) {
-                const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.country, formData.permission, formData.tags);
+                const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.permission, formData.tags);
                 console.log(cities)
                 if (!cities) return;
             }
             else {
-                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.country, formData.permission, formData.tags);
+                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.permission, formData.tags);
                 console.log(cities)
                 if (!cities) return;
             }

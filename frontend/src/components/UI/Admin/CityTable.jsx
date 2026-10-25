@@ -1,4 +1,4 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 import { DeleteCity } from "../../../API/ApiClient";
@@ -6,6 +6,8 @@ import { DeleteCity } from "../../../API/ApiClient";
 export default function CityTable(props) {
 
     const { cities, selectCity, currentCity, deleteCity } = props;
+
+    console.log(cities)
 
     function SetSelectedCity(city) {
         if (currentCity?.id === city.id) {
@@ -49,10 +51,10 @@ export default function CityTable(props) {
                             <TableCell>{city.country}</TableCell>
                             <TableCell>{city.type}</TableCell>
                             <TableCell>{city.region}</TableCell>
-                            <TableCell>{city.description}</TableCell>
+                            <TableCell><Box sx={{maxHeight: 50, overflowY: "auto", width: 300}}>{city.description}</Box></TableCell>
                             <TableCell>{city.permission}</TableCell>
                             <TableCell>{city.tags.map((tag) => (
-                                <Chip label={tag.name}></Chip>
+                                <Chip label={tag.name} ></Chip>
                             ))}</TableCell>
                             <TableCell sx={{zIndex: 1}} align="right"><Button variant="contained" color="error" onClick={() => RemoveCity(city)}>Delete</Button></TableCell>
                         </TableRow>

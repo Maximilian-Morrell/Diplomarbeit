@@ -214,7 +214,7 @@ export async function ResendVerificationLink() {
     }
 }
 
-export async function AddNewCity(name, type, region, description, country, permission) {
+export async function AddNewCity(name, type, region, description, permission, tags) {
     try {
         const cities = await fetch('/api/post/city', {
             method: "POST",
@@ -224,7 +224,7 @@ export async function AddNewCity(name, type, region, description, country, permi
             },
             credentials: "include",
             body: JSON.stringify({
-                name, type, region, description, country, permission,
+                name, type, region, description, permission, tags
             }),
         });
         console.log(cities)
@@ -235,7 +235,7 @@ export async function AddNewCity(name, type, region, description, country, permi
     }
 }
 
-export async function UpdateCity(id, name, type, region, description, country, permission) {
+export async function UpdateCity(id, name, type, region, description, permission, tags) {
     try {
         const cities = await fetch('/api/put/city', {
             method: "PUT",
@@ -245,7 +245,7 @@ export async function UpdateCity(id, name, type, region, description, country, p
             },
             credentials: "include",
             body: JSON.stringify({
-                id, name, type, region, description, country, permission,
+                id, name, type, region, description, permission, tags
             }),
         });
         console.log(cities)

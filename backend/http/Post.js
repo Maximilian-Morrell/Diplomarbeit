@@ -42,8 +42,8 @@ router.post('/log-in', async (req, res) => {
 
 router.post("/city", AuthMiddleware, async (req, res) => {
     try {
-        const { name, type, region, description, country, permission } = req.body;
-        const cities = await AddCity(name, type, region, description, country, permission);
+        const { name, type, region, description, permission, tags } = req.body;
+        const cities = await AddCity(name, type, region, description, permission, tags);
         res.json({cities: cities});
     } catch (error) {
         console.error('Error creating city:', error);
