@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddCity, AddCountry, AddUser, LogIn } from '../db/dbServer.js';
+import { AddCity, AddCountry, AddRegion, AddTag, AddUser, LogIn } from '../db/dbServer.js';
 import { AuthMiddleware, GenerateToken } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -48,6 +48,28 @@ router.post("/city", AuthMiddleware, async (req, res) => {
     } catch (error) {
         console.error('Error creating city:', error);
         res.status(500).json({ message: 'Failed to create City' });
+    }
+})
+
+router.post("/region", AuthMiddleware, async (req, res) => {
+    try {
+        const { name, country_id } = req.body;
+        const regions = await AddRegion(name, country_id);
+        res.json({regions: regions});
+    } catch (error) {
+        console.error('Error creating region:', error);
+        res.status(500).json({ message: 'Failed to region City' });
+    }
+})
+
+router.post("/tag", AuthMiddleware, async (req, res) => {
+    try {
+        const { name } = req.body;
+        const tags = await AddTag(name);
+        res.json({tags: tags});
+    } catch (error) {
+        console.error('Error creating tag:', error);
+        res.status(500).json({ message: 'Failed to create Tag' });
     }
 })
 

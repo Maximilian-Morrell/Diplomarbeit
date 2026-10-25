@@ -36,6 +36,7 @@ export default function CityTable(props) {
                         <TableCell>Region</TableCell>
                         <TableCell>Description</TableCell>
                         <TableCell>Permission</TableCell>
+                        <TableCell>Tags</TableCell>
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
@@ -50,6 +51,9 @@ export default function CityTable(props) {
                             <TableCell>{city.region}</TableCell>
                             <TableCell>{city.description}</TableCell>
                             <TableCell>{city.permission}</TableCell>
+                            <TableCell>{city.tags.map((tag) => (
+                                <Chip label={tag.name}></Chip>
+                            ))}</TableCell>
                             <TableCell sx={{zIndex: 1}} align="right"><Button variant="contained" color="error" onClick={() => RemoveCity(city)}>Delete</Button></TableCell>
                         </TableRow>
                     ))}

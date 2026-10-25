@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddUser, GetUser, UpdateCity, UpdateCountry, UpdateUser, UpdateUserPassword } from '../db/dbServer.js';
+import { GetUser, UpdateCity, UpdateCountry, UpdateRegion, UpdateUser, UpdateUserPassword, UpdateTag } from '../db/dbServer.js';
 import { AuthMiddleware, } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -62,8 +62,30 @@ router.put("/city", AuthMiddleware, async (req, res) => {
         const cities = await UpdateCity(name, type, region, description, country, permission, id);
         res.json({cities: cities});
     } catch (error) {
-        console.error('Error creating city:', error);
-        res.status(500).json({ message: 'Failed to create City' });
+        console.error('Error updating city:', error);
+        res.status(500).json({ message: 'Failed to update City' });
+    }
+})
+
+router.put("/region", AuthMiddleware, async (req, res) => {
+    try {
+        const { id, name, country_id } = req.body;
+        const regions = await UpdateRegion(name, id, country_id);
+        res.json({regions: regions});
+    } catch (error) {
+        console.error('Error updating region:', error);
+        res.status(500).json({ message: 'Failed to update Region' });
+    }
+})
+
+router.put("/tag", AuthMiddleware, async (req, res) => {
+    try {
+        const { id, name } = req.body;
+        const tags = await UpdateTag(name, id);
+        res.json({tags: tags});
+    } catch (error) {
+        console.error('Error updating tag:', error);
+        res.status(500).json({ message: 'Failed to update Tag' });
     }
 })
 

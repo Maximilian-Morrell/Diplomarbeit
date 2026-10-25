@@ -27,6 +27,22 @@ export async function CheckDB() {
             VALUES 
             ('User'), ('PlacesAdmin'), ('UserAdmin'), ('AlphaTester'), ('BetaTester')`);
 
+
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS tags (
+            id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name varchar(255) NOT NULL UNIQUE)`)
+
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS regions (
+            id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name varchar(255) NOT NULL UNIQUE,
+            country_id INT NOT NULL,
+            
+            FOREIGN KEY (country_id)
+                REFERENCES countries(id))`)
+
+
         await con.query(`
             CREATE TABLE IF NOT EXISTS cities (
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -34,16 +50,25 @@ export async function CheckDB() {
             type VARCHAR(25) NOT NULL,
             region VARCHAR(255) NOT NULL,
             description VARCHAR(255), 
-            country_id INT NOT NULL,
+            region_id INT NOT NULL,
             permission_id INT NOT NULL,
             
-            FOREIGN KEY (country_id)
-                REFERENCES countries(id),
+            FOREIGN KEY (region_id)
+                REFERENCES regions(id),
             FOREIGN KEY (permission_id)
                 REFERENCES permissions(id))`);
 
         console.log("Table cities is ready!")
 
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS city_tags (
+            city_id INT NOT NULL,
+            tag_id INT NOT NULL,
+            
+            FOREIGN KEY (city_id)
+                REFERENCES cities(id),
+            FOREIGN KEY (tag_id)
+                REFERENCES tags(id))`)
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS users (
@@ -91,12 +116,13 @@ export async function GetCountries(countCities) {
         conn = await pool.getConnection();
 
         if (countCities) {
-            const countries = await conn.query('SELECT countries.*, COUNT(cities.id) AS cities FROM countries LEFT JOIN cities ON cities.country_id = countries.id GROUP BY countries.id, countries.name');
+            const countries = await conn.query('SELECT countries.*, COUNT(regions.id) AS regions, COUNT(cities.id) AS cities FROM countries LEFT JOIN regions ON regions.country_id = countries.id LEFT JOIN cities ON regions.id = cities.region_id GROUP BY countries.id, countries.name');
 
             conn.release();
             return countries.map(country => ({
                 id: Number(country.id),
                 name: country.name,
+                regions: Number(country.regions),
                 cities: Number(country.cities)
             }));
         }
@@ -164,6 +190,7 @@ export async function GetCountry(id) {
 
     return null;
 }
+
 
 export async function GetCities() {
     var conn;
@@ -363,21 +390,6 @@ export async function VerifyUser(id) {
     }
 }
 
-export async function GetUsers() {
-    var conn;
-
-    try {
-        conn = await pool.getConnection();
-
-        const rows = await conn.query('SELECT * FROM users');
-        conn.release();
-        return rows;
-    } catch (err) {
-        console.log(err)
-        if (conn) conn.release();
-        return null;
-    }
-}
 
 export async function GetUser(id) {
 
@@ -395,6 +407,31 @@ export async function GetUser(id) {
         console.log("Fetched user:", user);
         conn.release();
         return user;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function GetUsers() {
+
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const users = await conn.query('SELECT * FROM users');
+
+        for (const user in users) {
+            const userPermissions = await GetPermissionsByUserId(user.id);
+            user.permissions = userPermissions.map(p => p.name);
+        }
+
+
+        console.log("Fetched users:", users);
+        conn.release();
+        return users;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
@@ -577,4 +614,238 @@ export async function DeleteCity(id) {
         if (conn) conn.release();
         return null;
     }
+}
+
+export async function GetRegions(countCities) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        if (countCities) {
+            const regions = await conn.query('SELECT regions.*, COUNT(cities.id) AS cities FROM regions LEFT JOIN cities ON regions.id = cities.region_id GROUP BY regions.id, regions.name');
+            console.log(regions)
+            conn.release();
+            return regions.map(region => ({
+                id: region.id,
+                name: region.name,
+                country_id: region.country_id,
+                cities: Number(region.cities)
+            }));
+        }
+
+        const rows = await conn.query('SELECT * FROM regions');
+
+        conn.release();
+        return rows;
+
+
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetTags() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query('SELECT * FROM tags');
+
+        conn.release();
+        return rows;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetTagsByID(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query('SELECT * FROM tags WHERE id = ?', [id]);
+
+        conn.release();
+        return rows;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetRegionsByCountry(countryID) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query('SELECT * FROM regions WHERE country_id = ?', [countryID]);
+
+        conn.release();
+        return rows;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function AddRegion(name, country_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`INSERT INTO regions (name, country_id) VALUES (?, ?)`, [name, country_id]);
+        const Regions = await GetRegions();
+        conn.release();
+        return regions;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function UpdateRegion(name, id, country_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query(`UPDATE regions SET name  = ?, country_id = ? WHERE id = ?`, [name, country_id, id]);
+        const Regions = await GetRegions();
+
+        conn.release();
+        return Regions;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function DeleteRegion(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query(`DELETE FROM regions WHERE id = ?`, [id]);
+        const Regions = await GetRegions();
+
+        conn.release();
+        return Regions;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+
+export async function AddTag(name) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`INSERT INTO tags (name) VALUES (?)`, [name]);
+        const Tags = await GetTags();
+
+        conn.release();
+        return Tags;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function UpdateTag(name, id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query(`UPDATE tags SET name  = ? WHERE id = ?`, [name, id]);
+        const Tags = await GetTags();
+
+        conn.release();
+        return Tags;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function DeleteTag(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query(`DELETE FROM tags WHERE id = ?`, [id]);
+        const Tags = await GetTags();
+
+        conn.release();
+        return Tags;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetTagsForCity(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const tag_ids = await conn.query(`SELECT tag_id FROM tags WHERE city_id = ?`, [id]);
+        const Tags = [];
+        for (const tagID of tag_ids) {
+            const Tag = await GetTagsByID(tagID);
+            Tags.push(Tag);
+        }
+
+        conn.release();
+        return Tags;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
 }

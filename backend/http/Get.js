@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetTags, GetUsers, GetTagsForCity } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -15,8 +15,25 @@ router.get('/permissions', async (req, res) => {
     res.json(permissions);
 }) 
 
+router.get('/regions', async (req, res) => {
+    const regions = await GetRegions(req.query.countCities);
+    for (const region of regions) {
+        const country = await GetCountry(region.country_id);
+        region.country = country.name;
+    }
+    res.json(regions);
+}) 
+
+router.get('/tags', async (req, res) => {
+    const tags = await GetTags();
+    res.json(tags);
+}) 
+
 router.get('/countries', async (req, res) => {
     const countries = await GetCountries(req.query.countCities);
+    for (const country of countries) {
+        country.regions = await GetRegionsByCountry(country.id);
+    }
     res.json(countries);
 })
 
@@ -26,8 +43,10 @@ router.get('/cities', async (req, res) => {
     for (const city of cities) {
         const country = await GetCountry(city.country_id);
         const permission = await GetPermission(city.permission_id)
+        const Tags = await GetTagsForCity(city.id)
         city.permission = permission.name;
         city.country = country.name;
+        city.tags = Tags;
         console.log(city)
     }
     res.json(cities);

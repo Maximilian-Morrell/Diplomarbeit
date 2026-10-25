@@ -62,7 +62,7 @@ export default function CreateCountryDialog(props) {
             }}
         >
             <DialogTitle sx={{ flexShrink: 0 }}>
-                New Country
+                {country ? "Update Country" : "New Country"}
             </DialogTitle>
 
             <Box sx={{ flex: 1, minHeight: 0, m: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>

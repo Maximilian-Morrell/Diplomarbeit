@@ -4,6 +4,7 @@ import { DeleteCountry } from "../../../API/ApiClient";
 export default function CountryTable(props) {
 
     const { countries, selectCountry, currentCountry, deletedCountry } = props;
+    console.log(countries)
 
     function SetSelectedCountry(country) {
         if (currentCountry?.id === country.id) {
@@ -29,6 +30,7 @@ export default function CountryTable(props) {
                         <TableCell>ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Amount of Cities</TableCell>
+                        <TableCell>Amount of Regions</TableCell>
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
@@ -39,7 +41,8 @@ export default function CountryTable(props) {
                             <TableCell>{country.id}</TableCell>
                             <TableCell>{country.name}</TableCell>
                             <TableCell>{country.cities}</TableCell>
-                            <TableCell sx={{zIndex: 1}} align="right"><Button variant="contained" color="error" onClick={() => RemoveCountry(country)}>Delete</Button></TableCell>
+                            <TableCell>{country.regions.length}</TableCell>
+                            <TableCell sx={{ zIndex: 1 }} align="right"><Button variant="contained" color="error" onClick={() => RemoveCountry(country)}>Delete</Button></TableCell>
 
                         </TableRow>
                     ))}
