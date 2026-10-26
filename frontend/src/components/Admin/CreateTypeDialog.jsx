@@ -1,9 +1,9 @@
 import { Box, Button, Dialog, DialogTitle, MenuItem, TextField } from "@mui/material";
 import React from "react";
-import {AddNewTag, UpdateTag } from "../../API/ApiClient";
+import {AddNewType, UpdateType } from "../../API/ApiClient";
 
-export default function CreateTagDialog(props) {
-    const { onClose, onTagCreated, open, tag } = props;
+export default function CreateTypeDialog(props) {
+    const { onClose, onTypeCreate, open, type } = props;
 
     const handleClose = () => {
         onClose();
@@ -12,10 +12,10 @@ export default function CreateTagDialog(props) {
     const [formData, setFormData] = React.useState({ name: "", description: "" });
 
     React.useEffect(() => {
-        if (tag != null) {
-            setFormData({ name: tag.name, description: tag.description })
+        if (type != null) {
+            setFormData({ name: type.name, description: type.description })
         }
-    }, [tag])
+    }, [type])
 
 
     const handleChange = (event) => {
@@ -26,22 +26,22 @@ export default function CreateTagDialog(props) {
     const handleSave = async () => {
         console.log("saving")
         try {
-            if (tag === null) {
-                const tags = await AddNewTag(formData.name, formData.description);
-                console.log(tags)
-                if (!tags) return;
+            if (type === null) {
+                const types = await AddNewType(formData.name, formData.description);
+                console.log(types)
+                if (!types) return;
             }
             else {
-                const tags = await UpdateTag(formData.name, formData.description, tag.id)
-                console.log(tags);
-                if (!tags) return;
+                const types = await UpdateType(formData.name, formData.description, type.id)
+                console.log(types);
+                if (!types) return;
             }
 
-            await onTagCreated();
+            await onTypeCreate();
             setFormData({ name: "", description: "" })
 
         } catch (error) {
-            console.error("Failed to create Tag:", error);
+            console.error("Failed to create Type:", error);
         }
     };
 
@@ -61,7 +61,7 @@ export default function CreateTagDialog(props) {
             }}
         >
             <DialogTitle sx={{ flexShrink: 0 }}>
-                {tag ? "Update Tag" : "New Tag"}
+                {type ? "Update Type" : "New Type"}
             </DialogTitle>
 
             <Box sx={{ flex: 1, minHeight: 0, m: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>

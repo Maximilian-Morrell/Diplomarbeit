@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetTags, GetUsers, GetRegion } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -24,8 +24,14 @@ router.get('/regions', async (req, res) => {
     res.json(regions);
 }) 
 
-router.get('/tags', async (req, res) => {
-    const tags = await GetTags();
+router.get('/types', async (req, res) => {
+    const tags = await GetTypes();
+    res.json(tags);
+}) 
+
+router.get('/type', async (req, res) => {
+    const id = req.params.id;
+    const tags = await GetTypesByID(id);
     res.json(tags);
 }) 
 
@@ -56,10 +62,13 @@ router.get('/cities', async (req, res) => {
     res.json(cities);
 })
 
-router.get('/city/:id', async (req, res) => {
-    const city = await GetCity(req.params.id);
+router.get('/city', async (req, res) => {
+    console.log(req.query.id)
+    const city = await GetCity(req.query.id);
     console.log(city);
-    const country = await GetCountry(city.country_id);
+    const region = await GetRegion(city.region_id);
+    city.region = region.name;
+    const country = await GetCountry(region.country_id)
     city.country = country.name;
     res.json(city);
 })
@@ -69,8 +78,8 @@ router.get('/users', AuthMiddleware, async (req, res) => {
     res.json(users)
 })
 
-router.get('/user/:id', AuthMiddleware, async (req, res) => {
-    const user = await GetUser(req.params.id);
+router.get('/user', AuthMiddleware, async (req, res) => {
+    const user = await GetUser(req.query.id);
     res.json(user)
 })
 

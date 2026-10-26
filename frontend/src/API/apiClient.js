@@ -8,12 +8,12 @@ export async function getCountries(countCities = false) {
     }
 }
 
-export async function getTags() {
+export async function getTypes() {
     try {
-        const response = await fetch('/api/get/tags');
+        const response = await fetch('/api/get/types');
         return response.json();
     } catch (error) {
-        console.error('Error fetching tags:', error);
+        console.error('Error fetching types:', error);
         throw error;
     }
 }
@@ -403,9 +403,9 @@ export async function DeleteRegion(id) {
     }
 }
 
-export async function AddNewTag(name, description) {
+export async function AddNewType(name, description) {
     try {
-        const tags = await fetch('/api/post/tag', {
+        const tags = await fetch('/api/post/type', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -424,9 +424,9 @@ export async function AddNewTag(name, description) {
     }
 }
 
-export async function UpdateTag(name, description, id) {
+export async function UpdateType(name, description, id) {
     try {
-        const tags = await fetch('/api/put/tag', {
+        const tags = await fetch('/api/put/type', {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -445,9 +445,9 @@ export async function UpdateTag(name, description, id) {
     }
 }
 
-export async function DeleteTag(id) {
+export async function DeleteType(id) {
     try {
-        const tags = await fetch('/api/delete/tag', {
+        const tags = await fetch('/api/delete/type', {
             method: "delete",
             headers: {
                 "Content-Type": "application/json",

@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetUser, UpdateCity, UpdateCountry, UpdateRegion, UpdateUser, UpdateUserPassword, UpdateTag } from '../db/dbServer.js';
+import { GetUser, UpdateCity, UpdateCountry, UpdateRegion, UpdateUser, UpdateUserPassword, UpdateType } from '../db/dbServer.js';
 import { AuthMiddleware, } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -78,14 +78,14 @@ router.put("/region", AuthMiddleware, async (req, res) => {
     }
 })
 
-router.put("/tag", AuthMiddleware, async (req, res) => {
+router.put("/type", AuthMiddleware, async (req, res) => {
     try {
         const { id, description, name } = req.body;
-        const tags = await UpdateTag(name, description, id);
-        res.json({tags: tags});
+        const types = await UpdateType(name, description, id);
+        res.json({types: types});
     } catch (error) {
-        console.error('Error updating tag:', error);
-        res.status(500).json({ message: 'Failed to update Tag' });
+        console.error('Error updating type:', error);
+        res.status(500).json({ message: 'Failed to update Type' });
     }
 })
 

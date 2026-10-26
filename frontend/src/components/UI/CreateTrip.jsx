@@ -10,13 +10,21 @@ import PropTypes from 'prop-types';
 import Box from "@mui/material/Box";
 import { flex, maxHeight } from "@mui/system";
 import Button from "@mui/material/Button";
-import CT_Two from "./CTPages/CT_Two";
-import CT_One from "./CTPages/CT_One";
-import CT_Three from "./CTPages/CT_Three";
-import CT_Four from "./CTPages/CT_Four";
-import { getCities } from "../../API/ApiClient";
+import CT_Two from "./CTPages/CT_Travellers";
+import CT_One from "./CTPages/CT_City";
+import CT_Three from "./CTPages/CT_Dates";
+import CT_Four from "./CTPages/CT_Types";
+import { getCities, getTypes } from "../../API/ApiClient";
+import CT_City from "./CTPages/CT_City";
+import CT_Travellers from "./CTPages/CT_Travellers";
+import CT_Dates from "./CTPages/CT_Dates";
+import CT_Type from "./CTPages/CT_Types";
+import CT_Activites from "./CTPages/CT_Activities";
+import CT_Finalise from "./CTPages/CT_Finalise";
+import dayjs from 'dayjs';
 
-const steps = ['Select a City', "Travelers", "Dates", 'Select a type of trip', 'Select special desires', "Finalise"]
+
+const steps = ['Select a City', "Travellers", "Dates", 'Trip Types', 'Activity Types', "Finalise"]
 
 export default function CreateTrip(props) {
 
@@ -34,7 +42,7 @@ export default function CreateTrip(props) {
     const [skipped, setSkipped] = React.useState(new Set());
 
     const isStepOptional = React.useCallback((step) => {
-        return step === 4 || step === 3;
+        return step === 4;
     }, []);
 
     const isStepSkipped = (step) => {
@@ -84,6 +92,28 @@ export default function CreateTrip(props) {
         });
     }, []);
 
+    const [numberOfAdults, changeNumberOfAdults] = React.useState(1)
+    const [numberOfTeens, changeNumberOfTeens] = React.useState(0)
+    const [numberOfChildren, changeNumberOfChildren] = React.useState(0)
+
+    const [arrivalDate, setArrivalDate] = React.useState(dayjs());
+    const [depatureDate, setDepatureDate] = React.useState(dayjs().add(1, "day"));
+
+    const [types, setTypes] = React.useState([])
+    const [selectedTypes, setSelectedTypes] = React.useState([])
+
+    const loadTypes = async () => {
+        try {
+            setTypes(await getTypes())
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    React.useEffect(() => {
+        loadTypes();
+    }, [])
+
     return (
         <Dialog
             onClose={handleClose}
@@ -98,6 +128,7 @@ export default function CreateTrip(props) {
                     overflow: 'hidden',
                 },
             }}
+
         >
             <DialogTitle sx={{ flexShrink: 0 }}>
                 New Trip
@@ -111,6 +142,7 @@ export default function CreateTrip(props) {
                     display: 'flex',
                     flexDirection: 'column',
                 }}
+
             >
                 {/* Stepper - always visible */}
                 <Box sx={{ flexShrink: 0 }}>
@@ -176,17 +208,47 @@ export default function CreateTrip(props) {
                             }}
                         >
                             {activeStep === 0 ? (
-                                <CT_One
+                                <CT_City
                                     selectedCity={selectedCity}
-                                    setSelectedCity={setSelectedCity} 
+                                    setSelectedCity={setSelectedCity}
                                     cities={cities}
                                 />
                             ) : activeStep === 1 ? (
-                                <CT_Two />
+                                <CT_Travellers
+                                    numberOfAdults={numberOfAdults}
+                                    changeNumberOfAdults={changeNumberOfAdults}
+                                    numberOfTeens={numberOfTeens}
+                                    changeNumberOfTeens={changeNumberOfTeens}
+                                    numberOfChildren={numberOfChildren}
+                                    changeNumberOfChildren={changeNumberOfChildren}
+                                />
                             ) : activeStep === 2 ? (
-                                <CT_Three city={cities[selectedCity]?.name}/>
+                                <CT_Dates 
+                                city={cities[selectedCity]?.name} 
+                                arrivalDate={arrivalDate}
+                                setArrivalDate={setArrivalDate}
+                                depatureDate={depatureDate}
+                                setDepatureDate={setDepatureDate}
+                                />
+                            ) : activeStep === 3 ? (
+                                <CT_Type
+                                    types={types}
+                                    selectedTypes={selectedTypes}
+                                    setSelectedTypes={setSelectedTypes}
+                                />
+                            ) : activeStep === 4 ? (
+                                <CT_Activites />
                             ) : (
-                                <CT_Four />
+                                <CT_Finalise
+                                    city={cities[selectedCity]}
+                                    numberOfAdults={numberOfAdults}
+                                    numberOfTeens={numberOfTeens}
+                                    numberOfChildren={numberOfChildren}
+                                    arrivalDate={arrivalDate}
+                                    depatureDate={depatureDate}
+                                    selectedTypes={selectedTypes}
+                                    types={types}
+                                />
                             )}
                         </Box>
 

@@ -9,11 +9,12 @@ import Admin from "./Pages/Admin";
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/de'
 
 function App() {
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
       <BrowserRouter>
         <Routes>
           <Route element={<MainLayout></MainLayout>}>

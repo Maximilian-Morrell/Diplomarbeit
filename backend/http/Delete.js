@@ -1,6 +1,6 @@
 import express from "express";
 import { AuthMiddleware } from '../middleware/authMiddleware.js';
-import { DeleteCity, DeleteCountry, DeleteRegion, DeleteTag } from "../db/dbServer.js";
+import { DeleteCity, DeleteCountry, DeleteRegion, DeleteType } from "../db/dbServer.js";
 
 const router = express.Router();
 
@@ -43,16 +43,16 @@ router.delete("/region", AuthMiddleware, async (req, res) => {
     }
 })
 
-router.delete("/tag", AuthMiddleware, async (req, res) => {
+router.delete("/type", AuthMiddleware, async (req, res) => {
     try {
         const { id } = req.body;
 
-        const result = await DeleteTag(id);
+        const result = await DeleteType(id);
         res.status(200).json({ result: result })
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Failed to delete region' });
+        res.status(500).json({ message: 'Failed to delete type' });
     }
 })
 

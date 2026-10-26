@@ -29,7 +29,7 @@ export async function CheckDB() {
 
 
         await con.query(`
-            CREATE TABLE IF NOT EXISTS tags (
+            CREATE TABLE IF NOT EXISTS types (
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name varchar(255) NOT NULL UNIQUE,
             description varchar(255))`)
@@ -511,12 +511,11 @@ export async function LogIn(email, password) {
     }
 }
 
-export async function AddCity(name, type, region, description, permission, tags) {
+export async function AddCity(name, type, region, description, permission) {
     var conn;
     try {
         conn = await pool.getConnection();
         const result = await conn.query(`INSERT INTO cities (name, type, description, region_id, permission_id) VALUES (?, ?, ?, ?, ?)`, [name, type, description, region, permission]);
-        await ModifyTagsForCity(result.insertId, tags);
         const cities = await GetCities();
         conn.release()
         return cities;
@@ -634,13 +633,13 @@ export async function GetRegions(countCities) {
     return null;
 }
 
-export async function GetTags() {
+export async function GetTypes() {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const rows = await conn.query('SELECT * FROM tags');
+        const rows = await conn.query('SELECT * FROM types');
 
         conn.release();
         return rows;
@@ -653,13 +652,13 @@ export async function GetTags() {
     return null;
 }
 
-export async function GetTagsByID(id) {
+export async function GetTypesByID(id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const rows = await conn.query('SELECT * FROM tags WHERE id = ?', [id]);
+        const rows = await conn.query('SELECT * FROM types WHERE id = ?', [id]);
 
         conn.release();
         return rows[0];
@@ -751,17 +750,17 @@ export async function DeleteRegion(id) {
 }
 
 
-export async function AddTag(name, description) {
+export async function AddType(name, description) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`INSERT INTO tags (name, description) VALUES (?, ?)`, [name, description]);
-        const Tags = await GetTags();
+        const result = await conn.query(`INSERT INTO types (name, description) VALUES (?, ?)`, [name, description]);
+        const Types = await GetTypes();
 
         conn.release();
-        return Tags;
+        return Types;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
@@ -771,17 +770,17 @@ export async function AddTag(name, description) {
     return null;
 }
 
-export async function UpdateTag(name, description, id) {
+export async function UpdateType(name, description, id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const rows = await conn.query(`UPDATE tags SET name  = ?, description = ? WHERE id = ?`, [name, description, id]);
-        const Tags = await GetTags();
+        const rows = await conn.query(`UPDATE types SET name  = ?, description = ? WHERE id = ?`, [name, description, id]);
+        const Types = await GetTypes();
 
         conn.release();
-        return Tags;
+        return Types;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();
@@ -791,17 +790,17 @@ export async function UpdateTag(name, description, id) {
     return null;
 }
 
-export async function DeleteTag(id) {
+export async function DeleteType(id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const rows = await conn.query(`DELETE FROM tags WHERE id = ?`, [id]);
-        const Tags = await GetTags();
+        const rows = await conn.query(`DELETE FROM types WHERE id = ?`, [id]);
+        const Types = await GetTypes();
 
         conn.release();
-        return Tags;
+        return Types;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();

@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import NumberSpinner from "../../../Components/UI/NumberSpinner";
+import NumberSpinner from "../NumberSpinner";
 import { Avatar, Button, Paper } from "@mui/material";
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import EscalatorWarningRoundedIcon from '@mui/icons-material/EscalatorWarningRounded';
@@ -9,8 +9,7 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import React from "react";
 import { blue, green } from "@mui/material/colors";
 
-export default function CT_Two() {
-    const [numberOfAdults, changeNumberOfAdults] = React.useState(1)
+export default function CT_Travellers({numberOfAdults, changeNumberOfAdults, numberOfTeens, changeNumberOfTeens, numberOfChildren, changeNumberOfChildren}) {
 
     function increaseAdults() {
         changeNumberOfAdults(prev => prev + 1);
@@ -20,7 +19,6 @@ export default function CT_Two() {
         changeNumberOfAdults(prev => Math.max(1, prev - 1));
     }
 
-    const [numberOfTeens, changeNumberOfTeens] = React.useState(0)
 
     function increaseTeens() {
         changeNumberOfTeens(prev => prev + 1);
@@ -29,8 +27,6 @@ export default function CT_Two() {
     function decreaseTeens() {
         changeNumberOfTeens(prev => Math.max(0, prev - 1));
     }
-
-    const [numberOfChildren, changeNumberOfChildren] = React.useState(0)
 
     function increaseChildren() {
         changeNumberOfChildren(prev => prev + 1);

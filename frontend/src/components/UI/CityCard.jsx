@@ -15,7 +15,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export default function CityCard({ city, onClick, selected, isMini = false }) {
 
-    var custom_height = 550;
+    var custom_height = 610;
     if(isMini) {
         custom_height = "auto"
     }
@@ -44,7 +44,7 @@ export default function CityCard({ city, onClick, selected, isMini = false }) {
                 }}
             >
                 <CardMedia
-                    sx={{ height: 170, flexShrink: 0 }}
+                    sx={{ height: 200, flexShrink: 0 }}
                     image="/image/Kitz.jpg"
                     title="Kitz">
 
@@ -52,6 +52,7 @@ export default function CityCard({ city, onClick, selected, isMini = false }) {
                 <CardContent sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, width: "100%", boxSizing: "border-box" }}>
                     <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>{city.type || "Village/Town/City/Capital City"}</Typography>
                     <Typography variant='h4' component="div" sx={{
+                        fontWeight: "bold",
                         fontSize: city.name?.length > 25
                             ? '1.25rem'
                             : city.name?.length > 18

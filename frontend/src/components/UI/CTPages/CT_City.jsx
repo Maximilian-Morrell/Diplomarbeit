@@ -3,12 +3,12 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import MultiSelect from "../MultiSelect";
 import * as React from 'react'
-import CityCard from "../../../Components/UI/CityCard"
+import CityCard from "../CityCard"
 import CardActionArea from "@mui/material/CardActionArea";
 import { FormControl, Input, Paper, TextField } from "@mui/material";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
-export default function CT_One({ selectedCity, setSelectedCity, cities }) {
+export default function CT_City({ selectedCity, setSelectedCity, cities }) {
 
 
     return (
