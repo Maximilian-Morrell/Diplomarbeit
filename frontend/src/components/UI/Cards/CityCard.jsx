@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import CardActionArea from '@mui/material/CardActionArea';
-import { useAuth } from '../../AuthContext';
+import { useAuth } from '../../../AuthContext';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export default function CityCard({ city, onClick, selected, isMini = false }) {
@@ -45,7 +45,7 @@ export default function CityCard({ city, onClick, selected, isMini = false }) {
             >
                 <CardMedia
                     sx={{ height: 200, flexShrink: 0 }}
-                    image="/image/Kitz.jpg"
+                    image={"/api/" + city.picture_url}
                     title="Kitz">
 
                 </CardMedia>

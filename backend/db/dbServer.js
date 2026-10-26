@@ -50,6 +50,7 @@ export async function CheckDB() {
             name VARCHAR(255) NOT NULL,
             type VARCHAR(25) NOT NULL,
             description text, 
+            picture_url VARCHAR(255),
             region_id INT NOT NULL,
             permission_id INT NOT NULL,
             
@@ -78,8 +79,12 @@ export async function CheckDB() {
 
         console.log("Table users is ready!")
 
-
-
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS interests (
+            id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            description VARCHAR(255) NOT NULL
+            )`)
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS user_permissions (
@@ -516,9 +521,8 @@ export async function AddCity(name, type, region, description, permission) {
     try {
         conn = await pool.getConnection();
         const result = await conn.query(`INSERT INTO cities (name, type, description, region_id, permission_id) VALUES (?, ?, ?, ?, ?)`, [name, type, description, region, permission]);
-        const cities = await GetCities();
         conn.release()
-        return cities;
+        return Number(result.insertId);
     } catch (err) {
         console.error(err);
         if (conn) conn.release();
@@ -821,6 +825,140 @@ export async function GetRegion(id) {
 
         conn.release();
         return regions[0];
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function hasCityImage(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const picture_url = await conn.query(`SELECT picture_url FROM cities WHERE id = ?`, [id]);
+
+        conn.release();
+        return picture_url[0];
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+
+export async function UpdateCityImage(id, url) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const regions = await conn.query(`UPDATE cities SET picture_url = ? WHERE id = ?`, [url, id]);
+
+        conn.release();
+        return regions[0];
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function AddInterest(name, description) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`INSERT INTO interests (name, description) VALUES (?, ?)`, [name, description]);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function UpdateInterest(id, name, description) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`UPDATE interests SET name = ?, description = ? WHERE id = ?`, [name, description, id]);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function DeleteInterest(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`DELETE FROM interests WHERE id = ?`, [id]);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetInterests() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM interests`);
+        console.log(result)
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetInterest(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM interests WHERE id = ?`, [id]);
+
+        conn.release();
+        return result;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();

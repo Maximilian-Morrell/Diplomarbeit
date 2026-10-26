@@ -14,7 +14,7 @@ import CT_Two from "./CTPages/CT_Travellers";
 import CT_One from "./CTPages/CT_City";
 import CT_Three from "./CTPages/CT_Dates";
 import CT_Four from "./CTPages/CT_Types";
-import { getCities, getTypes } from "../../API/ApiClient";
+import { getCities, getIntersts, getTypes } from "../../API/ApiClient";
 import CT_City from "./CTPages/CT_City";
 import CT_Travellers from "./CTPages/CT_Travellers";
 import CT_Dates from "./CTPages/CT_Dates";
@@ -102,6 +102,17 @@ export default function CreateTrip(props) {
     const [types, setTypes] = React.useState([])
     const [selectedTypes, setSelectedTypes] = React.useState([])
 
+    const [activites, setActivities] = React.useState([]);
+    const [selectedActivites, setSelectedActivites] = React.useState([])
+
+    const loadActivites = async () => {
+        try {
+            setActivities(await getIntersts())
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const loadTypes = async () => {
         try {
             setTypes(await getTypes())
@@ -112,6 +123,7 @@ export default function CreateTrip(props) {
 
     React.useEffect(() => {
         loadTypes();
+        loadActivites();
     }, [])
 
     return (
@@ -237,7 +249,11 @@ export default function CreateTrip(props) {
                                     setSelectedTypes={setSelectedTypes}
                                 />
                             ) : activeStep === 4 ? (
-                                <CT_Activites />
+                                <CT_Activites 
+                                    activities={activites}
+                                    selectedActivites={selectedActivites}
+                                    setSelectedInterests={setSelectedActivites}
+                                />
                             ) : (
                                 <CT_Finalise
                                     city={cities[selectedCity]}
@@ -248,6 +264,8 @@ export default function CreateTrip(props) {
                                     depatureDate={depatureDate}
                                     selectedTypes={selectedTypes}
                                     types={types}
+                                    activities={activites}
+                                    selectedActivites={selectedActivites}
                                 />
                             )}
                         </Box>

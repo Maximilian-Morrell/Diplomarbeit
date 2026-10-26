@@ -15,6 +15,8 @@ services:
       context: ./backend
     image: diplomarbeit-backend:latest
     restart: unless-stopped
+    volumes:
+      - uploads_data:/app/uploads
     environment:
       BACKEND_PORT: 3000
       DB_HOST: database
@@ -28,6 +30,7 @@ services:
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       FRONTEND_URL: ${FRONTEND_URL}
+      UPLOAD_DIR: /app/uploads
     depends_on:
       - database
 
@@ -53,5 +56,7 @@ services:
     depends_on:
       - backend
 
+volumes:
+  uploads_data:
 # Docker Command:
 # docker compose --env-file .env.docker  up --build

@@ -8,23 +8,28 @@ import GetRouter from './http/Get.js'
 import PostRouter from './http/Post.js'
 import PutRouter from './http/PUT.js'
 import DeleteRouter from "./http/Delete.js"
+import FilesRouter from "./http/File.js"
 import crypto from 'crypto'
 import { EMailVerificationSuccessful } from "./mail/mailserver.js";
 
 // Setup
 const app = express();
 const port = process.env.BACKEND_PORT || 3000;
-app.use(express.json());
+app.use((req, res, next) => {
+    if(req.originalUrl.startsWith("/files")) {
+        return next();
+    }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+    express.json({limit: "10gb"})(req, res, next);
+})
 
 
-app.use("/image", express.static("./public/images"))
+app.use('/uploads', express.static("./uploads"))
 app.use('/get', GetRouter)
 app.use('/post', PostRouter)
 app.use("/put", PutRouter)
 app.use("/delete", DeleteRouter)
+app.use("/files", FilesRouter)
 
 app.use('/verify-email', async (req, res) => {
     console.log("Verification process beginning")

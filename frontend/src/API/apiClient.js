@@ -214,9 +214,9 @@ export async function ResendVerificationLink() {
     }
 }
 
-export async function AddNewCity(name, type, region, description, permission) {
+export async function AddNewCity(name, type, region, description, permission, file) {
     try {
-        const cities = await fetch('/api/post/city', {
+        const cityResult = await fetch('/api/post/city', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -227,8 +227,13 @@ export async function AddNewCity(name, type, region, description, permission) {
                 name, type, region, description, permission
             }),
         });
-        console.log(cities)
-        return cities;
+        const result = await cityResult.json();
+
+        if(file != null) {
+            const uploadResult = await uploadFile("city", result.city, file)
+        }
+
+        return result;
     } catch (err) {
         console.error(err);
         throw err;
@@ -245,7 +250,7 @@ export async function UpdateCity(id, name, type, region, description, permission
             },
             credentials: "include",
             body: JSON.stringify({
-                id, name, type, region, description, permission 
+                id, name, type, region, description, permission
             }),
         });
         console.log(cities)
@@ -460,6 +465,107 @@ export async function DeleteType(id) {
         });
         console.log(tags)
         return tags;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function uploadFile(resourceType, resourceId, file) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const fileType = "." + file.type.substring(file.type.lastIndexOf("/") + 1);
+    console.log(fileType)
+
+
+    return await fetch(`/api/files/post/${resourceType}?id=${resourceId}&fileType=${fileType}`, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        credentials: "include",
+        body: file
+    });
+}
+
+export async function AddNewInterest(name, description) {
+    try {
+        const tags = await fetch('/api/post/interest', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name, description,
+            }),
+        });
+        console.log(tags)
+        return tags;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function UpdateInterest(name, description, id) {
+    try {
+        const tags = await fetch('/api/put/interest', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name, description, id
+            }),
+        });
+        console.log(tags)
+        return tags;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function DeleteInterest(id) {
+    try {
+        const tags = await fetch('/api/delete/interest', {
+            method: "delete",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                id
+            }),
+        });
+        console.log(tags)
+        return tags;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function getIntersts() {
+    try {
+        const interests = await fetch('/api/get/interests', {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include"
+        });
+        const interestData = await interests.json();
+        console.log(interestData)
+        return interestData;
     } catch (err) {
         console.error(err);
         throw err;

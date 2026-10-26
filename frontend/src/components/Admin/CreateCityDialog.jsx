@@ -1,6 +1,7 @@
 import { Box, Button, Chip, Dialog, DialogTitle, Divider, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
 import * as React from "react";
-import { AddNewCity, getCountries, getPermissions, UpdateCity } from "../../API/ApiClient";
+import { AddNewCity, getCountries, getPermissions, UpdateCity, uploadFile } from "../../API/ApiClient";
+import BackupRoundedIcon from '@mui/icons-material/BackupRounded';
 
 export default function CreateCityDialog(props) {
     const { onClose, onCityCreated, open, city } = props;
@@ -9,7 +10,7 @@ export default function CreateCityDialog(props) {
         onClose();
     };
 
-    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: ""});
+    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: "" });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -39,7 +40,7 @@ export default function CreateCityDialog(props) {
 
     React.useEffect(() => {
         if (city != null) {
-            setFormData({ name: city.name, country: city.country_id, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id})
+            setFormData({ name: city.name, country: city.country_id, type: city.type, region: city.region_id, description: city.description, country: city.country_id, permission: city.permission_id })
         }
     }, [city])
 
@@ -51,15 +52,18 @@ export default function CreateCityDialog(props) {
 
             if (city) {
                 const cities = await UpdateCity(city.id, formData.name, formData.type, formData.region, formData.description, formData.permission);
+                
+                if(selectedFile != null) {
+                    uploadFile("city", city.id, selectedFile)
+                }
                 console.log(cities)
                 if (!cities) return;
             }
             else {
-                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.permission);
+                const cities = await AddNewCity(formData.name, formData.type, formData.region, formData.description, formData.permission, selectedFile);
                 console.log(cities)
                 if (!cities) return;
             }
-
 
             await onCityCreated();
             setFormData({ name: "", type: "", region: "", description: "", country: "", permission: "" })
@@ -67,6 +71,15 @@ export default function CreateCityDialog(props) {
             console.error("Failed to create city:", error);
         }
     };
+
+    const [selectedFile, setSelectedFile] = React.useState(null);
+    const uploadRef = React.useRef(null);
+    function handlePictureUploadBtn(event) {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+
+        if(!file) return;
+    }
 
     return (
         <Dialog
@@ -103,7 +116,17 @@ export default function CreateCityDialog(props) {
                 <TextField name="permission" value={formData.permission} onChange={handleChange} label="Permission" select>{permissions.map((permission) => (
                     <MenuItem key={permission.id} value={permission.id}>{permission.name}</MenuItem>
                 ))}</TextField>
-                
+                <>
+                    <input
+                        ref={uploadRef}
+                        type="file"
+                        hidden
+                        accept="image/jpg,image/png/image/webp"
+                        onChange={handlePictureUploadBtn}
+                        />
+                    <Button startIcon={<BackupRoundedIcon></BackupRoundedIcon>} variant="contained" onClick={() => uploadRef.current.click()}>Upload Picture</Button>
+                </>
+
                 <Button onClick={handleSave}>Save</Button>
             </Box>
         </Dialog>

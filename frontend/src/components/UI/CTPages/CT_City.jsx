@@ -3,7 +3,7 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import MultiSelect from "../MultiSelect";
 import * as React from 'react'
-import CityCard from "../CityCard"
+import CityCard from "../Cards/CityCard"
 import CardActionArea from "@mui/material/CardActionArea";
 import { FormControl, Input, Paper, TextField } from "@mui/material";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';

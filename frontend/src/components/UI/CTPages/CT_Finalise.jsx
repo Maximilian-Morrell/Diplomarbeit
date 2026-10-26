@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
-import CityCard from "../CityCard";
+import CityCard from "../Cards/CityCard";
 import { Avatar, Card, Divider, Paper } from "@mui/material";
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { blue, green } from "@mui/material/colors";
@@ -9,13 +9,14 @@ import FlightTakeoffRoundedIcon from '@mui/icons-material/FlightTakeoffRounded';
 import FlightLandRoundedIcon from '@mui/icons-material/FlightLandRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
+import AttractionsRoundedIcon from '@mui/icons-material/AttractionsRounded';
 import dayjs from 'dayjs';
 
 export default function CT_Finalise(props) {
 
-    const { city, numberOfAdults, numberOfTeens, numberOfChildren, depatureDate, arrivalDate, selectedTypes, types } = props;
+    const { city, numberOfAdults, numberOfTeens, numberOfChildren, depatureDate, arrivalDate, selectedTypes, types, selectedActivites, activities } = props;
 
-    console.log(selectedTypes)
+    console.log(activities)
 
     return (
         <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
@@ -82,10 +83,17 @@ export default function CT_Finalise(props) {
                                         <Typography> - {types.find(t => t.id == id).name}</Typography>
                                     ))}
                                 </Box>
-                                <Typography></Typography>
                             </Paper>
-                            <Paper sx={{ flex: 1 }}>
-
+                            <Paper sx={{ flex: 1, display: "flex", flexDirection: "column", p: 1 }}>
+                                <Box sx={{ display: "flex" }}>
+                                    <AttractionsRoundedIcon sx={{ fontSize: 32 }}></AttractionsRoundedIcon>
+                                    <Typography variant="h6" sx={{fontWeight: "bold"}}>Activity types</Typography>
+                                </Box>
+                                <Box sx={{ flex: 1, display: "flex", flexDirection: "column", ml: 2 }}>
+                                    {selectedActivites.map(id => (
+                                        <Typography> - {activities.find(t => t.id == id).name}</Typography>
+                                    ))}
+                                </Box>
                             </Paper>
                         </Box>
 

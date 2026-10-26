@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddCity, AddCountry, AddRegion, AddType, AddUser, LogIn } from '../db/dbServer.js';
+import { AddCity, AddCountry, AddInterest, AddRegion, AddType, AddUser, LogIn } from '../db/dbServer.js';
 import { AuthMiddleware, GenerateToken } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -43,8 +43,8 @@ router.post('/log-in', async (req, res) => {
 router.post("/city", AuthMiddleware, async (req, res) => {
     try {
         const { name, type, region, description, permission } = req.body;
-        const cities = await AddCity(name, type, region, description, permission);
-        res.json({cities: cities});
+        const city = await AddCity(name, type, region, description, permission);
+        res.json({city: city});
     } catch (error) {
         console.error('Error creating city:', error);
         res.status(500).json({ message: 'Failed to create City' });
@@ -83,5 +83,17 @@ router.post("/country", AuthMiddleware, async (req, res) => {
         res.status(500).json({ message: 'Failed to create Country' });
     }
 })
+
+router.post("/interest", AuthMiddleware, async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const countries = await AddInterest(name, description);
+        res.json({countries: true});
+    } catch (error) {
+        console.error('Error creating country', error);
+        res.status(500).json({ message: 'Failed to create Country' });
+    }
+})
+
 
 export default router;

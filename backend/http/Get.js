@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -134,6 +134,23 @@ router.get("/newVerificationLink", AuthMiddleware, async (req, res) => {
         res.status(500).json({
             message: "Failed to send new verification Link"
         });
+    }
+})
+
+router.get("/interests", async (req, res) => {
+    try {
+        const interests = await GetInterests();
+        res.json(interests)
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/interest", async (req, res) => {
+    try {
+        res.json(await GetInterest(req.query.id))
+    } catch (error) {
+        console.error(error)
     }
 })
 

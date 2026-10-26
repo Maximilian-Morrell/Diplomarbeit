@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetUser, UpdateCity, UpdateCountry, UpdateRegion, UpdateUser, UpdateUserPassword, UpdateType } from '../db/dbServer.js';
+import { GetUser, UpdateCity, UpdateCountry, UpdateRegion, UpdateUser, UpdateUserPassword, UpdateType, UpdateInterest } from '../db/dbServer.js';
 import { AuthMiddleware, } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -88,5 +88,17 @@ router.put("/type", AuthMiddleware, async (req, res) => {
         res.status(500).json({ message: 'Failed to update Type' });
     }
 })
+
+router.put("/type", AuthMiddleware, async (req, res) => {
+    try {
+        const { id, description, name } = req.body;
+        const types = await UpdateInterest(name, description, id);
+        res.json({types: types});
+    } catch (error) {
+        console.error('Error updating type:', error);
+        res.status(500).json({ message: 'Failed to update Type' });
+    }
+})
+
 
 export default router;
