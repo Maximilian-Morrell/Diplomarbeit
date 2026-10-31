@@ -1,8 +1,8 @@
 import ProtectedRoute from "./Components/ProtectedRoute";
-import Trips from "./pages/Trips";
+import Trips from "./Pages/Trips";
 import Home from "./Pages/Home"
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Account from "./pages/Account";
+import Account from "./Pages/Account";
 import MainLayout from "./MainLayout";
 import AboutUs from "./Pages/AboutUs";
 import Admin from "./Pages/Admin";
@@ -13,6 +13,7 @@ import 'dayjs/locale/de'
 
 function App() {
 
+  
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
       <BrowserRouter>

@@ -18,6 +18,8 @@
     "jsonwebtoken": "^9.0.3",
     "mariadb": "^3.5.4",
     "nodemailer": "^10.0.16",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "ollama": "^0.6.4",
+    "undici": "^7.30.1"
   }
 }

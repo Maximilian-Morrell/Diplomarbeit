@@ -15,13 +15,9 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export default function CityCard({ city, onClick, selected, isMini = false }) {
 
-    var custom_height = 610;
-    if(isMini) {
-        custom_height = "auto"
-    }
 
     return (
-        <Card sx={{ width: 400, height: custom_height, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
+        <Card sx={{ width: 400, m: 0.1, display: 'flex', flexDirection: "column" }} variant='elevation'>
             <CardActionArea
                 onClick={onClick}
                 sx={{
@@ -67,7 +63,7 @@ export default function CityCard({ city, onClick, selected, isMini = false }) {
                         <Typography sx={{ color: 'text.secondary' }}>{city.country || "Country"} - {city.region || "Region"}  </Typography>
                     </Box>
                     {!isMini ? (
-                        <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 0.5, flex: 1, overflowY: 'scroll' }}>
+                        <Typography variant='body2' sx={{ overflowWrap: "break-word", mt: 0.5, flex: 1, overflowY: 'scroll' }} className="hide-scrollbar">
                             {city.description}
                         </Typography>
                     ) : (

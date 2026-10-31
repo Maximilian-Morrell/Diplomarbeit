@@ -229,7 +229,7 @@ export async function AddNewCity(name, type, region, description, permission, fi
         });
         const result = await cityResult.json();
 
-        if(file != null) {
+        if (file != null) {
             const uploadResult = await uploadFile("city", result.city, file)
         }
 
@@ -571,3 +571,92 @@ export async function getIntersts() {
         throw err;
     }
 }
+
+
+export const generateTrip = async (tripData, onThinking, onResult) => {
+    const response = await fetch(`/api/ai/generate-trip`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // Include your existing authorization header here if required
+        },
+        body: JSON.stringify(tripData),
+    });
+
+    if (!response.ok) {
+        throw new Error(`AI generation failed: ${response.status}`);
+    }
+
+    if (!response.body) {
+        throw new Error("Streaming is not supported by this response.");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let buffer = "";
+    let finalResult = "";
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+
+            buffer += decoder.decode(value || new Uint8Array(), {
+                stream: !done
+            });
+
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+
+                const data = JSON.parse(line);
+
+                switch (data.type) {
+                    case "thinking":
+                        onThinking?.(data.content);
+                        break;
+
+                    case "result":
+                        finalResult = data.content;
+                        break;
+
+                    case "error":
+                        throw new Error(data.content);
+                }
+            }
+
+            if (done) break;
+        }
+
+        // Process any remaining data in the buffer
+        if (buffer.trim()) {
+            const data = JSON.parse(buffer);
+
+            switch (data.type) {
+                case "thinking":
+                    onThinking?.(data.content);
+                    break;
+
+                case "result":
+                    finalResult = data.content;
+                    break;
+
+                case "error":
+                    throw new Error(data.content);
+            }
+        }
+
+        if (!finalResult) {
+            throw new Error("AI did not return a final result.");
+        }
+
+        onResult?.(finalResult);
+
+        return finalResult;
+
+    } finally {
+        reader.releaseLock();
+    }
+};

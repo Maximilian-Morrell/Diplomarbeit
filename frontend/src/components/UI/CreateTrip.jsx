@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import * as React from 'react'
 import PropTypes from 'prop-types';
 import Box from "@mui/material/Box";
-import { flex, maxHeight } from "@mui/system";
+import { decomposeColor, flex, maxHeight, minHeight } from "@mui/system";
 import Button from "@mui/material/Button";
 import CT_Two from "./CTPages/CT_Travellers";
 import CT_One from "./CTPages/CT_City";
@@ -22,9 +22,11 @@ import CT_Type from "./CTPages/CT_Types";
 import CT_Activites from "./CTPages/CT_Activities";
 import CT_Finalise from "./CTPages/CT_Finalise";
 import dayjs from 'dayjs';
+import CT_Remarks from "./CTPages/CT_Remarks";
+import CT_Generate from "./CTPages/CT_Generate";
 
 
-const steps = ['Select a City', "Travellers", "Dates", 'Trip Types', 'Activity Types', "Finalise"]
+const steps = ['Select a City', "Travellers", "Dates", 'Trip Types', 'Activity Types', "Additional Remarks", "Finalise", "Generate Trip"]
 
 export default function CreateTrip(props) {
 
@@ -42,7 +44,7 @@ export default function CreateTrip(props) {
     const [skipped, setSkipped] = React.useState(new Set());
 
     const isStepOptional = React.useCallback((step) => {
-        return step === 4;
+        return step === 5 || step === 4;
     }, []);
 
     const isStepSkipped = (step) => {
@@ -50,6 +52,9 @@ export default function CreateTrip(props) {
     };
 
     const handleNext = () => {
+        if (activeStep === 6) {
+            handleGenerate();
+        }
         let newSkipped = skipped;
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
@@ -58,6 +63,11 @@ export default function CreateTrip(props) {
 
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setSkipped(newSkipped);
+    };
+
+    const handleGenerate = () => {
+        // Your custom logic here
+        console.log("Generate!");
     };
 
     const handleBack = () => {
@@ -105,6 +115,11 @@ export default function CreateTrip(props) {
     const [activites, setActivities] = React.useState([]);
     const [selectedActivites, setSelectedActivites] = React.useState([])
 
+    const [remarks, setRemarks] = React.useState("")
+
+    const [aiThinking, setAiThinking] = React.useState("");
+    const [aiResult, setAiResult] = React.useState(null);
+
     const loadActivites = async () => {
         try {
             setActivities(await getIntersts())
@@ -116,7 +131,7 @@ export default function CreateTrip(props) {
     const loadTypes = async () => {
         try {
             setTypes(await getTypes())
-        } catch(err) {
+        } catch (err) {
             console.error(err);
         }
     }
@@ -138,6 +153,8 @@ export default function CreateTrip(props) {
                     maxHeight: '97vh',
                     margin: 0,
                     overflow: 'hidden',
+                    display: "flex",
+                    flexDirection: "column"
                 },
             }}
 
@@ -187,7 +204,7 @@ export default function CreateTrip(props) {
                 </Box>
 
                 {activeStep === steps.length ? (
-                    <React.Fragment>
+                    <Box>
                         <Typography sx={{ mt: 2, mb: 1 }}>
                             All steps completed - you&apos;re finished
                         </Typography>
@@ -198,10 +215,11 @@ export default function CreateTrip(props) {
                                 Reset
                             </Button>
                         </Box>
-                    </React.Fragment>
+                    </Box>
                 ) : (
-                    <React.Fragment
+                    <Box
                         style={{
+                            flex: 1,
                             minHeight: 0,
                             display: 'flex',
                             flexDirection: 'column',
@@ -210,13 +228,10 @@ export default function CreateTrip(props) {
                         {/* ONLY THIS AREA SCROLLS */}
                         <Box
                             sx={{
-                                ml: 3,
-                                mt: 1,
-                                mr: 3,
-                                p: 1,
                                 flex: 1,
                                 minHeight: 0,
-                                overflowY: 'auto',
+                                overflowY: 'hidden',
+                                display: "flex"
                             }}
                         >
                             {activeStep === 0 ? (
@@ -235,12 +250,12 @@ export default function CreateTrip(props) {
                                     changeNumberOfChildren={changeNumberOfChildren}
                                 />
                             ) : activeStep === 2 ? (
-                                <CT_Dates 
-                                city={cities[selectedCity]?.name} 
-                                arrivalDate={arrivalDate}
-                                setArrivalDate={setArrivalDate}
-                                depatureDate={depatureDate}
-                                setDepatureDate={setDepatureDate}
+                                <CT_Dates
+                                    city={cities[selectedCity]?.name}
+                                    arrivalDate={arrivalDate}
+                                    setArrivalDate={setArrivalDate}
+                                    depatureDate={depatureDate}
+                                    setDepatureDate={setDepatureDate}
                                 />
                             ) : activeStep === 3 ? (
                                 <CT_Type
@@ -249,12 +264,17 @@ export default function CreateTrip(props) {
                                     setSelectedTypes={setSelectedTypes}
                                 />
                             ) : activeStep === 4 ? (
-                                <CT_Activites 
+                                <CT_Activites
                                     activities={activites}
                                     selectedActivites={selectedActivites}
                                     setSelectedInterests={setSelectedActivites}
                                 />
-                            ) : (
+                            ) : activeStep === 5 ? (
+                                <CT_Remarks
+                                    remarks={remarks}
+                                    setRemarks={setRemarks}
+                                />
+                            ) : activeStep === 6 ? (
                                 <CT_Finalise
                                     city={cities[selectedCity]}
                                     numberOfAdults={numberOfAdults}
@@ -266,6 +286,30 @@ export default function CreateTrip(props) {
                                     types={types}
                                     activities={activites}
                                     selectedActivites={selectedActivites}
+                                    remarks={remarks}
+                                />
+
+                            ) : (
+                                <CT_Generate
+                                    tripData={{
+                                        city: cities[selectedCity]?.name,
+                                        numberOfAdults: numberOfAdults,
+                                        numberOfTeens: numberOfTeens,
+                                        numberOfChildren: numberOfChildren,
+                                        arrivalAtDestination: arrivalDate,
+                                        depatureFromDestination: depatureDate,
+                                        types: selectedTypes.map(id => ({
+                                            name: types.find(type => type.id === id)?.name,
+                                            description: types.find(type => type.id === id)?.description
+                                        })),
+                                        interests: selectedActivites.map(id => ({
+                                            name: activites.find(type => type.id === id)?.name,
+                                            description: activites.find(type => type.id === id)?.name
+                                        })),
+                                        remarks: remarks
+                                    }}
+                                    onThinking={setAiThinking}
+                                    onResult={setAiResult}
                                 />
                             )}
                         </Box>
@@ -301,12 +345,14 @@ export default function CreateTrip(props) {
                             )}
 
                             <Button onClick={handleNext}>
-                                {activeStep === steps.length - 1
-                                    ? 'Finish'
-                                    : 'Next'}
+                                {activeStep === 6
+                                    ? 'Generate'
+                                    : activeStep === steps.length
+                                        ? 'Finish'
+                                        : "Next"}
                             </Button>
                         </Box>
-                    </React.Fragment>
+                    </Box>
                 )}
             </Box>
         </Dialog>

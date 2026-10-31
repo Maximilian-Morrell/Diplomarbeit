@@ -37,7 +37,7 @@ export default function CT_Travellers({numberOfAdults, changeNumberOfAdults, num
     }
 
     return (
-        <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
+        <Box sx={{ display: "flex", flex: 1, overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", p: 1 }}>
                 <Box sx={{ display: "flex" }}>
                     <GroupsRoundedIcon sx={{ fontSize: 80 }}></GroupsRoundedIcon>
@@ -74,7 +74,7 @@ export default function CT_Travellers({numberOfAdults, changeNumberOfAdults, num
                         <Avatar sx={{ width: 75, height: 75, bgcolor: green[300] }}>
                             <PersonRoundedIcon sx={{ fontSize: 70 }}></PersonRoundedIcon>
                         </Avatar>
-                        <Typography variant="h6" sx={{ mt: 0.7 }}>Children (0 - 18)</Typography>
+                        <Typography variant="h6" sx={{ mt: 0.7 }}>Children (0 - 12)</Typography>
                         <Typography variant="h3" sx={{ fontWeight: "bold" }}>{numberOfChildren}</Typography>
                         <Box sx={{ display: "flex", gap: 1 }}>
                             <Button disabled={numberOfChildren === 0} onClick={decreaseChildren} variant="contained"><Typography sx={{ fontWeight: "bold" }}>-</Typography></Button>

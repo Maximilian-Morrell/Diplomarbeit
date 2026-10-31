@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
 import React from "react";
 
@@ -13,21 +13,59 @@ export default function CT_Dates(props) {
     const [stay, setStay] = React.useState(1);
 
     function changeArrival(newDate) {
-        setArrivalDate(newDate);
-        if (newDate >= depatureDate) {
-            setDepatureDate(dayjs(newDate).add(1, "day"))
+        if (!newDate) return;
+
+        const updatedDate = newDate
+            .hour(arrivalDate.hour())
+            .minute(arrivalDate.minute());
+
+        setArrivalDate(updatedDate);
+
+        if (!updatedDate.isBefore(depatureDate, "day")) {
+            setDepatureDate(
+                dayjs(depatureDate)
+                    .add(1, "day")
+                    .hour(depatureDate.hour())
+                    .minute(depatureDate.minute())
+            );
         }
 
-        setStay((depatureDate - newDate) / (1000 * 3600 * 24))
+        setStay(dayjs(depatureDate).startOf("day").diff(updatedDate.startOf("day"), "day"));
     }
 
     function changeDepature(newDate) {
-        setDepatureDate(newDate);
-        setStay((newDate - arrivalDate) / (1000 * 3600 * 24))
+        if (!newDate) return;
+
+        const updatedDate = newDate
+            .hour(depatureDate.hour())
+            .minute(depatureDate.minute());
+
+        setDepatureDate(updatedDate);
+        setStay(updatedDate.startOf("day").diff(arrivalDate.startOf("day"), "day"));
+    }
+
+    function changeArrivalTime(newTime) {
+        if (!newTime) return;
+
+        setArrivalDate(
+            arrivalDate
+                .hour(newTime.hour())
+                .minute(newTime.minute())
+        );
+    }
+
+    function changeDepatureTime(newTime) {
+        if (!newTime) return;
+
+        setDepatureDate(
+            depatureDate
+                .hour(newTime.hour())
+                .minute(newTime.minute())
+        );
     }
 
     return (
-        <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
+        <Box sx={{ display: "flex", flex: 1, overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", p: 1 }}>
                 <Box sx={{ display: "flex" }}>
                     <CalendarMonthRoundedIcon sx={{ fontSize: 80 }}></CalendarMonthRoundedIcon>
@@ -39,8 +77,14 @@ export default function CT_Dates(props) {
                 </Box>
                 <Box sx={{ pt: 3, m: 1, width: "99%", alignItems: "flex-start", display: "flex", gap: 2 }}>
 
-                    <DatePicker label="Arrival" sx={{ flex: 1 }} disablePast value={arrivalDate} onChange={changeArrival}></DatePicker>
-                    <DatePicker label="Depature" sx={{ flex: 1 }} disablePast minDate={arrivalDate.add(1, "day")} value={depatureDate} onChange={changeDepature}></DatePicker>
+                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                        <DatePicker label="Arrival Date" sx={{ flex: 1 }} disablePast value={arrivalDate} onChange={changeArrival}></DatePicker>
+                        <TimePicker label="Arrival Time" value={arrivalDate} onChange={changeArrivalTime}></TimePicker>
+                    </Box>
+                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                        <DatePicker label="Depature Date" sx={{ flex: 1 }} disablePast minDate={arrivalDate.add(1, "day")} value={depatureDate} onChange={changeDepature}></DatePicker>
+                        <TimePicker label="Depature Time" value={depatureDate} onChange={changeDepatureTime}></TimePicker>
+                    </Box>
                 </Box>
                 <Typography color="textSecondary" sx={{ textAlign: "end", pr: 2 }}>Current stay: {stay} {stay > 1 ? "Days" : "Day"}</Typography>
             </Box>

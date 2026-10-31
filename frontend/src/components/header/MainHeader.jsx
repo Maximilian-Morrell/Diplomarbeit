@@ -10,6 +10,7 @@ import AuthDialog from '../UI/AuthDialog';
 import { useAuth } from '../../AuthContext';
 import Link from '@mui/material/Link';
 import { Alert, Avatar, Snackbar } from '@mui/material';
+import { blue } from '@mui/material/colors';
 
 export default function MainHeader() {
     const [authOpen, setAuthOpen] = React.useState(false);
@@ -39,7 +40,7 @@ export default function MainHeader() {
 
     return (
         <Box sx={{ margin: '0.5%' }}>
-            <AppBar position="static" sx={{ borderRadius: 0.8 }}>
+            <AppBar position="static" sx={{ borderRadius: 0.8, bgcolor: blue[900]}}>
                 <Toolbar>
                     <Link
                         href="/"

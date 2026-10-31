@@ -32,7 +32,10 @@ services:
       FRONTEND_URL: ${FRONTEND_URL}
       UPLOAD_DIR: /app/uploads
     depends_on:
-      - database
+      database:
+        condition: service_started
+      ollama-init:
+        condition: service_completed_successfully
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -56,7 +59,43 @@ services:
     depends_on:
       - backend
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: diplomarbeit-ollama
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: diplomarbeit-ollama-init
+    restart: "no"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if ollama show qwen3:8b >/dev/null 2>&1; then
+          echo "qwen3 is already downloaded."
+        else
+          echo "qwen3 not found. Downloading..."
+          ollama pull qwen3:8b
+        fi
+        echo "Ollama initialization completed."
+
 volumes:
   uploads_data:
+  ollama_data:
 # Docker Command:
 # docker compose --env-file .env.docker  up --build

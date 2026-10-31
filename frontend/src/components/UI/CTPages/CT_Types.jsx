@@ -15,7 +15,7 @@ export default function CT_Type({ types, selectedTypes, setSelectedTypes }) {
     }
 
     return (
-        <Box sx={{ display: "flex", overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
+        <Box sx={{ display: "flex", flex: 1, overflow: 'auto', flexWrap: 'wrap', gap: 2, boxSizing: 'border-box', padding: 1 }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", p: 1 }}>
                 <Box sx={{ display: "flex" }}>
                     <ChecklistRoundedIcon sx={{ fontSize: 80 }}></ChecklistRoundedIcon>
