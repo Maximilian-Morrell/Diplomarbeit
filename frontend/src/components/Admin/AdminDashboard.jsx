@@ -20,6 +20,7 @@ import CreateTypeDialog from "./CreateTypeDialog";
 import TypeTable from "../UI/Admin/TypeTable";
 import InterestTable from "../UI/Admin/InterestTable";
 import CreateInterestDialog from "./CreateInterstDialog";
+import PlaceTable from "../UI/Admin/PlaceTable";
 
 export default function AdminDashboard() {
     const [value, setValue] = React.useState("0");
@@ -55,7 +56,7 @@ export default function AdminDashboard() {
     };
 
     React.useEffect(() => {
-        loadData().finally(() => etLoading(false));
+        loadData().finally(() => setLoading(false));
 
     }, []);
 
@@ -107,9 +108,10 @@ export default function AdminDashboard() {
                         {hasPermission("PlacesAdmin") && <Tab label="Countries" value="0" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Regions" value="1" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Cities" value="2" />}
-                        {hasPermission("PlacesAdmin") && <Tab label="Types" value="3" />}
-                        {hasPermission("UserAdmin") && <Tab label="Users" value="4" />}
-                        {hasPermission("PlacesAdmin") && <Tab label="Interests" value="5" />}
+                        {hasPermission("PlacesAdmin") && <Tab label="Places" value="3" />}
+                        {hasPermission("PlacesAdmin") && <Tab label="Types" value="4" />}
+                        {hasPermission("UserAdmin") && <Tab label="Users" value="5" />}
+                        {hasPermission("PlacesAdmin") && <Tab label="Interests" value="6" />}
                     </TabList>
                     <Button onClick={handleClickOpen} disabled={!user.emailVerified}>
                         <AddRoundedIcon />
@@ -117,9 +119,10 @@ export default function AdminDashboard() {
                             value === "0" && selectedCountry != null ? "Edit Country" : value === "0" ? "New Country" :
                                 value === "1" && selectedRegion != null ? "Edit Region" : value === "1" ? "New Region" :
                                     value === "2" && selectedCity != null ? "Edit City" : value === "2" ? "New City" :
-                                        value === "3" && selectedType != null ? "Edit Type" : value === "3" ? "New Type" :
-                                            value === "4" && selectedUser != null ? "Edit User" : value === "4" ? "New User" :
-                                                value === "5" && selectedInterest != null ? "Edit Interest" : "New Interest"
+                                        value === "3" && selectedType != null ? "Edit Place" : value === "3" ? "New Place" :
+                                            value === "4" && selectedType != null ? "Edit Type" : value === "4" ? "New Type" :
+                                                value === "5" && selectedUser != null ? "Edit User" : value === "5" ? "New User" :
+                                                    value === "6" && selectedInterest != null ? "Edit Interest" : "New Interest"
                         }</Typography>
                     </Button>
                 </Box>
@@ -134,6 +137,10 @@ export default function AdminDashboard() {
                         <CityTable cities={cities} currentCity={selectedCity} selectCity={setSelectedCity} deleteCity={handleDelete}></CityTable>
                     </TabPanel>
                     <TabPanel value="3" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
+                        <Button>Test</Button>
+                        <PlaceTable places={[]}></PlaceTable>
+                    </TabPanel>
+                    <TabPanel value="4" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <TypeTable types={types} currentType={selectedType} selectType={setSelectedType} deleteType={handleDelete}></TypeTable>
                     </TabPanel>
                     <TabPanel value="4" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>

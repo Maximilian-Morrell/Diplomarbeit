@@ -10,6 +10,7 @@ import PutRouter from './http/PUT.js'
 import DeleteRouter from "./http/DELETE.js"
 import AIRouter from "./http/ai.js"
 import FilesRouter from "./http/File.js"
+import GeoAPIRouter from "./http/geoAPI.js"
 
 import crypto from 'crypto'
 import { EMailVerificationSuccessful } from "./mail/mailserver.js";
@@ -33,6 +34,7 @@ app.use("/put", PutRouter)
 app.use("/delete", DeleteRouter)
 app.use("/files", FilesRouter)
 app.use("/ai", AIRouter)
+app.use("/geo", GeoAPIRouter)
 
 app.use('/verify-email', async (req, res) => {
     console.log("Verification process beginning")
@@ -64,6 +66,7 @@ app.use('/verify-email', async (req, res) => {
         return res.status(500).send("Something went wrong");
     }
 })
+
 
 // Routing
 app.get("/", async (req, res) => {

@@ -86,11 +86,11 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        if ollama show qwen3:8b >/dev/null 2>&1; then
-          echo "qwen3 is already downloaded."
+        if ollama show lfm3 >/dev/null 2>&1; then
+          echo "lfm3 is already downloaded."
         else
           echo "qwen3 not found. Downloading..."
-          ollama pull qwen3:8b
+          ollama pull lfm3
         fi
         echo "Ollama initialization completed."
 

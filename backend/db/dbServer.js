@@ -98,6 +98,88 @@ export async function CheckDB() {
 
 
         console.log("Table permissions is ready!")
+
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS geocategories (
+            id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name VARCHAR(255) NOT NULL UNIQUE,
+            geoapify_category VARCHAR(255) NOT NULL
+            )`)
+
+        console.log("Table GeoCategories is ready!")
+
+        await con.query(`
+            INSERT IGNORE  INTO geocategories (name, geoapify_category)
+            VALUES 
+            ('Antiques shops', 'commercial.antiques'),
+            ('Art shops', 'commercial.art'),
+            ('Book shops', 'commercial.books'),
+            ('Clothing shops', 'commercial.clothing'),
+            ('Gift shops', 'commercial.gift_and_souvenir'),
+            ('Hobby shops', 'commercial.hobby'),
+            ('Markets', 'commercial.markets'),
+            ('Malls', 'commercial.shopping_mall'),
+            ('Supermarket', 'commercial.supermarket'),
+            ('Bars', 'catering.bar'),
+            ('Café', 'catering.cafe'),
+            ('Food courts', 'catering.food_curt'),
+            ('Ice cream shops', 'catering.ice_cream'),
+            ('Pubs', 'catering.pub'),
+            ('Restaurants', 'catering.restaurants'),
+            ('Amusment Arcades', 'entertainment.amusement_arcade'),
+            ('Aquariums', 'entertainment.aquarium'),
+            ('Bowling alleys', 'entertainment.bowling_alley'),
+            ('Cinemas', 'entertainment.cinemas'),
+            ('Galleries', 'entertainment.gallery'),
+            ('Theatres', 'entertainment.theatres'),
+            ('Escape rooms', 'entertainment.escape_game'),
+            ('Miniature golf', 'entertainment.miniature_golf'),
+            ('Museums', 'entertainment.museums'),
+            ('Planetarium', 'entertainment.planetarium'),
+            ('Theme parks', 'entertainment.theme_park'),
+            ('Water parks', 'entertainment.water_park'),
+            ('Zoos', 'entertainment.zoo'),
+            ('Heritage sites', 'heritage'),
+            ('Parks', 'leisure.park'),
+            ('Picnics', 'leisure.picnic'),
+            ('Playgrounds', 'leisure.playground'),
+            ('Spas', 'leisure.spa'),
+            ('Coastal points', 'natural.coastal'),
+            ('Geysers', 'natural.water.geyser'),
+            ('Coral reefs', 'natural.water.reef'),
+            ('Springs', 'natural.water.spring'),
+            ('National park', 'national_park'),
+            ('Tourist attrations', 'tourism.attraction'),
+            ('Tourist sights', 'tourism.sights'),
+            ('Beaches', 'beach'),
+            ('Ski lifts', 'ski.lift'),
+            ('Dive centres', 'sport.dive_centre'),
+            ('Fishing spots', 'sport.fishing'),
+            ('Fitness spots', 'sport.fitness'),
+            ('Golf courses', 'sport.golf_curse'),
+            ('Horse riding places', 'sport.horse_riding'),
+            ('Ice rink', 'sport.ice_rink'),
+            ('Shooting', 'sport.shooting'),
+            ('Skateboarding', 'sport.skateboard'),
+            ('Stadiums', 'sport.stadium'),
+            ('Swimming Pools', 'sport.swimming_pool'),
+            ('Sport tracks', 'sport.track'),
+            ('Memorial sites', 'memorial')
+        `);    
+        
+        await con.query(`
+            CREATE TABLE IF NOT EXISTS places (
+            id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            opening_hours VARCHAR(255),
+            brand VARCHAR(255),
+            website VARCHAR(255),
+            place_id VARCHAR(255) UNIQUE
+            city_id int NOT NULL
+            )`)
+
+        con.release();
     } catch (err) {
         console.log(err)
     }
@@ -950,6 +1032,25 @@ export async function GetInterests() {
 }
 
 export async function GetInterest(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM interests WHERE id = ?`, [id]);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetPlaces() {
     var conn;
 
     try {
