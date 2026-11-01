@@ -176,7 +176,9 @@ export async function CheckDB() {
             brand VARCHAR(255),
             website VARCHAR(255),
             place_id VARCHAR(255) UNIQUE
-            city_id int NOT NULL
+            city_id int NOT NULL,
+
+            FOREIGN KEY (city_id) REFERENCES cities(id)
             )`)
 
         con.release();
