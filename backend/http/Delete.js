@@ -79,4 +79,17 @@ router.delete("/interest", AuthMiddleware, async (req, res) => {
     }
 })
 
+router.delete("/place", AuthMiddleware, async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const result = await DeletePlace(id);
+        res.status(200).json({ result: result })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to delete place' });
+    }
+})
+
 export default router;

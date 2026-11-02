@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest, GetPlacesForList, GetGeoCategories } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
@@ -149,6 +149,38 @@ router.get("/interests", async (req, res) => {
 router.get("/interest", async (req, res) => {
     try {
         res.json(await GetInterest(req.query.id))
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/places", async (req, res) => {
+    try {
+        res.json(await GetPlaces())
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/places/list", async (req, res) => {
+    try {
+        res.json(await GetPlacesForList())
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/places", async (req, res) => {
+    try {
+        res.json(await GetPlacesByCity(req.query.city_id))
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/GeoCategories", async (req, res) => {
+    try {
+        res.json(await GetGeoCategories())
     } catch (error) {
         console.error(error)
     }

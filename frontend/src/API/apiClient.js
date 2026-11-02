@@ -572,6 +572,110 @@ export async function getIntersts() {
     }
 }
 
+export async function getPlaces() {
+    try {
+        const places = await fetch('/api/get/places/list', {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include"
+        });
+        const placeData = await places.json();
+        console.log(placeData)
+        return placeData;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function getGeoCategories() {
+    try {
+        const places = await fetch('/api/get/GeoCategories', {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include"
+        });
+        const placeData = await places.json();
+        console.log(placeData)
+        return placeData;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function LoadPlacesFromOpenStreetMap(cityId, categories) {
+    try {
+        const places = await fetch(`/api/Geo/LoadPlaces?cityID=${cityId}`, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                categories
+            })
+        });
+        const placeData = await places.json();
+        console.log(placeData.places)
+        return placeData.places;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function UpdatePlace(cityId, categories) {
+    try {
+        const places = await fetch(`/api/Geo/LoadPlaces?cityID=${cityId}`, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                categories
+            })
+        });
+        const placeData = await places.json();
+        console.log(placeData.places)
+        return placeData.places;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function DeletePlace(cityId, categories) {
+    try {
+        const places = await fetch(`/api/Geo/LoadPlaces?cityID=${cityId}`, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                categories
+            })
+        });
+        const placeData = await places.json();
+        console.log(placeData.places)
+        return placeData.places;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 
 export const generateTrip = async (tripData, onThinking, onResult) => {
     const response = await fetch(`/api/ai/generate-trip`, {

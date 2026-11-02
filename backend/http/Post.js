@@ -95,5 +95,16 @@ router.post("/interest", AuthMiddleware, async (req, res) => {
     }
 })
 
+router.post("/place", AuthMiddleware, async (req, res) => {
+        try {
+        const { name, address, opening_hours, brand, website, place_id, city_id } = req.body;
+        const places = await AddPlace(name, address, opening_hours, brand, website, place_id, city_id);
+        res.json({places: true});
+    } catch (error) {
+        console.error('Error creating place', error);
+        res.status(500).json({ message: 'Failed to create Place' });
+    }
+})
+
 
 export default router;

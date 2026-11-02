@@ -7,7 +7,7 @@ import TabList from "@mui/lab/TabList";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import TabPanel from "@mui/lab/TabPanel";
 import List from "../UI/List";
-import { getCities, getCountries, getIntersts, getRegions, getTypes, getUsers } from "../../API/ApiClient";
+import { getCities, getCountries, getGeoCategories, getIntersts, getPlaces, getRegions, getTypes, getUsers } from "../../API/ApiClient";
 import CreateCityDialog from "./CreateCityDialog";
 import CountryTable from "../UI/Admin/CountryTable";
 import CreateCountryDialog from "./CreateCountryDialog";
@@ -21,6 +21,7 @@ import TypeTable from "../UI/Admin/TypeTable";
 import InterestTable from "../UI/Admin/InterestTable";
 import CreateInterestDialog from "./CreateInterstDialog";
 import PlaceTable from "../UI/Admin/PlaceTable";
+import OSMLoadPlacesDialog from "../UI/Admin/OSMLoadPlacesDialog";
 
 export default function AdminDashboard() {
     const [value, setValue] = React.useState("0");
@@ -30,6 +31,8 @@ export default function AdminDashboard() {
     const [types, setTypes] = React.useState([]);
     const [users, setUsers] = React.useState([]);
     const [interests, setInterests] = React.useState([]);
+    const [places, setPlaces] = React.useState([]);
+    const [geoCategories, setGeoCategories] = React.useState([]);
     const { user, hasPermission } = useAuth();
     const [CityOpen, setCityOpen] = React.useState(false);
     const [CountryOpen, setCountryOpen] = React.useState(false);
@@ -47,6 +50,8 @@ export default function AdminDashboard() {
             setTypes(await getTypes());
             setUsers(await getUsers())
             setInterests(await getIntersts())
+            setPlaces(await getPlaces())
+            setGeoCategories(await getGeoCategories())
             console.log(interests)
             return true;
         } catch (error) {
@@ -137,8 +142,7 @@ export default function AdminDashboard() {
                         <CityTable cities={cities} currentCity={selectedCity} selectCity={setSelectedCity} deleteCity={handleDelete}></CityTable>
                     </TabPanel>
                     <TabPanel value="3" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
-                        <Button>Test</Button>
-                        <PlaceTable places={[]}></PlaceTable>
+                        <PlaceTable city_places={places} geoCategories={geoCategories} setPlaces={setPlaces}></PlaceTable>
                     </TabPanel>
                     <TabPanel value="4" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <TypeTable types={types} currentType={selectedType} selectType={setSelectedType} deleteType={handleDelete}></TypeTable>
@@ -156,6 +160,7 @@ export default function AdminDashboard() {
             <CreateCountryDialog open={CountryOpen} onClose={handleClose} onCountryCreated={handleCreated} country={selectedCountry} />
             <CreateTypeDialog open={TypeOpen} onClose={handleClose} onTypeCreate={handleCreated} type={selectedType} />
             <CreateInterestDialog open={InterestOpen} onClose={handleClose} onInterestCreate={handleCreated} interest={selectedInterest} />
+            
         </Box>
     );
 }

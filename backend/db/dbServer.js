@@ -125,7 +125,7 @@ export async function CheckDB() {
             ('Food courts', 'catering.food_curt'),
             ('Ice cream shops', 'catering.ice_cream'),
             ('Pubs', 'catering.pub'),
-            ('Restaurants', 'catering.restaurants'),
+            ('Restaurants', 'catering.restaurant'),
             ('Amusment Arcades', 'entertainment.amusement_arcade'),
             ('Aquariums', 'entertainment.aquarium'),
             ('Bowling alleys', 'entertainment.bowling_alley'),
@@ -165,8 +165,9 @@ export async function CheckDB() {
             ('Swimming Pools', 'sport.swimming_pool'),
             ('Sport tracks', 'sport.track'),
             ('Memorial sites', 'memorial')
-        `);    
-        
+        `);
+
+
         await con.query(`
             CREATE TABLE IF NOT EXISTS places (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -175,7 +176,7 @@ export async function CheckDB() {
             opening_hours VARCHAR(255),
             brand VARCHAR(255),
             website VARCHAR(255),
-            place_id VARCHAR(255) UNIQUE
+            place_id VARCHAR(255) UNIQUE,
             city_id int NOT NULL,
 
             FOREIGN KEY (city_id) REFERENCES cities(id)
@@ -1052,13 +1053,13 @@ export async function GetInterest(id) {
     return null;
 }
 
-export async function GetPlaces() {
+export async function GetPlacesByCity(city_id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`SELECT * FROM interests WHERE id = ?`, [id]);
+        const result = await conn.query(`SELECT * FROM places WHERE city_id = ?`, [city_id]);
 
         conn.release();
         return result;
@@ -1069,4 +1070,123 @@ export async function GetPlaces() {
     }
 
     return null;
+}
+
+export async function GetPlaces() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM places`);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetPlacesForList() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+        const cities = await GetCities();
+        const places = [];
+        for (const city of cities) {
+            const result = await GetPlacesByCity(city.id);
+            const cityPlace = {
+                city: city.name,
+                city_id: city.id,
+                places: result
+            }
+            places.push(cityPlace)
+        }
+
+        conn.release();
+        return places;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function AddPlace(name = "", address, opening_hours, brand, website, place_id, city_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`INSERT INTO places (name, address, opening_hours, brand, website, place_id, city_id) VALUES (?, ?, ?, ?, ?, ?, ?)`, [name, address, opening_hours, brand, website, place_id, city_id]);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function UpdatePlace(name = "", address, opening_hours, brand, website, place_id, city_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(
+            `UPDATE places SET name = ?, address = ?, opening_hours = ?, brand = ?, website = ?, city_id = ? WHERE place_id = ?`,
+            [name, address, opening_hours, brand, website, city_id, place_id]
+        );
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function DeletePlace(place_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(
+            `DELETE FROM places WHERE place_id = ?`,
+            [place_id]
+        );
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function GetGeoCategories() {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM geocategories`);
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
 }

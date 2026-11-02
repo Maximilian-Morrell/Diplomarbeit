@@ -89,14 +89,25 @@ router.put("/type", AuthMiddleware, async (req, res) => {
     }
 })
 
-router.put("/type", AuthMiddleware, async (req, res) => {
+router.put("/interest", AuthMiddleware, async (req, res) => {
     try {
         const { id, description, name } = req.body;
-        const types = await UpdateInterest(name, description, id);
-        res.json({types: types});
+        const interests = await UpdateInterest(name, description, id);
+        res.json({interests: interests});
     } catch (error) {
-        console.error('Error updating type:', error);
-        res.status(500).json({ message: 'Failed to update Type' });
+        console.error('Error updating interest:', error);
+        res.status(500).json({ message: 'Failed to update Interest' });
+    }
+})
+
+router.put("/place", AuthMiddleware, async (req, res) => {
+    try {
+        const { id, name, address, opening_hours, brand, website } = req.body;
+        const places = await UpdatePlace(name, address, opening_hours, brand, website, id);
+        res.json({places: places});
+    } catch (error) {
+        console.error('Error updating place:', error);
+        res.status(500).json({ message: 'Failed to update Place' });
     }
 })
 
