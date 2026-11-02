@@ -113,7 +113,7 @@ export default function AdminDashboard() {
                         {hasPermission("PlacesAdmin") && <Tab label="Countries" value="0" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Regions" value="1" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Cities" value="2" />}
-                        {hasPermission("PlacesAdmin") && <Tab label="Places" value="3" />}
+                        {hasPermission("PlacesAdmin") && <Tab label="Places (Alpha)" value="3" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Types" value="4" />}
                         {hasPermission("UserAdmin") && <Tab label="Users" value="5" />}
                         {hasPermission("PlacesAdmin") && <Tab label="Interests" value="6" />}
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
                     <TabPanel value="2" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <CityTable cities={cities} currentCity={selectedCity} selectCity={setSelectedCity} deleteCity={handleDelete}></CityTable>
                     </TabPanel>
-                    <TabPanel value="3" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
+                    <TabPanel value="3" tabIndex={0} sx={{ height: "81dvh", overflowY: "auto", boxSizing: "border-box" }}>
                         <PlaceTable city_places={places} geoCategories={geoCategories} setPlaces={setPlaces}></PlaceTable>
                     </TabPanel>
                     <TabPanel value="4" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>

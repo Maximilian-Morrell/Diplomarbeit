@@ -610,7 +610,8 @@ export async function getGeoCategories() {
     }
 }
 
-export async function LoadPlacesFromOpenStreetMap(cityId, categories) {
+export async function LoadPlacesFromOpenStreetMap(cityId, categories, offset) {
+    
     try {
         const places = await fetch(`/api/Geo/LoadPlaces?cityID=${cityId}`, {
             method: "post",
@@ -620,12 +621,13 @@ export async function LoadPlacesFromOpenStreetMap(cityId, categories) {
             },
             credentials: "include",
             body: JSON.stringify({
-                categories
+                categories: categories,
+                offset: offset
             })
         });
         const placeData = await places.json();
         console.log(placeData.places)
-        return placeData.places;
+        return {places: placeData.places, nextOffset: placeData.nextOffset, hasMore: placeData.hasMore};
     } catch (err) {
         console.error(err);
         throw err;

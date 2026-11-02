@@ -117,19 +117,19 @@ export async function CheckDB() {
             ('Clothing shops', 'commercial.clothing'),
             ('Gift shops', 'commercial.gift_and_souvenir'),
             ('Hobby shops', 'commercial.hobby'),
-            ('Markets', 'commercial.markets'),
+            ('Markets', 'commercial.marketplace'),
             ('Malls', 'commercial.shopping_mall'),
             ('Supermarket', 'commercial.supermarket'),
             ('Bars', 'catering.bar'),
             ('Café', 'catering.cafe'),
-            ('Food courts', 'catering.food_curt'),
+            ('Food courts', 'catering.food_court'),
             ('Ice cream shops', 'catering.ice_cream'),
             ('Pubs', 'catering.pub'),
             ('Restaurants', 'catering.restaurant'),
             ('Amusment Arcades', 'entertainment.amusement_arcade'),
             ('Aquariums', 'entertainment.aquarium'),
             ('Bowling alleys', 'entertainment.bowling_alley'),
-            ('Cinemas', 'entertainment.cinemas'),
+            ('Cinemas', 'entertainment.cinema'),
             ('Galleries', 'entertainment.gallery'),
             ('Theatres', 'entertainment.theatres'),
             ('Escape rooms', 'entertainment.escape_game'),
@@ -173,13 +173,16 @@ export async function CheckDB() {
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name VARCHAR(255) NOT NULL,
             address VARCHAR(255) NOT NULL,
+            suburb VARCHAR(255),
             opening_hours VARCHAR(255),
             brand VARCHAR(255),
             website VARCHAR(255),
             place_id VARCHAR(255) UNIQUE,
             city_id int NOT NULL,
+            category_id int NOT NULL,
 
-            FOREIGN KEY (city_id) REFERENCES cities(id)
+            FOREIGN KEY (city_id) REFERENCES cities(id),
+            FOREIGN KEY (category_id) REFERENCES geocategories(id)
             )`)
 
         con.release();
@@ -1060,6 +1063,10 @@ export async function GetPlacesByCity(city_id) {
         conn = await pool.getConnection();
 
         const result = await conn.query(`SELECT * FROM places WHERE city_id = ?`, [city_id]);
+        for (const place of result) {
+            const category = await GetGeoCategoryByID(place.category_id);
+            place.category = category.name;
+        }
 
         conn.release();
         return result;
@@ -1117,13 +1124,13 @@ export async function GetPlacesForList() {
     }
 }
 
-export async function AddPlace(name = "", address, opening_hours, brand, website, place_id, city_id) {
+export async function AddPlace(name = "", address, opening_hours, brand, website, place_id, city_id, suburb, category_id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`INSERT INTO places (name, address, opening_hours, brand, website, place_id, city_id) VALUES (?, ?, ?, ?, ?, ?, ?)`, [name, address, opening_hours, brand, website, place_id, city_id]);
+        const result = await conn.query(`INSERT INTO places (name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id]);
 
         conn.release();
         return result;
@@ -1134,15 +1141,15 @@ export async function AddPlace(name = "", address, opening_hours, brand, website
     }
 }
 
-export async function UpdatePlace(name = "", address, opening_hours, brand, website, place_id, city_id) {
+export async function UpdatePlace(name = "", address, opening_hours, brand, website, place_id, city_id, suburb, category_id) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
         const result = await conn.query(
-            `UPDATE places SET name = ?, address = ?, opening_hours = ?, brand = ?, website = ?, city_id = ? WHERE place_id = ?`,
-            [name, address, opening_hours, brand, website, city_id, place_id]
+            `UPDATE places SET name = ?, address = ?, opening_hours = ?, brand = ?, website = ?, city_id = ?, suburb = ?, category_id = ? WHERE place_id = ?`,
+            [name, address, opening_hours, brand, website, city_id, suburb, category_id, place_id]
         );
 
         conn.release();
@@ -1184,6 +1191,40 @@ export async function GetGeoCategories() {
 
         conn.release();
         return result;
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function GetGeoCategoryByTag(tag) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM geocategories WHERE geoapify_category = ?`, [tag]);
+
+        conn.release();
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        if (conn) conn.release();
+        return null;
+    }
+}
+
+export async function GetGeoCategoryByID(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM geocategories WHERE id = ?`, [id]);
+
+        conn.release();
+        return result[0];
     } catch (err) {
         console.log(err);
         if (conn) conn.release();
