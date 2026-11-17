@@ -766,3 +766,5 @@ export const generateTrip = async (tripData, onThinking, onResult) => {
         reader.releaseLock();
     }
 };
+
+
