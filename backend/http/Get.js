@@ -1,6 +1,9 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest, GetPlacesForList, GetGeoCategories } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest, GetPlacesForList, GetGeoCategories, GetPlacesByCityAndCategory } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
+import path from "path";
+import crypto from "crypto";
+import { mkdirSync, writeFile, writeFileSync } from 'fs';
 
 const router = express.Router();
 
@@ -178,9 +181,41 @@ router.get("/places", async (req, res) => {
     }
 })
 
+router.get("/places/city_cat", async (req, res) => {
+    try {
+        res.json(await GetPlacesByCityAndCategory(req.query.city_id, req.query.category))
+    } catch (error) {
+        console.error(error)
+    }
+})
+
 router.get("/GeoCategories", async (req, res) => {
     try {
         res.json(await GetGeoCategories())
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.get("/Geo/Admin/Map", async (req, res) => {
+    try {
+        const uploadDir = process.env.UPLOAD_DIR || "./uploads";
+        const long = req.query.long;
+        const lat = req.query.lat;
+        const name = req.query.name;
+        const geoapifyReq = await fetch(`https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=400&center=lonlat:${long},${lat}&zoom=12&marker=lonlat:${long},${lat};color:%23ff0000;size:42;text:${name}&apiKey=${process.env.GEOAPIFY_API_KEY}`)
+        
+        const response = await fetch(geoapifyReq.url);
+
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const directory = path.join(uploadDir, "AdminMaps");
+        mkdirSync(directory, {recursive: true});
+        const filename = crypto.randomUUID() + ".jpg"
+        writeFileSync(path.join(directory, filename), buffer)
+        console.log("IMG Generated")
+        res.json({
+            url: `/api/uploads/AdminMaps/${filename}`
+        });
     } catch (error) {
         console.error(error)
     }

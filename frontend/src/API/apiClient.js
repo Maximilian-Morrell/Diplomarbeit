@@ -591,6 +591,25 @@ export async function getPlaces() {
     }
 }
 
+export async function getPlacesByCityAndCategory(city_id, cat_id) {
+    try {
+        const places = await fetch('/api/get/places/city_cat?city_id=' + city_id + "&category=" + cat_id, {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include"
+        });
+        const placeData = await places.json();
+        console.log(placeData)
+        return placeData;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 export async function getGeoCategories() {
     try {
         const places = await fetch('/api/get/GeoCategories', {
@@ -604,6 +623,25 @@ export async function getGeoCategories() {
         const placeData = await places.json();
         console.log(placeData)
         return placeData;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function getPlaceMapForAdmin(place) {
+    try {
+        const places = await fetch(`/api/get/Geo/Admin/Map?long=${place.longitude}&lat=${place.latitude}&name=${place.name}`, {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include"
+        });
+        const placeData = await places.json();
+        console.log(placeData)
+        return placeData.url;
     } catch (err) {
         console.error(err);
         throw err;

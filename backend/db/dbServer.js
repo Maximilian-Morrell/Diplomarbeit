@@ -103,73 +103,85 @@ export async function CheckDB() {
             CREATE TABLE IF NOT EXISTS geocategories (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name VARCHAR(255) NOT NULL UNIQUE,
+            icon VARCHAR(255),
             geoapify_category VARCHAR(255) NOT NULL
             )`)
 
         console.log("Table GeoCategories is ready!")
 
         await con.query(`
-            INSERT IGNORE  INTO geocategories (name, geoapify_category)
-            VALUES 
-            ('Antiques shops', 'commercial.antiques'),
-            ('Art shops', 'commercial.art'),
-            ('Book shops', 'commercial.books'),
-            ('Gift shops', 'commercial.gift_and_souvenir'),
-            ('Hobby shops', 'commercial.hobby'),
-            ('Markets', 'commercial.marketplace'),
-            ('Malls', 'commercial.shopping_mall'),
-            ('Bars', 'catering.bar'),
-            ('Café', 'catering.cafe'),
-            ('Food courts', 'catering.food_court'),
-            ('Ice cream shops', 'catering.ice_cream'),
-            ('Pubs', 'catering.pub'),
-            ('Restaurants', 'catering.restaurant'),
-            ('Amusment Arcades', 'entertainment.amusement_arcade'),
-            ('Aquariums', 'entertainment.aquarium'),
-            ('Bowling alleys', 'entertainment.bowling_alley'),
-            ('Cinemas', 'entertainment.cinema'),
-            ('Galleries', 'entertainment.gallery'),
-            ('Theatres', 'entertainment.theatres'),
-            ('Escape rooms', 'entertainment.escape_game'),
-            ('Miniature golf', 'entertainment.miniature_golf'),
-            ('Museums', 'entertainment.museums'),
-            ('Planetarium', 'entertainment.planetarium'),
-            ('Theme parks', 'entertainment.theme_park'),
-            ('Water parks', 'entertainment.water_park'),
-            ('Zoos', 'entertainment.zoo'),
-            ('Heritage sites', 'heritage'),
-            ('Parks', 'leisure.park'),
-            ('Picnics', 'leisure.picnic'),
-            ('Playgrounds', 'leisure.playground'),
-            ('Spas', 'leisure.spa'),
-            ('Coastal points', 'natural.coastal'),
-            ('Geysers', 'natural.water.geyser'),
-            ('Coral reefs', 'natural.water.reef'),
-            ('Springs', 'natural.water.spring'),
-            ('National park', 'national_park'),
-            ('Tourist attrations', 'tourism.attraction'),
-            ('Tourist sights', 'tourism.sights'),
-            ('Beaches', 'beach'),
-            ('Ski lifts', 'ski.lift'),
-            ('Dive centres', 'sport.dive_centre'),
-            ('Fishing spots', 'sport.fishing'),
-            ('Fitness spots', 'sport.fitness'),
-            ('Golf courses', 'sport.golf_curse'),
-            ('Horse riding places', 'sport.horse_riding'),
-            ('Ice rink', 'sport.ice_rink'),
-            ('Shooting', 'sport.shooting'),
-            ('Skateboarding', 'sport.skateboard'),
-            ('Stadiums', 'sport.stadium'),
-            ('Swimming Pools', 'sport.swimming_pool'),
-            ('Sport tracks', 'sport.track'),
-            ('Memorial sites', 'memorial')
-        `);
+            INSERT IGNORE INTO geocategories (name, icon, geoapify_category)
+            VALUES
+                ('Antiques shops', 'Specialty Shops', 'commercial.antiques'),
+                ('Art shops', 'Art & Design', 'commercial.art'),
+                ('Book shops', 'Books & Literature', 'commercial.books'),
+                ('Gift shops', 'Specialty Shops', 'commercial.gift_and_souvenir'),
+                ('Hobby shops', 'Specialty Shops', 'commercial.hobby'),
+                ('Markets', 'Markets', 'commercial.marketplace'),
+                ('Malls', 'Shopping Centres', 'commercial.shopping_mall'),
+
+                ('Bars', 'Bars & Pubs', 'catering.bar'),
+                ('Café', 'Cafés', 'catering.cafe'),
+                ('Food courts', 'Restaurants & Food Courts', 'catering.food_court'),
+                ('Ice cream shops', 'Ice Cream', 'catering.ice_cream'),
+                ('Pubs', 'Bars & Pubs', 'catering.pub'),
+                ('Restaurants', 'Restaurants & Food Courts', 'catering.restaurant'),
+
+                ('Amusement Arcades', 'Gaming & Entertainment', 'entertainment.amusement_arcade'),
+                ('Aquariums', 'Aquatic Attractions', 'entertainment.aquarium'),
+                ('Bowling alleys', 'Gaming & Entertainment', 'entertainment.bowling_alley'),
+                ('Cinemas', 'Performing Arts & Cinema', 'entertainment.cinema'),
+                ('Galleries', 'Art Galleries', 'entertainment.gallery'),
+                ('Theatres', 'Performing Arts & Cinema', 'entertainment.theatres'),
+                ('Escape rooms', 'Entertainment & Attractions', 'entertainment.escape_game'),
+                ('Miniature golf', 'Golf', 'entertainment.miniature_golf'),
+                ('Museums', 'Museums & Heritage', 'entertainment.museums'),
+                ('Planetarium', 'Museums & Heritage', 'entertainment.planetarium'),
+                ('Theme parks', 'Entertainment & Attractions', 'entertainment.theme_park'),
+                ('Water parks', 'Swimming & Water Parks', 'entertainment.water_park'),
+                ('Zoos', 'Parks & Wildlife', 'entertainment.zoo'),
+
+                ('Heritage sites', 'Museums & Heritage', 'heritage'),
+
+                ('Parks', 'Parks & Wildlife', 'leisure.park'),
+                ('Picnics', 'Outdoor Recreation', 'leisure.picnic'),
+                ('Playgrounds', 'Entertainment & Attractions', 'leisure.playground'),
+                ('Spas', 'Wellness & Fitness', 'leisure.spa'),
+
+                ('Coastal points', 'Coastal Attractions', 'natural.coastal'),
+                ('Geysers', 'Aquatic Attractions', 'natural.water.geyser'),
+                ('Coral reefs', 'Aquatic Attractions', 'natural.water.reef'),
+                ('Springs', 'Aquatic Attractions', 'natural.water.spring'),
+                ('National park', 'Parks & Wildlife', 'national_park'),
+
+                ('Tourist attractions', 'Entertainment & Attractions', 'tourism.attraction'),
+                ('Tourist sights', 'Tours & Outdoor Activities', 'tourism.sights'),
+                ('Beaches', 'Coastal Attractions', 'beach'),
+
+                ('Ski lifts', 'Skiing', 'ski.lift'),
+
+                ('Dive centres', 'Aquatic Attractions', 'sport.dive_centre'),
+                ('Fishing spots', 'Fishing', 'sport.fishing'),
+                ('Fitness spots', 'Wellness & Fitness', 'sport.fitness'),
+                ('Golf courses', 'Golf', 'sport.golf_curse'),
+                ('Horse riding places', 'Tours & Outdoor Activities', 'sport.horse_riding'),
+                ('Ice rink', 'Ice Skating', 'sport.ice_rink'),
+                ('Shooting', 'Entertainment & Attractions', 'sport.shooting'),
+                ('Skateboarding', 'Skateboarding', 'sport.skateboard'),
+                ('Stadiums', 'Sports Facilities', 'sport.stadium'),
+                ('Swimming Pools', 'Swimming & Water Parks', 'sport.swimming_pool'),
+                ('Sport tracks', 'Sports Facilities', 'sport.track'),
+
+                ('Memorial sites', 'Museums & Heritage', 'memorial')
+`);
 
 
         await con.query(`
             CREATE TABLE IF NOT EXISTS places (
             id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name VARCHAR(255) NOT NULL,
+            latitude DECIMAL(10, 8) NOT NULL,
+            longitude DECIMAL(11, 8) NOT NULL,
             address VARCHAR(255) NOT NULL,
             suburb VARCHAR(255),
             opening_hours VARCHAR(255),
@@ -1077,6 +1089,29 @@ export async function GetPlacesByCity(city_id) {
     return null;
 }
 
+export async function GetPlacesByCityAndCategory(city_id, cat_id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const result = await conn.query(`SELECT * FROM places WHERE city_id = ? AND category_id = ?`, [city_id, cat_id]);
+        for (const place of result) {
+            const category = await GetGeoCategoryByID(place.category_id);
+            place.category = category.name;
+        }
+
+        conn.release();
+        return result;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
 export async function GetPlaces() {
     var conn;
 
@@ -1122,13 +1157,13 @@ export async function GetPlacesForList() {
     }
 }
 
-export async function AddPlace(name = "", address, opening_hours, brand, website, place_id, city_id, suburb, category_id) {
+export async function AddPlace(name = "", address, opening_hours, brand, website, place_id, city_id, suburb, category_id, long, lat) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`INSERT INTO places (name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id]);
+        const result = await conn.query(`INSERT INTO places (name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id, longitude, latitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [name, address, opening_hours, brand, website, place_id, city_id, suburb, category_id, long, lat]);
 
         conn.release();
         return result;

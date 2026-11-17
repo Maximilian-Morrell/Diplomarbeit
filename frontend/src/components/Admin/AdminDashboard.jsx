@@ -141,8 +141,8 @@ export default function AdminDashboard() {
                     <TabPanel value="2" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <CityTable cities={cities} currentCity={selectedCity} selectCity={setSelectedCity} deleteCity={handleDelete}></CityTable>
                     </TabPanel>
-                    <TabPanel value="3" tabIndex={0} sx={{ height: "81dvh", overflowY: "auto", boxSizing: "border-box" }}>
-                        <PlaceTable city_places={places} geoCategories={geoCategories} setPlaces={setPlaces}></PlaceTable>
+                    <TabPanel value="3" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
+                        <PlaceTable ></PlaceTable>
                     </TabPanel>
                     <TabPanel value="4" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <TypeTable types={types} currentType={selectedType} selectType={setSelectedType} deleteType={handleDelete}></TypeTable>

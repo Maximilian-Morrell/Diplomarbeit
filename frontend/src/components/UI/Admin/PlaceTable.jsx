@@ -1,5 +1,12 @@
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { getGeoCategories } from "../../../API/ApiClient";
+import { Box, Button, CardMedia, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { getCities, getGeoCategories, getPlaceMapForAdmin, getPlacesByCityAndCategory, LoadPlacesFromOpenStreetMap } from "../../../API/ApiClient";
+import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import { styled, alpha } from '@mui/material/styles';
+import { TreeItemIcon } from '@mui/x-tree-view/TreeItemIcon';
+import { TreeItemDragAndDropOverlay } from '@mui/x-tree-view/TreeItemDragAndDropOverlay';
+import Collapse from '@mui/material/Collapse';
+import { animated, useSpring } from '@react-spring/web';
+
 
 import LocalGroceryStoreRoundedIcon from '@mui/icons-material/LocalGroceryStoreRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
@@ -28,68 +35,443 @@ import SkateboardingRoundedIcon from '@mui/icons-material/SkateboardingRounded';
 import IceSkatingRoundedIcon from '@mui/icons-material/IceSkatingRounded';
 import StadiumRoundedIcon from '@mui/icons-material/StadiumRounded';
 import PoolRoundedIcon from '@mui/icons-material/PoolRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
+import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
+import SportsSoccerRoundedIcon from '@mui/icons-material/SportsSoccerRounded';
+import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded';
+import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
+
+
 import * as React from "react";
+import { TreeItemLabel, TreeItemProvider, useTreeItem, useTreeItemModel } from "@mui/x-tree-view";
+import {
+    TreeItemCheckbox,
+    TreeItemIconContainer
+} from '@mui/x-tree-view/TreeItem';
+import TypeTable from "./TypeTable";
 
-export default function InterestTable(props) {
+function CustomLabel({ icon: Icon, expandable, children, ...other }) {
+    return (
+        <TreeItemLabel
+            {...other}
+            sx={{ display: "flex", alignItems: 'center' }}>
+            {Icon && (
+                <Box
+                    component={Icon}
+                    className="labelIcon"></Box>
+            )}
+            <TreeItemLabel>{children}</TreeItemLabel>
+            {expandable}
+        </TreeItemLabel>
+    )
+}
 
-    const { interests, selectInterest, currentInterest, deleteInterest } = props;
+const CustomCollapse = styled(Collapse)({
+    padding: 0,
+});
 
-    console.log(interests)
-    function SetSelectedType(interest) {
-        if (currentInterest?.id === interest.id) {
-            console.log("Test")
-            selectInterest(null)
-        }
-        else {
-            selectInterest(interest);
-        }
+const AnimatedCollapse = animated(CustomCollapse);
+
+function TransitionComponent(props) {
+    const style = useSpring({
+        to: {
+            opacity: props.in ? 1 : 0,
+            transform: `translate3d(0,${props.in ? 0 : 20}px,0)`,
+        },
+    });
+
+    return <AnimatedCollapse style={style} {...props} />;
+}
+
+const TreeItemContent = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0.5),
+    paddingRight: theme.spacing(1),
+    paddingLeft: `calc(${theme.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`,
+    width: '100%',
+    boxSizing: 'border-box', // prevent width + padding to overflow
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    cursor: 'pointer',
+    WebkitTapHighlightColor: 'transparent',
+    flexDirection: 'row-reverse',
+    borderRadius: theme.spacing(0.7),
+    marginBottom: theme.spacing(0.5),
+    marginTop: theme.spacing(0.5),
+    fontWeight: 500,
+    '&[data-expanded]:not([data-focused], [data-selected]) .labelIcon': {
+        color: theme.palette.primary.dark,
+        ...theme.applyStyles('light', {
+            color: theme.palette.primary.main,
+        }),
+        '&::before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            left: '16px',
+            top: '44px',
+            height: 'calc(100% - 48px)',
+            width: '1.5px',
+            backgroundColor: theme.palette.grey[700],
+            ...theme.applyStyles('light', {
+                backgroundColor: theme.palette.grey[300],
+            }),
+        },
+    },
+    [`&[data-focused], &[data-selected]`]: {
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.primary.contrastText,
+        ...theme.applyStyles('light', {
+            backgroundColor: theme.palette.primary.main,
+        }),
+    },
+    '&:not([data-focused], [data-selected]):hover': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+        color: 'white',
+        ...theme.applyStyles('light', {
+            color: theme.palette.primary.main,
+        }),
+    },
+}));
+
+const TreeItemRoot = styled('li')(({ theme }) => ({
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    outline: 0,
+    color: theme.palette.grey[400],
+    ...theme.applyStyles('light', {
+        color: theme.palette.grey[800],
+    }),
+}));
+
+const getIconFromIconTXT = (iconTXT) => {
+    switch (iconTXT) {
+        case 'City':
+            return LocationCityRoundedIcon;
+        case 'Specialty Shops':
+            return LocalGroceryStoreRoundedIcon;
+        case 'Art & Design':
+            return ColorLensRoundedIcon;
+        case 'Books & Literature':
+            return AutoStoriesRoundedIcon;
+        case 'Markets':
+            return StoreRoundedIcon;
+        case 'Shopping Centres':
+            return LocalMallRoundedIcon;
+        case 'Bars & Pubs':
+            return LocalBarRoundedIcon;
+        case 'Cafés':
+            return LocalCafeRoundedIcon;
+        case 'Restaurants & Food Courts':
+            return RestaurantRoundedIcon;
+        case 'Ice Cream':
+            return IcecreamRoundedIcon;
+        case 'Gaming & Entertainment':
+            return VideogameAssetRoundedIcon;
+        case 'Aquatic Attractions':
+            return WaterRoundedIcon;
+        case 'Entertainment & Attractions':
+            return AttractionsRoundedIcon;
+        case 'Performing Arts & Cinema':
+            return TheatersRoundedIcon;
+        case 'Art Galleries':
+            return ColorLensRoundedIcon;
+        case 'Museums & Heritage':
+            return MuseumRoundedIcon;
+        case 'Golf':
+            return GolfCourseRoundedIcon;
+        case 'Parks & Wildlife':
+            return ParkRoundedIcon;
+        case 'Wellness & Fitness':
+            return SpaRoundedIcon;
+        case 'Coastal Attractions':
+            return BeachAccessRoundedIcon;
+        case 'Outdoor Recreation':
+            return OutdoorGrillRoundedIcon;
+        case 'Tours & Outdoor Activities':
+            return TourRoundedIcon;
+        case 'Skiing':
+            return DownhillSkiingRoundedIcon;
+        case 'Fishing':
+            return PhishingRoundedIcon;
+        case 'Skateboarding':
+            return SkateboardingRoundedIcon;
+        case 'Ice Skating':
+            return IceSkatingRoundedIcon;
+        case 'Sports Facilities':
+            return StadiumRoundedIcon;
+        case 'Swimming & Water Parks':
+            return PoolRoundedIcon;
+        case 'Shopping':
+            return ShoppingBagRoundedIcon;
+        case 'Speciality Shops':
+            return CategoryRoundedIcon;
+        case 'Art & Design':
+            return ColorLensRoundedIcon;
+        case 'Shopping':
+            return ShoppingBagRoundedIcon;
+        case 'Food & Drinks':
+            return RestaurantRoundedIcon;
+        case 'Entertainment':
+            return AttractionsRoundedIcon;
+        case 'Culture & History':
+            return MuseumRoundedIcon;
+        case 'Nature':
+            return ParkRoundedIcon;
+        case 'Sports & Activities':
+            return SportsSoccerRoundedIcon;
+        case 'Wellness':
+            return SpaRoundedIcon;
+        default:
+            return PlaceRoundedIcon;
     }
+}
 
-    async function RemoveType(interest) {
-        await DeleteType(interest.id);
-        console.log(interests)
-        deleteInterest();
+const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
+    const { id, itemId, label, disabled, children, ...other } = props;
+
+    const { getContextProviderProps, getRootProps, getContentProps, getIconContainerProps, getCheckboxProps, getLabelProps, getGroupTransitionProps, getDragAndDropOverlayProps, status } = useTreeItem({ id, itemId, children, label, disabled, rootRef: ref });
+
+    const item = useTreeItemModel(itemId);
+
+    let icon;
+    if (item.icon) {
+        icon = getIconFromIconTXT(item.icon)
     }
-    const [PlaceTypes, setPlaceTypes] = React.useState([]);
-    
-    React.useEffect(async () => {
-        const LoadPlaceTypes = await getGeoCategories();
-        setPlaceTypes(LoadPlaceTypes);
-    }, [])
 
     return (
-        <Box sx={{ flex: 1, minHeight: 0, m: 1, display: 'flex', flexDirection: 'row', gap: 1 }}>
+        <TreeItemProvider {...getContextProviderProps()}>
+            <TreeItemRoot {...getRootProps(other)}>
+                <TreeItemContent {...getContentProps()}>
+                    <TreeItemIconContainer {...getIconContainerProps()}>
+                        <TreeItemIcon status={status} />
+                    </TreeItemIconContainer>
+                    <TreeItemCheckbox {...getCheckboxProps()} />
+                    <CustomLabel
+                        {...getLabelProps({
+                            icon,
+                            expandable: status.expandable && status.expanded,
+                        })}
+                    />
+                    <TreeItemDragAndDropOverlay {...getDragAndDropOverlayProps()} />
+                </TreeItemContent>
+                {children && <TransitionComponent {...getGroupTransitionProps()} />}
+            </TreeItemRoot>
+        </TreeItemProvider>
+    )
+})
+
+const MainCategoryIcons = {
+    Shopping: ShoppingBagRoundedIcon,
+    'Food & Drinks': RestaurantRoundedIcon,
+    Entertainment: AttractionsRoundedIcon,
+    'Culture & History': MuseumRoundedIcon,
+    Nature: ParkRoundedIcon,
+    'Sports & Activities': SportsSoccerRoundedIcon,
+    Wellness: SpaRoundedIcon
+};
+
+export default function PlaceTable() {
+
+
+    const [PlaceTypes, setPlaceTypes] = React.useState([]);
+    const [Cities, setCities] = React.useState([])
+
+    React.useEffect(() => {
+        const LoadData = async () => {
+            try {
+                const LoadCities = await getCities();
+                const LoadPlaceTypes = await getGeoCategories();
+
+                // Prepare and group place types by icon
+                const MainCategories = {
+                    Shopping: [
+                        'Specialty Shops',
+                        'Art & Design',
+                        'Books & Literature',
+                        'Markets',
+                        'Shopping Centres'
+                    ],
+                    'Food & Drinks': [
+                        'Bars & Pubs',
+                        'Cafés',
+                        'Restaurants & Food Courts',
+                        'Ice Cream'
+                    ],
+                    Entertainment: [
+                        'Gaming & Entertainment',
+                        'Performing Arts & Cinema',
+                        'Entertainment & Attractions'
+                    ],
+                    'Culture & History': [
+                        'Art Galleries',
+                        'Museums & Heritage'
+                    ],
+                    Nature: [
+                        'Parks & Wildlife',
+                        'Coastal Attractions',
+                        'Aquatic Attractions'
+                    ],
+                    'Sports & Activities': [
+                        'Golf',
+                        'Outdoor Recreation',
+                        'Tours & Outdoor Activities',
+                        'Skiing',
+                        'Fishing',
+                        'Skateboarding',
+                        'Ice Skating',
+                        'Sports Facilities',
+                        'Swimming & Water Parks'
+                    ],
+                    Wellness: [
+                        'Wellness & Fitness'
+                    ]
+                };
+
+                const GroupedPlaceTypes = Object.entries(MainCategories).map(
+                    ([mainCategory, subcategories]) => {
+
+                        console.log(mainCategory);
+                        console.log('Main category icon:', getIconFromIconTXT(mainCategory));
+
+                        return {
+                            id: `main-${mainCategory}`,
+                            icon: mainCategory,
+                            label: mainCategory,
+                            children: subcategories
+                                .map(subcategory => ({
+                                    id: `group-${subcategory}`,
+                                    label: subcategory,
+                                    icon: subcategory,
+                                    children: LoadPlaceTypes
+                                        .filter(type => type.icon === subcategory)
+                                        .map(type => ({
+                                            ...type,
+                                            originalId: type.id,
+                                            id: `${type.id}`,
+                                            label: type.name
+                                        }))
+                                }))
+                                .filter(group => group.children.length > 0)
+                        };
+                    }
+                ).filter(category => category.children.length > 0);
+
+                // Create city tree items
+                const Cities = LoadCities.map(city => ({
+                    ...city,
+                    originalId: city.id,
+                    icon: "City",
+                    id: `city-${city.id}`,
+                    label: city.name,
+                    children: GroupedPlaceTypes.map(category => ({
+                        ...category,
+                        id: `city-${city.id}-${category.id}`,
+                        children: category.children.map(group => ({
+                            ...group,
+                            id: `city-${city.id}-${group.id}`,
+                            children: group.children.map(type => ({
+                                ...type,
+                                id: `F${city.id},${type.id}`
+                            }))
+                        }))
+                    }))
+                }));
+
+                setPlaceTypes(LoadPlaceTypes);
+                setCities(Cities);
+
+            } catch (error) {
+                console.error("Error loading tree data:", error);
+            }
+        };
+
+        LoadData();
+    }, []);
+
+    const [lastSelectedItem, setLastSelectedItem] = React.useState(null);
+    const [selectedPlace, setSelectedPlace] = React.useState(null);
+    const [places, setPlaces] = React.useState([]);
+    const [mapURL, setMapURL] = React.useState("");
+
+    const handleItemSelectionToggle = async (event, itemId = "", isSelected) => {
+        if (isSelected && itemId.startsWith("F")) {
+            const ids = itemId.substring(1).split(',')
+            setLastSelectedItem(ids);
+
+            try {
+                const test = await getPlacesByCityAndCategory(ids[0], ids[1])
+                setPlaces(test);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        else {
+            setLastSelectedItem(null)
+        }
+    };
+
+    const loadFromOSM = async (event, itemId = "", isSelected) => {
+        const cat = PlaceTypes[lastSelectedItem[1] - 1].geoapify_category;
+        LoadPlacesFromOpenStreetMap(lastSelectedItem[0], cat)
+    };
+
+    async function SetSelectedPlace(place) {
+        setSelectedPlace(place)
+        setMapURL(await getPlaceMapForAdmin(place))
+    }
+
+
+    return (
+        <Box sx={{ flex: 1, minHeight: 0, height: '95%', m: 1, display: 'flex', flexDirection: 'row', gap: 1 }}>
             <Paper elevation={3} sx={{ display: "flex", flex: 0.5, p: 1, minHeight: 0 }}>
-                Test
+                <RichTreeView
+                    items={Cities}
+                    getItemId={(item) => item.id}
+                    slots={{ item: CustomTreeItem }}
+                    sx={{ minHeight: 0, flex: 1, overflowY: 'auto' }}
+                    onItemSelectionToggle={handleItemSelectionToggle}
+                ></RichTreeView>
             </Paper>
-            <Paper elevation={3} sx={{ display: "flex", flex: 1, p: 1, minHeight: 0 }}>
-                Test
+            <Paper elevation={3} sx={{ display: "flex", flexDirection: "column", flex: 1, p: 1, minHeight: 0 }}>
+                <TableContainer component={Paper} sx={{ flex: 1 }}>
+                    <Table sx={{ width: '100%' }}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Brand</TableCell>
+                                <TableCell>Suburb</TableCell>
+                                <TableCell>Address</TableCell>
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            {places.map((place) => (
+                                <TableRow key={place.id} hover onClick={() => SetSelectedPlace(place)} sx={{ cursor: "pointer" }} selected={selectedPlace?.id === place.id}>
+                                    <TableCell>{place.id}</TableCell>
+                                    <TableCell>{place.name}</TableCell>
+                                    <TableCell>{place.brand}</TableCell>
+                                    <TableCell>{place.suburb}</TableCell>
+                                    <TableCell>{place.address}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Button sx={{ display: lastSelectedItem === null ? 'none' : 'inline-flex' }} onClick={loadFromOSM}>Load</Button>
+            </Paper>
+            <Paper sx={{ flex: 0.5, p: 1 }}>
+                <Box sx={{ml: 0.5}}>
+                    <Typography variant="overline" sx={{display: selectedPlace?.brand === null ? 'none' : 'inline-flex'}}>{selectedPlace?.brand}</Typography>
+                    <Typography variant="h5" sx={{fontWeight: "bold"}}>{selectedPlace?.name}</Typography>
+                    <CardMedia component="img" image={mapURL}></CardMedia>
+                </Box>
             </Paper>
         </Box>
 
-        // <TableContainer component={Paper}>
-        //     <Table sx={{ width: '100%' }}>
-        //         <TableHead>
-        //             <TableRow>
-        //                 <TableCell>ID</TableCell>
-        //                 <TableCell>Name</TableCell>
-        //                 <TableCell>Description</TableCell>
-        //                 <TableCell></TableCell>
-        //             </TableRow>
-        //         </TableHead>
 
-        //         <TableBody>
-        //             {interests.map((interest) => (
-        //                 <TableRow key={interest.id} hover onClick={() => SetSelectedType(interest)} sx={{ cursor: "pointer" }} selected={currentInterest?.id === interest.id}>
-        //                     <TableCell>{interest.id}</TableCell>
-        //                     <TableCell>{interest.name}</TableCell>
-        //                     <TableCell>{interest.description}</TableCell>
-        //                     <TableCell sx={{ zIndex: 1 }} align="right"><Button variant="contained" color="error" onClick={() => RemoveType(interest)}>Delete</Button></TableCell>
-
-        //                 </TableRow>
-        //             ))}
-        //         </TableBody>
-        //     </Table>
-        // </TableContainer>
     )
 }

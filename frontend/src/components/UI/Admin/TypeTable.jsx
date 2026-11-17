@@ -3,7 +3,7 @@ import { DeleteType } from "../../../API/ApiClient";
 
 export default function TypeTable(props) {
 
-    const { types, selectType, currentType, deleteType } = props;
+    const { types = [], selectType, currentType, deleteType } = props;
 
     console.log(types)
     function SetSelectedType(type) {

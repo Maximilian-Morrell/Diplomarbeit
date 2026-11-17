@@ -29,7 +29,7 @@ router.post("/LoadPlaces", async (req, res) => {
         const cityGeoDataResult = await cityGeoData.json();
         console.log(cityGeoDataResult);
         for (const place of cityGeoDataResult.features) {
-            const { name, address_line2, opening_hours, website, brand, place_id } = place.properties;
+            const { name, address_line2, opening_hours, website, brand, place_id, lon, lat } = place.properties;
             const suburbFields = [
                 "suburb",
                 "neighbourhood",
@@ -45,7 +45,7 @@ router.post("/LoadPlaces", async (req, res) => {
                 .find(value => value) || "";
 
             const category = await GetGeoCategoryByTag(categories);
-            await AddPlace(name, address_line2, opening_hours, brand, website, place_id, city.id, suburb, category.id);
+            await AddPlace(name, address_line2, opening_hours, brand, website, place_id, city.id, suburb, category.id, lon, lat);
         }
 
         const updatedPlaceList = await GetPlacesForList();
