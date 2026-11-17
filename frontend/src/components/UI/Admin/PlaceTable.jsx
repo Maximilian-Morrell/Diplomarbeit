@@ -41,11 +41,7 @@ export default function PlaceTable(props) {
         { field: "name", headerName: "Name", minWidth: 180, flex: 1 },
         { field: "category", headerName: "Category", minWidth: 180, flex: 1 },
         { field: "suburb", headerName: "Suburb", minWidth: 180, flex: 1 },
-        { field: "address", headerName: "Address", minWidth: 200, flex: 1 },
-        { field: "opening_hours", headerName: "Opening Hours", minWidth: 180, flex: 1 },
-        { field: "brand", headerName: "Brand", minWidth: 130, flex: 1 },
-        { field: "website", headerName: "Website", minWidth: 180, flex: 1 },
-        { field: "place_id", headerName: "Place ID", minWidth: 150, flex: 1 }
+        { field: "address", headerName: "Address", minWidth: 200, flex: 1 }
     ];
 
     function SetSelectedType(place) {
