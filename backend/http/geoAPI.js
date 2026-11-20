@@ -7,29 +7,63 @@ const router = express.Router();
 
 router.post("/LoadPlaces", async (req, res) => {
     try {
-        console.log("Test route hit")
-
         const city = await GetCity(req.query.cityID);
         const region = await GetRegion(city.region_id);
         const country = await GetCountry(region.country_id);
+
         const { categories } = req.body;
-        const offset = Number(req.body.offset) || 0;
+        const offset = Math.max(0, Number(req.body.offset) || 0);
+        const limit = 250;
 
-        const cityID = await fetch(`https://api.geoapify.com/v1/geocode/search?city=${city.name}&country=${country.name}&apiKey=${process.env.GEOAPIFY_API_KEY}`);
-        const cityData = await cityID.json();
-        const cityIDResult = cityData.features[0].properties.place_id;
-        console.log("City ID:", cityIDResult);
+        if (!categories) {
+            return res.status(400).json({
+                message: "Categories are required."
+            });
+        }
 
-        const cityGeoData = await fetch(`https://api.geoapify.com/v2/places?apiKey=${process.env.GEOAPIFY_API_KEY}&categories=${categories}&filter=place:${cityIDResult}&limit=250&offset=${offset}`, {
-            method: "GET",
-            headers: {
-                "User-Agent": "HolidayCityPlanerAdmin/1.0"
-            }
-        })
-        const cityGeoDataResult = await cityGeoData.json();
-        console.log(cityGeoDataResult);
-        for (const place of cityGeoDataResult.features) {
-            const { name, address_line2, opening_hours, website, brand, place_id, lon, lat } = place.properties;
+        // Get Geoapify city ID
+        const cityResponse = await fetch(
+            `https://api.geoapify.com/v1/geocode/search?city=${encodeURIComponent(city.name)}&country=${encodeURIComponent(country.name)}&apiKey=${process.env.GEOAPIFY_API_KEY}`
+        );
+
+        if (!cityResponse.ok) {
+            throw new Error("Failed to retrieve city information from Geoapify.");
+        }
+
+        const cityData = await cityResponse.json();
+        const cityIDResult = cityData.features?.[0]?.properties?.place_id;
+
+        if (!cityIDResult) {
+            throw new Error("Could not find city in Geoapify.");
+        }
+
+        // Fetch places with offset
+        const placesResponse = await fetch(
+            `https://api.geoapify.com/v2/places?apiKey=${process.env.GEOAPIFY_API_KEY}&categories=${encodeURIComponent(categories)}&filter=place:${cityIDResult}&limit=${limit}&offset=${offset}`
+        );
+
+        if (!placesResponse.ok) {
+            throw new Error("Failed to retrieve places from Geoapify.");
+        }
+
+        const placesData = await placesResponse.json();
+        const features = placesData.features || [];
+
+        // Insert places
+        const category = await GetGeoCategoryByTag(categories);
+
+        for (const place of features) {
+            const {
+                name,
+                address_line2,
+                opening_hours,
+                website,
+                brand,
+                place_id,
+                lon,
+                lat
+            } = place.properties;
+
             const suburbFields = [
                 "suburb",
                 "neighbourhood",
@@ -44,26 +78,38 @@ router.post("/LoadPlaces", async (req, res) => {
                 .map(field => place.properties[field])
                 .find(value => value) || "";
 
-            const category = await GetGeoCategoryByTag(categories);
-            await AddPlace(name, address_line2, opening_hours, brand, website, place_id, city.id, suburb, category.id, lon, lat);
+            await AddPlace(
+                name,
+                address_line2,
+                opening_hours,
+                brand,
+                website,
+                place_id,
+                city.id,
+                suburb,
+                category.id,
+                lon,
+                lat
+            );
         }
 
         const updatedPlaceList = await GetPlacesForList();
+
         res.status(200).json({
-            places: updatedPlaceList, 
-            nextOffset: offset + cityGeoDataResult.features.length,
-            hasMore: cityGeoDataResult.features.length === 250
+            places: updatedPlaceList,
+            nextOffset: offset + features.length,
+            hasMore: features.length === limit,
+            loadedCount: features.length
         });
-        console.log("Places loaded successfully:", updatedPlaceList);
-        console.log(cityGeoDataResult);
 
     } catch (err) {
-        console.error(err);
+        console.error("LoadPlaces error:", err);
+
         return res.status(500).json({
             message: "An error occurred while processing the request."
         });
     }
-})
+});
 
 
 

@@ -51,6 +51,8 @@ export async function CheckDB() {
             type VARCHAR(25) NOT NULL,
             description text, 
             picture_url VARCHAR(255),
+            latitude DECIMAL(10, 8) NOT NULL,
+            longitude DECIMAL(11, 8) NOT NULL,
             region_id INT NOT NULL,
             permission_id INT NOT NULL,
             
@@ -614,11 +616,28 @@ export async function LogIn(email, password) {
     }
 }
 
+async function getCityLocation(name, countryName) {
+    const cityGeoData = await fetch(`https://api.geoapify.com/v1/geocode/search?apiKey=${process.env.GEOAPIFY_API_KEY}&city=${name}&country=${countryName}&format=json`, {
+        method: "GET",
+        headers: {
+            "User-Agent": "HolidayCityPlanerAdmin/1.0"
+        }
+    })
+    const data = await cityGeoData.json();
+    const coordinates = [data.results[0].lat, data.results[0].lon]
+    return coordinates;
+}
+
 export async function AddCity(name, type, region, description, permission) {
     var conn;
+
+    const regionO = await GetRegion(region);
+    const country = await GetCountry(regionO.country_id);
+    const coordinates = await getCityLocation(name, country.name)
+
     try {
         conn = await pool.getConnection();
-        const result = await conn.query(`INSERT INTO cities (name, type, description, region_id, permission_id) VALUES (?, ?, ?, ?, ?)`, [name, type, description, region, permission]);
+        const result = await conn.query(`INSERT INTO cities (name, type, description, region_id, permission_id, latitude , longitude) VALUES (?, ?, ?, ?, ?, ?, ?)`, [name, type, description, region, permission, coordinates[0], coordinates[1]]);
         conn.release()
         return Number(result.insertId);
     } catch (err) {

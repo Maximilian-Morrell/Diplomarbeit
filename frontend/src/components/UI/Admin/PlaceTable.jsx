@@ -49,6 +49,7 @@ import {
     TreeItemIconContainer
 } from '@mui/x-tree-view/TreeItem';
 import TypeTable from "./TypeTable";
+import Map from "../../Map";
 
 function CustomLabel({ icon: Icon, expandable, children, ...other }) {
     return (
@@ -278,6 +279,9 @@ export default function PlaceTable() {
 
     const [PlaceTypes, setPlaceTypes] = React.useState([]);
     const [Cities, setCities] = React.useState([])
+    const [places, setPlaces] = React.useState([]);
+    const [currentMarkers, setMarkers] = React.useState([]);
+
 
     React.useEffect(() => {
         const LoadData = async () => {
@@ -364,7 +368,7 @@ export default function PlaceTable() {
                     ...city,
                     originalId: city.id,
                     icon: "City",
-                    id: `city-${city.id}`,
+                    id: `City-${city.id}`,
                     label: city.name,
                     children: GroupedPlaceTypes.map(category => ({
                         ...category,
@@ -389,11 +393,13 @@ export default function PlaceTable() {
         };
 
         LoadData();
-    }, []);
+    }, [places]);
 
     const [lastSelectedItem, setLastSelectedItem] = React.useState(null);
+    const [lastSelectedCity, setLastSelectedCity] = React.useState(null);
+    const [lastCenter, setLastCenter] = React.useState([0.0000, 0.0000]);
     const [selectedPlace, setSelectedPlace] = React.useState(null);
-    const [places, setPlaces] = React.useState([]);
+
     const [mapURL, setMapURL] = React.useState("");
 
     const handleItemSelectionToggle = async (event, itemId = "", isSelected) => {
@@ -404,18 +410,46 @@ export default function PlaceTable() {
             try {
                 const test = await getPlacesByCityAndCategory(ids[0], ids[1])
                 setPlaces(test);
+                ManageMarkers(test)
             } catch (error) {
                 console.error(error);
             }
         }
-        else {
-            setLastSelectedItem(null)
+        else if (isSelected && itemId.startsWith("C")) {
+            const id = itemId.substring(itemId.lastIndexOf("-") + 1);
+            const city = Cities.find(c => c.originalId == id);
+
+            const coordinates = [Number(city.latitude), Number(city.longitude)]
+            setLastCenter(coordinates)
         }
     };
 
     const loadFromOSM = async (event, itemId = "", isSelected) => {
+        const cityId = lastSelectedItem[0];
         const cat = PlaceTypes[lastSelectedItem[1] - 1].geoapify_category;
-        LoadPlacesFromOpenStreetMap(lastSelectedItem[0], cat)
+
+        const storageKey = `osmOffset_${cityId}_${cat}`;
+        const offset = Number(localStorage.getItem(storageKey)) || 0;
+
+        try {
+            const result = await LoadPlacesFromOpenStreetMap(cityId, cat, offset);
+
+            localStorage.setItem(storageKey, result.nextOffset);
+            console.log(result.places[0].places)
+
+            // Automatically update frontend list
+            const placeList = result.places[0].places;
+            const filteredPlaces = placeList.filter(
+                place => place.category_id === Number(lastSelectedItem[1])
+            );
+            setPlaces(filteredPlaces);
+            ManageMarkers(filteredPlaces)
+
+            console.log("Loaded places:", result.places);
+
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     async function SetSelectedPlace(place) {
@@ -423,6 +457,20 @@ export default function PlaceTable() {
         setMapURL(await getPlaceMapForAdmin(place))
     }
 
+    const ManageMarkers = (PlaceList) => {
+        const markers = [];
+        for (var item of PlaceList) {
+            console.log(item)
+            const marker = {
+                id: item.id,
+                name: item.name,
+                lon: item.longitude,
+                lat: item.latitude
+            }
+            markers.push(marker);
+        }
+        setMarkers(markers)
+    }
 
     return (
         <Box sx={{ flex: 1, minHeight: 0, height: '95%', m: 1, display: 'flex', flexDirection: 'row', gap: 1 }}>
@@ -436,38 +484,44 @@ export default function PlaceTable() {
                 ></RichTreeView>
             </Paper>
             <Paper elevation={3} sx={{ display: "flex", flexDirection: "column", flex: 1, p: 1, minHeight: 0 }}>
-                <TableContainer component={Paper} sx={{ flex: 1 }}>
-                    <Table sx={{ width: '100%' }}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Brand</TableCell>
-                                <TableCell>Suburb</TableCell>
-                                <TableCell>Address</TableCell>
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            {places.map((place) => (
-                                <TableRow key={place.id} hover onClick={() => SetSelectedPlace(place)} sx={{ cursor: "pointer" }} selected={selectedPlace?.id === place.id}>
-                                    <TableCell>{place.id}</TableCell>
-                                    <TableCell>{place.name}</TableCell>
-                                    <TableCell>{place.brand}</TableCell>
-                                    <TableCell>{place.suburb}</TableCell>
-                                    <TableCell>{place.address}</TableCell>
+                <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+                    <TableContainer component={Paper} sx={{ flex: 1 }}>
+                        <Table sx={{ width: '100%' }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Brand</TableCell>
+                                    <TableCell>Suburb</TableCell>
+                                    <TableCell>Address</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <Button sx={{ display: lastSelectedItem === null ? 'none' : 'inline-flex' }} onClick={loadFromOSM}>Load</Button>
+                            </TableHead>
+
+                            <TableBody>
+                                {places.map((place) => (
+                                    <TableRow key={place.id} hover onClick={() => SetSelectedPlace(place)} sx={{ cursor: "pointer" }} selected={selectedPlace?.id === place.id}>
+                                        <TableCell>{place.id}</TableCell>
+                                        <TableCell>{place.name}</TableCell>
+                                        <TableCell>{place.brand}</TableCell>
+                                        <TableCell>{place.suburb}</TableCell>
+                                        <TableCell>{place.address}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+                <Button sx={{ display: lastSelectedItem === null ? 'none' : 'inline-flex', m: 1 }} variant="contained" onClick={loadFromOSM}>Load</Button>
             </Paper>
-            <Paper sx={{ flex: 0.5, p: 1 }}>
-                <Box sx={{ml: 0.5}}>
-                    <Typography variant="overline" sx={{display: selectedPlace?.brand === null ? 'none' : 'inline-flex'}}>{selectedPlace?.brand}</Typography>
-                    <Typography variant="h5" sx={{fontWeight: "bold"}}>{selectedPlace?.name}</Typography>
-                    <CardMedia component="img" image={mapURL}></CardMedia>
+            <Paper sx={{ flex: 0.5, p: 1, display: "flex" }}>
+                <Box sx={{ ml: 0.5, display: "flex", flexDirection: "column", flex: 1 }}>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="overline" sx={{ display: selectedPlace?.brand === null ? 'none' : 'inline-flex' }}>{selectedPlace?.brand}</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: "bold" }}>{selectedPlace?.name}</Typography>
+                    </Box>
+                    <Box sx={{ flex: 0.7 }}>
+                        <Map sx={{ flex: 1 }} centerOfMap={lastCenter} markers={currentMarkers}></Map>
+                    </Box>
                 </Box>
             </Paper>
         </Box>
