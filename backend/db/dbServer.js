@@ -13,7 +13,8 @@ export async function CheckDB() {
         await con.query(`
             CREATE TABLE IF NOT EXISTS countries (
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-            name VARCHAR(255) NOT NULL)`);
+            name VARCHAR(255) NOT NULL,
+            geoID VARCHAR(255))`);
 
         console.log("Table countries is ready!")
 
@@ -39,6 +40,7 @@ export async function CheckDB() {
             id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
             name varchar(255) NOT NULL UNIQUE,
             country_id INT NOT NULL,
+            geoID varchar(255),
             
             FOREIGN KEY (country_id)
                 REFERENCES countries(id))`)
@@ -273,6 +275,25 @@ export async function GetCountry(id) {
         conn = await pool.getConnection();
 
         const rows = await conn.query('SELECT * FROM countries WHERE id = ?', [id]);
+
+        conn.release();
+        return rows[0];
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
+export async function GetCountryByGeoID(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query('SELECT * FROM countries WHERE geoID = ?', [id]);
 
         conn.release();
         return rows[0];
@@ -662,11 +683,11 @@ export async function UpdateCity(name, type, region, description, permission, id
     }
 }
 
-export async function AddCountry(name) {
+export async function AddCountry(name, geoID) {
     var conn;
     try {
         conn = await pool.getConnection();
-        const result = await conn.query(`INSERT INTO countries (name) VALUES (?)`, [name]);
+        const result = await conn.query(`INSERT INTO countries (name, geoID) VALUES (?, ?)`, [name, geoID]);
         const countries = await GetCountries();
         conn.release()
         return countries;
@@ -811,16 +832,16 @@ export async function GetRegionsByCountry(countryID) {
     return null;
 }
 
-export async function AddRegion(name, country_id) {
+export async function AddRegion(name, country_id, geoID) {
     var conn;
 
     try {
         conn = await pool.getConnection();
 
-        const result = await conn.query(`INSERT INTO regions (name, country_id) VALUES (?, ?)`, [name, country_id]);
+        const result = await conn.query(`INSERT INTO regions (name, country_id, geoID) VALUES (?, ?, ?)`, [name, country_id, geoID]);
         const Regions = await GetRegions();
         conn.release();
-        return regions;
+        return Regions;
     } catch (err) {
         console.log(err)
         if (conn) conn.release();

@@ -1,6 +1,6 @@
-import { Box, Button, Dialog, DialogTitle, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogTitle, FormControlLabel, Switch, TextField } from "@mui/material";
 import React from "react";
-import { AddNewCountry, UpdateCountry } from "../../API/ApiClient";
+import { AddNewCountry, AutoComplete, UpdateCountry } from "../../API/ApiClient";
 
 export default function CreateCountryDialog(props) {
     const { onClose, onCountryCreated, open, country } = props;
@@ -9,25 +9,45 @@ export default function CreateCountryDialog(props) {
         onClose();
     };
 
-    const [formData, setFormData] = React.useState({ name: "" });
+    const [formData, setFormData] = React.useState({ name: "" , countryGeoID: "", loadStates: true});
+    const [autoCompleteList, setAutoCompleteList] = React.useState([])
+
+    React.useEffect(() => {
+        setAutoCompleteList([])
+    }, [])
 
     React.useEffect(() => {
         if (country != null) {
-            setFormData({ name: country.name })
+            setFormData({ name: country.name, countryGeoID: "" })
         }
     }, [country])
 
 
-    const handleChange = (event) => {
+    const handleChange = (event, newValue) => {
+
         const { name, value } = event.target;
-        setFormData((previous) => ({ ...previous, [name]: value }));
+
+        setFormData((previous) => ({ ...previous, name: typeof newValue === "string" ? newValue : newValue?.name || "", countryGeoID: typeof newValue === "object" ? newValue?.id || "" : "" }));
     };
+
+    const handleKeyDown = async (event) => {
+        const { value } = event.target;
+        if (value != "") {
+            const autocompleteData = await AutoComplete("country", value) || [];
+            setAutoCompleteList(autocompleteData);
+            console.log(autocompleteData);
+        }
+    }
+
+    const handleChangeSwitch = (event) => {
+        setFormData((previous => ({...previous, loadStates: event.target.checked})))
+    }
 
     const handleSave = async () => {
         console.log("saving")
         try {
             if (country === null) {
-                const countries = await AddNewCountry(formData.name);
+                const countries = await AddNewCountry(formData.name, formData.countryGeoID, formData.loadStates);
                 console.log(countries)
                 if (!countries) return;
                 await onCountryCreated();
@@ -36,9 +56,9 @@ export default function CreateCountryDialog(props) {
             else {
                 const countries = await UpdateCountry(formData.name, country.id)
                 console.log(countries);
-                if(!countries) return;
+                if (!countries) return;
                 await onCountryCreated();
-                setFormData({name: ""})
+                setFormData({ name: "" })
             }
 
         } catch (error) {
@@ -66,7 +86,26 @@ export default function CreateCountryDialog(props) {
             </DialogTitle>
 
             <Box sx={{ flex: 1, minHeight: 0, m: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField name="name" value={formData.name} onChange={handleChange} label="Name"></TextField>
+                <Autocomplete
+                    name="name"
+                    value={autoCompleteList?.find(option => option.id === formData.countryGeoID) || null}
+                    onChange={handleChange}
+                    label="Name"
+                    freeSolo
+                    options={autoCompleteList || []}
+                    getOptionLabel={(option) =>
+                        typeof option === "string" ? option : option.name
+                    }
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            onKeyDown={handleKeyDown}
+                            label="Country"
+                        />
+                    )}
+                    />
+                <FormControlLabel control={<Switch defaultChecked onChange={handleChangeSwitch}></Switch>} label="Load Regions"></FormControlLabel>
                 <Button onClick={handleSave}>Save</Button>
             </Box>
         </Dialog>

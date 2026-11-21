@@ -282,7 +282,7 @@ export async function DeleteCity(id) {
     }
 }
 
-export async function AddNewCountry(name) {
+export async function AddNewCountry(name, geoID, loadRegions) {
     try {
         const countries = await fetch('/api/post/country', {
             method: "POST",
@@ -292,7 +292,9 @@ export async function AddNewCountry(name) {
             },
             credentials: "include",
             body: JSON.stringify({
-                name
+                name,
+                geoID,
+                loadStates: loadRegions
             }),
         });
         console.log(countries)
@@ -716,6 +718,14 @@ export async function DeletePlace(cityId, categories) {
     }
 }
 
+export async function AutoComplete(type, searchQuery) {
+    try {
+        const results = await fetch(`/api/Geo/AutoComplete?type=${type}&searchQuery=${searchQuery}`);
+        return await results.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 export const generateTrip = async (tripData, onThinking, onResult) => {
     const response = await fetch(`/api/ai/generate-trip`, {

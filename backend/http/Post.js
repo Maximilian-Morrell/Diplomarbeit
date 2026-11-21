@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddCity, AddCountry, AddInterest, AddRegion, AddType, AddUser, LogIn } from '../db/dbServer.js';
+import { AddCity, AddCountry, AddInterest, AddRegion, AddType, AddUser, GetCountry, GetCountryByGeoID, LogIn } from '../db/dbServer.js';
 import { AuthMiddleware, GenerateToken } from '../middleware/authMiddleware.js'
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
@@ -75,14 +75,35 @@ router.post("/type", AuthMiddleware, async (req, res) => {
 
 router.post("/country", AuthMiddleware, async (req, res) => {
     try {
-        const { name } = req.body;
-        const countries = await AddCountry(name);
+        const { name, geoID, loadStates } = req.body;
+        const countries = await AddCountry(name, geoID);
+        console.log(loadStates)
+        if (loadStates) {
+            LoadRegions(geoID)
+        }
         res.json({countries: countries});
     } catch (error) {
         console.error('Error creating country', error);
         res.status(500).json({ message: 'Failed to create Country' });
     }
 })
+
+async function LoadRegions(geoID) {
+    try {
+        const country = await GetCountryByGeoID(geoID);
+        const data = await fetch(
+            `https://api.geoapify.com/v1/boundaries/consists-of?id=${geoID}&geometry=geometry_10000&apiKey=${process.env.GEOAPIFY_API_KEY}`
+        )
+        const resultData = await data.json();
+        for(var entry of resultData.features) {
+            console.log(entry)
+
+           await AddRegion(entry.properties.name, country.id, geoID);
+        }
+    } catch (err) {
+        console.error(err)
+    }
+}
 
 router.post("/interest", AuthMiddleware, async (req, res) => {
     try {

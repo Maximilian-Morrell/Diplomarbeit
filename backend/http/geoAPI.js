@@ -4,6 +4,27 @@ import { AddPlace, GetCity, GetCountry, GetGeoCategoryByTag, GetPlacesByCity, Ge
 
 const router = express.Router();
 
+router.get('/AutoComplete', async (req, res) => {
+    const searchQuery = req.query.searchQuery;
+    const type = req.query.type;
+
+    const response = await fetch(
+        `https://api.geoapify.com/v1/geocode/autocomplete?text=${searchQuery}&type=${type}&limit=5&format=json&apiKey=${process.env.GEOAPIFY_API_KEY}`
+    )
+
+    const data = await response.json();
+    const results = data.results;
+    const responseData = []
+    for(var result of results) {
+        const resultObject = {
+            name: result.name,
+            id: result.place_id
+        }
+        responseData.push(resultObject);
+    }
+    console.log(responseData);
+    res.json(responseData);
+})
 
 router.post("/LoadPlaces", async (req, res) => {
     try {
