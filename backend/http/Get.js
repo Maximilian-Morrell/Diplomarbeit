@@ -1,5 +1,5 @@
 import express from 'express'
-import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest, GetPlacesForList, GetGeoCategories, GetPlacesByCityAndCategory } from '../db/dbServer.js';
+import { GetCities, GetCountries, GetCountry, GetCity, GetUser, newVerificationEMail, GetPermissions, GetPermission, GetRegions, GetRegionsByCountry, GetUsers, GetRegion, GetTypes, GetTypesByID, GetInterests, GetInterest, GetPlacesForList, GetGeoCategories, GetPlacesByCityAndCategory, GetCitiesByRegion } from '../db/dbServer.js';
 import { AuthMiddleware } from '../middleware/authMiddleware.js'
 import path from "path";
 import crypto from "crypto";
@@ -20,6 +20,15 @@ router.get('/permissions', async (req, res) => {
 
 router.get('/regions', async (req, res) => {
     const regions = await GetRegions(req.query.countCities);
+    for (const region of regions) {
+        const country = await GetCountry(region.country_id);
+        region.country = country.name;
+    }
+    res.json(regions);
+}) 
+
+router.get('/regions/country', async (req, res) => {
+    const regions = await GetRegionsByCountry(req.query.id);
     for (const region of regions) {
         const country = await GetCountry(region.country_id);
         region.country = country.name;
@@ -49,6 +58,24 @@ router.get('/countries', async (req, res) => {
 
 router.get('/cities', async (req, res) => {
     const cities = await GetCities();
+    console.log(cities)
+    for (const city of cities) {
+        const region = await GetRegion(city.region_id);
+        console.log(region)
+        const country = await GetCountry(region.country_id)
+        console.log(region.country_id)
+        const permission = await GetPermission(city.permission_id)
+        city.permission = permission.name;
+        city.region = region.name;
+        city.country = country.name;
+        city.country_id = country.id;
+        console.log(city)
+    }
+    res.json(cities);
+})
+
+router.get('/cities/region', async (req, res) => {
+    const cities = await GetCitiesByRegion(req.query.id);
     console.log(cities)
     for (const city of cities) {
         const region = await GetRegion(city.region_id);

@@ -327,6 +327,25 @@ export async function GetCities() {
     return null;
 }
 
+export async function GetCitiesByRegion(id) {
+    var conn;
+
+    try {
+        conn = await pool.getConnection();
+
+        const rows = await conn.query('SELECT * FROM cities WHERE region_id = ?', [id]);
+
+        conn.release();
+        return rows;
+    } catch (err) {
+        console.log(err)
+        if (conn) conn.release();
+        return null;
+    }
+
+    return null;
+}
+
 export async function GetCity(id) {
     var conn;
 

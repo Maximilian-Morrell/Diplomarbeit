@@ -9,7 +9,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import List from "../UI/List";
 import { getCities, getCountries, getGeoCategories, getIntersts, getPlaces, getRegions, getTypes, getUsers } from "../../API/ApiClient";
 import CreateCityDialog from "./CreateCityDialog";
-import CountryTable from "../UI/Admin/CountryTable";
 import CreateCountryDialog from "./CreateCountryDialog";
 import CityTable from "../UI/Admin/CityTable";
 import CreateRegionDialog from "./CreateRegionDialog";
@@ -22,6 +21,7 @@ import InterestTable from "../UI/Admin/InterestTable";
 import CreateInterestDialog from "./CreateInterstDialog";
 import PlaceTable from "../UI/Admin/PlaceTable";
 import OSMLoadPlacesDialog from "../UI/Admin/OSMLoadPlacesDialog";
+import GeoTab from "../UI/Admin/GeoTab";
 
 export default function AdminDashboard() {
     const [value, setValue] = React.useState("0");
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
                 </Box>
                 <Box>
                     <TabPanel value="0" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
-                        <CountryTable countries={countries} currentCountry={selectedCountry} selectCountry={setSelectedCountry} deletedCountry={handleDelete}></CountryTable>
+                        <GeoTab></GeoTab>
                     </TabPanel>
                     <TabPanel value="1" tabIndex={0} sx={{ height: "750px", overflowY: "auto", boxSizing: "border-box" }}>
                         <RegionTable regions={regions} currentRegion={selectedRegion} selectRegion={setSelectedRegion} deleteRegion={handleDelete}></RegionTable>

@@ -28,6 +28,16 @@ export async function getRegions(countCities = false) {
     }
 }
 
+export async function getRegionsByCountry(id) {
+    try {
+        const response = await fetch('/api/get/regions/country?id=' + id);
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching regions:', error);
+        throw error;
+    }
+}
+
 export async function getUsers() {
     try {
         const response = await fetch('/api/get/me', {
@@ -61,6 +71,16 @@ export async function getPermissions() {
 export async function getCities() {
     try {
         const response = await fetch('/api/get/cities');
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        throw error;
+    }
+}
+
+export async function getCitiesByRegion(id) {
+    try {
+        const response = await fetch('/api/get/cities/region?id=' + id);
         return response.json();
     } catch (error) {
         console.error('Error fetching cities:', error);

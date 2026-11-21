@@ -51,7 +51,7 @@ import {
 import TypeTable from "./TypeTable";
 import Map from "../../Map";
 
-function CustomLabel({ icon: Icon, expandable, children, ...other }) {
+export function CustomLabel({ icon: Icon, expandable, children, ...other }) {
     return (
         <TreeItemLabel
             {...other}
@@ -73,7 +73,7 @@ const CustomCollapse = styled(Collapse)({
 
 const AnimatedCollapse = animated(CustomCollapse);
 
-function TransitionComponent(props) {
+export function TransitionComponent(props) {
     const style = useSpring({
         to: {
             opacity: props.in ? 1 : 0,
@@ -84,7 +84,7 @@ function TransitionComponent(props) {
     return <AnimatedCollapse style={style} {...props} />;
 }
 
-const TreeItemContent = styled('div')(({ theme }) => ({
+export const TreeItemContent = styled('div')(({ theme }) => ({
     padding: theme.spacing(0.5),
     paddingRight: theme.spacing(1),
     paddingLeft: `calc(${theme.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`,
@@ -136,7 +136,7 @@ const TreeItemContent = styled('div')(({ theme }) => ({
     },
 }));
 
-const TreeItemRoot = styled('li')(({ theme }) => ({
+export const TreeItemRoot = styled('li')(({ theme }) => ({
     listStyle: 'none',
     margin: 0,
     padding: 0,
@@ -147,7 +147,7 @@ const TreeItemRoot = styled('li')(({ theme }) => ({
     }),
 }));
 
-const getIconFromIconTXT = (iconTXT) => {
+export const getIconFromIconTXT = (iconTXT) => {
     switch (iconTXT) {
         case 'City':
             return LocationCityRoundedIcon;
