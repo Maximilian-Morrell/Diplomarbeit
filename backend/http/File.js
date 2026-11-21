@@ -48,6 +48,7 @@ router.post("/post/city", AuthMiddleware, async (req, res) => {
         const imageUrl = path.posix.join("uploads", "admin", "city", fileName);
 
         const oldImageURL = await hasCityImage(cityID)
+        console.log(oldImageURL)
 
         if (oldImageURL.picture_url != null) {
             console.log(oldImageURL.picture_url)

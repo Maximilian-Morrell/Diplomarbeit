@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, Divider, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField, Typography } from "@mui/material";
 import * as React from "react";
-import { AddNewCity, getCountries, getPermissions, UpdateCity, uploadFile, AutoComplete } from "../../API/ApiClient";
+import { AddNewCity, AutoComplete, getCountries, getPermissions, UpdateCity, uploadFile } from "../../API/ApiClient";
 import BackupRoundedIcon from '@mui/icons-material/BackupRounded';
 
 export default function CreateCityDialog(props) {
@@ -10,7 +10,7 @@ export default function CreateCityDialog(props) {
         onClose();
     };
 
-    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: "", cityGeoID: "" });
+    const [formData, setFormData] = React.useState({ name: "", type: "", region: "", description: "", country: "", permission: "" });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -29,7 +29,6 @@ export default function CreateCityDialog(props) {
     }, [])
 
     const [permissions, setPermissions] = React.useState([])
-    const [autoCompleteList, setAutoCompleteList] = React.useState([]);
 
     React.useEffect(() => {
         const loadPermissions = async () => {
@@ -38,24 +37,6 @@ export default function CreateCityDialog(props) {
 
         loadPermissions();
     }, [])
-
-    const handleCityChange = (event, newValue) => {
-
-        setFormData((previous) => ({
-            ...previous,
-            name: typeof newValue === "string" ? newValue : newValue?.name || "",
-            cityGeoID: typeof newValue === "object" ? newValue?.id || "" : ""
-        }));
-    };
-
-    const handleCityKeyDown = async (event) => {
-        const { value } = event.target;
-
-        if (value !== "") {
-            const autocompleteData = await AutoComplete("city", value) || [];
-            setAutoCompleteList(autocompleteData);
-        }
-    };
 
     React.useEffect(() => {
         if (city != null) {
@@ -100,23 +81,14 @@ export default function CreateCityDialog(props) {
         if (!file) return;
     }
 
-    const handleCityInputChange = async (event, newInputValue, reason) => {
-        if (reason === "input") {
-            setFormData(previous => ({
-                ...previous,
-                name: newInputValue,
-                cityGeoID: ""
-            }));
-
-            if (!newInputValue.trim()) {
-                setAutoCompleteList([]);
-                return;
-            }
-
-            const autocompleteData = await AutoComplete("city", newInputValue);
-            setAutoCompleteList(autocompleteData || []);
+    const [cityList, setCityList] = React.useState([])
+    const handleKeyDown = async (event) => {
+        if (event.target.value != "") {
+            const results = await AutoComplete("city", event.target.value);
+            console.log(results);
+            setCityList(results || [""]);
         }
-    };
+    }
 
     return (
         <Dialog
@@ -139,32 +111,33 @@ export default function CreateCityDialog(props) {
 
             <Box sx={{ flex: 1, minHeight: 0, m: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Autocomplete
+                    options={cityList ?? []}
                     freeSolo
-                    options={autoCompleteList}
-                    value={
-                        autoCompleteList.find(option => option.id === formData.cityGeoID) || null
-                    }
                     inputValue={formData.name}
-                    onInputChange={handleCityInputChange}
-                    onChange={handleCityChange}
                     getOptionLabel={(option) =>
-                        typeof option === "string" ? option : option.name || ""
+                        typeof option === "string" ? option : option.name ?? ""
                     }
-                    isOptionEqualToValue={(option, value) =>
-                        typeof value === "object" && option.id === value.id
-                    }
-                    filterOptions={(options) => options}
+                    onInputChange={(event, newValue) => {
+                        setFormData(previous => ({ ...previous, name: newValue }));
+                    }}
+                    onChange={(event, newValue) => {
+                        setFormData(previous => ({
+                            ...previous,
+                            name: typeof newValue === "string" ? newValue : newValue?.name ?? ""
+                        }));
+                    }}
+                    onKeyDown={handleKeyDown}
                     renderOption={(props, option) => (
                         <li {...props}>
                             <Box>
                                 <Typography>{option.name}</Typography>
-                                <Typography variant="caption" color="text.secondary">{option.state}, {option.country}</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {option.state}, {option.country}
+                                </Typography>
                             </Box>
                         </li>
                     )}
-                    renderInput={(params) => (
-                        <TextField {...params} label="City Name" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Name" />}
                 />
                 <TextField name="type" value={formData.type} onChange={handleChange} label="Type" defaultValue="Village" select>{typeOfCities.map((typeOfCity) => (
                     <MenuItem key={typeOfCity} value={typeOfCity}>{typeOfCity}</MenuItem>

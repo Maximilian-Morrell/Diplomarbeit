@@ -20,7 +20,7 @@ router.get('/AutoComplete', async (req, res) => {
             name: result.name,
             country: result.country,
             state: result.state,
-            id: result.place_id
+            geoID: result.place_id
         }
         responseData.push(resultObject);
     }
