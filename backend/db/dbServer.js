@@ -57,6 +57,7 @@ export async function CheckDB() {
             longitude DECIMAL(11, 8) NOT NULL,
             region_id INT NOT NULL,
             permission_id INT NOT NULL,
+            geoID VARCHAR(255),
             
             FOREIGN KEY (region_id)
                 REFERENCES regions(id),
@@ -649,7 +650,7 @@ async function getCityLocation(name, countryName) {
     return coordinates;
 }
 
-export async function AddCity(name, type, region, description, permission) {
+export async function AddCity(name, type, region, description, permission, geoID) {
     var conn;
 
     const regionO = await GetRegion(region);

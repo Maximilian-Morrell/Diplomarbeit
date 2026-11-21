@@ -9,7 +9,7 @@ router.get('/AutoComplete', async (req, res) => {
     const type = req.query.type;
 
     const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/autocomplete?text=${searchQuery}&type=${type}&limit=5&format=json&apiKey=${process.env.GEOAPIFY_API_KEY}`
+        `https://api.geoapify.com/v1/geocode/autocomplete?text=${searchQuery}&type=${type}&format=json&apiKey=${process.env.GEOAPIFY_API_KEY}`
     )
 
     const data = await response.json();
@@ -18,6 +18,8 @@ router.get('/AutoComplete', async (req, res) => {
     for(var result of results) {
         const resultObject = {
             name: result.name,
+            country: result.country,
+            state: result.state,
             id: result.place_id
         }
         responseData.push(resultObject);
